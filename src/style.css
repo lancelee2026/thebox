@@ -82,8 +82,9 @@ body {
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin-left: auto;
+  align-items: center;
 }
 
 .btn {
@@ -94,16 +95,26 @@ body {
   font-family: var(--font-ui);
   font-weight: 800;
   font-size: 0.9rem;
-  padding: 0.45rem 0.75rem;
+  padding: 0.6rem 0.9rem;
   border-radius: var(--radius-btn);
   box-shadow: var(--shadow);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
-  line-height: 1;
+  gap: 0.4rem;
+  line-height: 1.25;
+  min-height: 44px;
+  box-sizing: border-box;
   transition: transform 0.12s ease, background 0.12s ease;
+}
+
+/* 顶栏操作：固定高度，避免被压成扁长胶囊 */
+.actions .btn {
+  flex: 0 0 auto;
+  height: 48px;
+  min-height: 48px;
+  padding: 0 0.9rem;
 }
 
 .icon {
@@ -504,10 +515,11 @@ body {
   }
 
   .actions .btn {
-    padding: 0.5rem 0.6rem;
-    font-size: 0.8rem;
-    min-height: 44px;
-    gap: 0.25rem;
+    height: 48px;
+    min-height: 48px;
+    padding: 0 0.75rem;
+    font-size: 0.82rem;
+    gap: 0.3rem;
   }
 
   .pad-row {
@@ -530,15 +542,16 @@ body {
   }
 
   .actions .btn {
-    padding: 0.45rem 0.5rem;
-    font-size: 0.72rem;
-    min-height: 44px;
-    gap: 0.2rem;
+    height: 46px;
+    min-height: 46px;
+    padding: 0 0.65rem;
+    font-size: 0.78rem;
+    gap: 0.25rem;
   }
 
   .actions .btn .icon {
-    width: 1.1rem;
-    height: 1.1rem;
+    width: 1.15rem;
+    height: 1.15rem;
   }
 }
 
