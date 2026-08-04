@@ -1,10 +1,12 @@
-import { LEVEL_COUNT } from '../game/levels';
+import { LEVELS, LEVEL_COUNT } from '../game/levels';
 import { isLevelLocked, type Progress } from '../game/progress';
 
 export class Hud {
   private levelLabel = document.getElementById('level-label')!;
   private movesLabel = document.getElementById('moves-label')!;
   private muteBtn = document.getElementById('btn-mute')!;
+  private hintEl = document.getElementById('hint-mechanic');
+  private swapBtn = document.getElementById('btn-swap');
 
   setLevel(level1Based: number): void {
     this.levelLabel.textContent = `第 ${level1Based} / ${LEVEL_COUNT} 关`;
@@ -17,6 +19,22 @@ export class Hud {
   setMuted(muted: boolean): void {
     this.muteBtn.textContent = muted ? '静音' : '声音';
     this.muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
+  }
+
+  setHint(text: string): void {
+    if (!this.hintEl) return;
+    if (text) {
+      this.hintEl.textContent = text;
+      this.hintEl.classList.remove('hidden');
+    } else {
+      this.hintEl.textContent = '';
+      this.hintEl.classList.add('hidden');
+    }
+  }
+
+  setSwapVisible(v: boolean): void {
+    if (!this.swapBtn) return;
+    this.swapBtn.classList.toggle('hidden', !v);
   }
 }
 
@@ -75,7 +93,16 @@ export class LevelSelect {
   private render(): void {
     const maxCleared = this.progress.maxCleared;
     this.grid.replaceChildren();
+    let lastChapter = '';
     for (let i = 1; i <= LEVEL_COUNT; i++) {
+      const chapter = LEVELS[i - 1].chapter ?? '';
+      if (chapter && chapter !== lastChapter) {
+        lastChapter = chapter;
+        const label = document.createElement('div');
+        label.className = 'chapter-label';
+        label.textContent = chapter;
+        this.grid.appendChild(label);
+      }
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'level-cell';

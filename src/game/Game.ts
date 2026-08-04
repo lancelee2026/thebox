@@ -2,17 +2,24 @@ import { Group } from '@tweenjs/tween.js';
 import { createScene } from './setup';
 import { LevelView } from './Level';
 import { Player } from './Player';
-import { LEVELS, LEVEL_COUNT } from './levels';
-import type { BlockState, Dir } from './blockLogic';
-import { cloneState } from './blockLogic';
+import { LEVELS, LEVEL_COUNT, getLevel } from './levels';
+import type { Dir } from './blockLogic';
+import {
+  canMerge,
+  cloneState,
+  mergeBlocks,
+  occupiedCells,
+} from './blockLogic';
+import {
+  emptyBridges,
+  initialSnapshot,
+  type WorldSnapshot,
+} from './levelTypes';
+import { applySwitches, effectiveCell, rawCell } from './rules';
 import { Input } from '../input/Input';
 import { Sfx } from '../audio/Sfx';
 import { Hud, LevelSelect } from '../ui/hud';
-import {
-  loadProgress,
-  saveProgress,
-  type Progress,
-} from './progress';
+import { loadProgress, saveProgress, type Progress } from './progress';
 
 export class Game {
   private tweens = new Group();
@@ -24,11 +31,11 @@ export class Game {
   private hud = new Hud();
   private select = new LevelSelect();
   private progress: Progress;
-  /** 当前关卡 1-based */
   private levelNo = 1;
   private moves = 0;
   private totalMoves = 0;
-  private history: BlockState[] = [];
+  private history: WorldSnapshot[] = [];
+  private world: WorldSnapshot = initialSnapshot(LEVELS[0], 0, 0);
   private busy = false;
 
   constructor() {
@@ -49,12 +56,17 @@ export class Game {
     document.getElementById('btn-undo')!.addEventListener('click', () => this.undo());
     document.getElementById('btn-restart')!.addEventListener('click', () => this.restart());
     document.getElementById('btn-mute')!.addEventListener('click', () => this.toggleMute());
+    document.getElementById('btn-swap')?.addEventListener('click', () => this.swapEntity());
 
     window.addEventListener('keydown', (e) => {
       if (e.key === 'r' || e.key === 'R') this.restart();
       if (e.key === 'z' || e.key === 'Z' || e.key === 'Backspace') {
         e.preventDefault();
         this.undo();
+      }
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        this.swapEntity();
       }
     });
 
@@ -67,6 +79,32 @@ export class Game {
     requestAnimationFrame(this.loop);
   }
 
+  private snapshot(): WorldSnapshot {
+    return {
+      block: cloneState(this.player.state),
+      blockB: this.player.stateB ? cloneState(this.player.stateB) : null,
+      active: this.player.active,
+      bridges: { ...this.world.bridges },
+      layer: this.world.layer,
+    };
+  }
+
+  private applySnapshot(snap: WorldSnapshot): void {
+    this.world = {
+      block: cloneState(snap.block),
+      blockB: snap.blockB ? cloneState(snap.blockB) : null,
+      active: snap.active,
+      bridges: { ...snap.bridges },
+      layer: snap.layer,
+    };
+    if (snap.blockB) {
+      this.player.placeSplit(snap.block, snap.blockB, snap.active);
+    } else {
+      this.player.placeMerged(snap.block);
+    }
+    this.level.syncBridges(snap.bridges);
+  }
+
   private loadLevel(level1Based: number): void {
     this.busy = false;
     this.levelNo = level1Based;
@@ -75,42 +113,126 @@ export class Game {
     this.progress.lastPlayed = level1Based;
     saveProgress(this.progress);
 
-    const map = LEVELS[level1Based - 1];
-    this.level.load(map);
-    const start: BlockState = {
-      col: this.level.startCol,
-      row: this.level.startRow,
-      ori: 'standing',
-    };
-    this.player.reset(start);
+    const def = getLevel(level1Based - 1);
+    const bridges = emptyBridges(def);
+    this.level.load(def, 0, bridges);
+    this.world = initialSnapshot(def, this.level.startCol, this.level.startRow);
+    this.world.bridges = bridges;
+    this.player.reset(this.world.block);
     this.hud.setLevel(level1Based);
     this.hud.setMoves(0);
+    this.hud.setHint(def.hint ?? '');
+    this.hud.setSwapVisible(false);
     this.input.setEnabled(true);
   }
 
   private handleDir(dir: Dir): void {
     this.sfx.unlock();
     if (this.busy || !this.player.canMove) return;
-
-    const before = cloneState(this.player.state);
-    const ok = this.player.tryMove(dir, (after) => this.afterMove(before, after));
+    const before = this.snapshot();
+    const ok = this.player.tryMove(dir, () => this.afterMove(before));
     if (ok) this.sfx.move();
   }
 
-  private afterMove(before: BlockState, after: BlockState): void {
+  private swapEntity(): void {
+    if (this.busy || !this.player.isSplit) return;
+    this.player.toggleActive();
+    this.world.active = this.player.active;
+    this.sfx.beep(240, 40, 0.12);
+  }
+
+  private afterMove(before: WorldSnapshot): void {
     this.history.push(before);
     if (this.history.length > 50) this.history.shift();
     this.moves++;
     this.totalMoves++;
     this.hud.setMoves(this.moves);
 
-    if (this.level.isDeath(after)) {
+    const def = getLevel(this.levelNo - 1);
+    const parsed = this.level.parsed!;
+    let bridges = { ...this.world.bridges };
+
+    const moving = this.player.isSplit
+      ? this.player.active === 0
+        ? this.player.state
+        : this.player.stateB!
+      : this.player.state;
+    bridges = applySwitches(parsed, moving, bridges, this.player.isSplit);
+    this.world.bridges = bridges;
+    this.level.syncBridges(bridges);
+
+    // split pad
+    if (!this.player.isSplit && def.splitPads?.length) {
+      const cells = occupiedCells(this.player.state);
+      for (const pad of def.splitPads) {
+        if (cells.some((c) => c.col === pad.col && c.row === pad.row)) {
+          this.player.placeSplit(
+            { col: pad.destA[0], row: pad.destA[1], ori: 'standing' },
+            { col: pad.destB[0], row: pad.destB[1], ori: 'standing' },
+            0,
+          );
+          this.world.block = cloneState(this.player.state);
+          this.world.blockB = cloneState(this.player.stateB!);
+          this.world.active = 0;
+          this.hud.setSwapVisible(true);
+          this.sfx.beep(320, 80, 0.2);
+          break;
+        }
+      }
+    }
+
+    // merge
+    if (this.player.isSplit && this.player.stateB && canMerge(this.player.state, this.player.stateB)) {
+      const merged = mergeBlocks(this.player.state, this.player.stateB);
+      this.player.placeMerged(merged);
+      this.world.block = cloneState(merged);
+      this.world.blockB = null;
+      this.hud.setSwapVisible(false);
+      this.sfx.beep(400, 60, 0.18);
+    }
+
+    // stair / layer
+    if (def.layers && def.layers.length > 1 && !this.player.isSplit) {
+      const cells = occupiedCells(this.player.state);
+      const onStair = cells.some((c) => rawCell(parsed, c.col, c.row) === 'u');
+      if (onStair && this.player.state.ori === 'standing') {
+        const nextLayer = (this.world.layer + 1) % def.layers.length;
+        if (nextLayer !== this.world.layer) {
+          this.world.layer = nextLayer;
+          this.level.setLayer(nextLayer, this.world.bridges);
+          // keep position; re-place
+          this.player.placeMerged(this.player.state);
+          this.sfx.beep(280, 70, 0.15);
+        }
+      }
+    }
+
+    this.world.block = cloneState(this.player.state);
+    this.world.blockB = this.player.stateB ? cloneState(this.player.stateB) : null;
+    this.world.active = this.player.active;
+
+    if (this.player.isSplit) {
+      const deadA = this.cubeDead(this.player.state);
+      const deadB = this.cubeDead(this.player.stateB!);
+      if (deadA || deadB) {
+        this.onDeath();
+        return;
+      }
+      return;
+    }
+
+    if (this.level.isDeath(this.player.state, bridges)) {
       this.onDeath();
       return;
     }
-    if (this.level.isWin(after)) {
+    if (this.level.isWin(this.player.state, bridges)) {
       this.onWin();
     }
+  }
+
+  private cubeDead(state: { col: number; row: number }): boolean {
+    const t = effectiveCell(this.level.parsed!, state.col, state.row, this.world.bridges);
+    return t === '.' || t === 'z';
   }
 
   private onDeath(): void {
@@ -119,18 +241,11 @@ export class Game {
     this.sfx.fail();
     this.level.shake();
     this.player.fall(() => {
-      const start: BlockState = {
-        col: this.level.startCol,
-        row: this.level.startRow,
-        ori: 'standing',
-      };
       this.history = [];
       this.moves = 0;
       this.hud.setMoves(0);
-      this.player.reset(start, () => {
-        this.busy = false;
-        this.input.setEnabled(true);
-      });
+      this.loadLevel(this.levelNo);
+      this.busy = false;
     });
   }
 
@@ -163,7 +278,12 @@ export class Game {
     if (!prev) return;
     this.moves = Math.max(0, this.moves - 1);
     this.hud.setMoves(this.moves);
-    this.player.place(prev);
+    const def = getLevel(this.levelNo - 1);
+    if (def.layers && prev.layer !== this.world.layer) {
+      this.level.setLayer(prev.layer, prev.bridges);
+    }
+    this.applySnapshot(prev);
+    this.hud.setSwapVisible(!!prev.blockB);
     this.sfx.beep(160, 40, 0.15);
   }
 

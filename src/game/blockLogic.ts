@@ -56,6 +56,31 @@ export function nextState(s: BlockState, dir: Dir): BlockState {
   return { col: col + 1, row, ori: 'flatZ' };
 }
 
+/** 1×1 小方块：每次只移一格，始终站立 */
+export function nextCubeState(s: BlockState, dir: Dir): BlockState {
+  const { col, row } = s;
+  if (dir === 'left') return { col: col - 1, row, ori: 'standing' };
+  if (dir === 'right') return { col: col + 1, row, ori: 'standing' };
+  if (dir === 'up') return { col, row: row - 1, ori: 'standing' };
+  return { col, row: row + 1, ori: 'standing' };
+}
+
+/** 两颗站立小方块是否相邻可合并 */
+export function canMerge(a: BlockState, b: BlockState): boolean {
+  if (a.ori !== 'standing' || b.ori !== 'standing') return false;
+  const dc = Math.abs(a.col - b.col);
+  const dr = Math.abs(a.row - b.row);
+  return (dc === 1 && dr === 0) || (dc === 0 && dr === 1);
+}
+
+/** 合并为长砖：以较小 col/row 为锚点 */
+export function mergeBlocks(a: BlockState, b: BlockState): BlockState {
+  if (a.row === b.row) {
+    return { col: Math.min(a.col, b.col), row: a.row, ori: 'flatX' };
+  }
+  return { col: a.col, row: Math.min(a.row, b.row), ori: 'flatZ' };
+}
+
 /** 世界坐标：砖块几何中心（y 为底部之上的中心高度） */
 export function worldCenter(s: BlockState): { x: number; y: number; z: number } {
   if (s.ori === 'standing') return { x: s.col, y: 1, z: s.row };

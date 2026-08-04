@@ -172,6 +172,31 @@ body {
   font-weight: 600;
 }
 
+.mechanic-hint {
+  margin: 0;
+  text-align: center;
+  color: #1a5276;
+  background: rgba(255, 255, 255, 0.88);
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0.45rem 0.75rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+
+.mechanic-hint.hidden,
+.btn.hidden {
+  display: none !important;
+}
+
+.chapter-label {
+  grid-column: 1 / -1;
+  font-weight: 800;
+  color: #5d6d7e;
+  font-size: 0.85rem;
+  padding: 8px 4px 0;
+}
+
 .overlay {
   position: fixed;
   inset: 0;
@@ -216,6 +241,8 @@ body {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
+  max-height: 50vh;
+  overflow: auto;
 }
 
 .level-cell {

@@ -1,4 +1,5 @@
-const KEY = 'fan-zhuan-kuai-progress-v1';
+const KEY = 'fan-zhuan-kuai-progress-v2';
+const LEGACY_KEY = 'fan-zhuan-kuai-progress-v1';
 
 export interface Progress {
   /** 已通关最高关卡号（1-based）；0 表示尚未通关 */
@@ -15,7 +16,7 @@ const DEFAULT: Progress = {
 
 export function loadProgress(): Progress {
   try {
-    const raw = localStorage.getItem(KEY);
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY);
     if (!raw) return { ...DEFAULT };
     const parsed = JSON.parse(raw) as Partial<Progress>;
     return {
@@ -32,7 +33,6 @@ export function saveProgress(p: Progress): void {
   localStorage.setItem(KEY, JSON.stringify(p));
 }
 
-/** 关卡号 i（1-based）是否可选 */
 export function isLevelPlayable(i: number, maxCleared: number): boolean {
   return i <= maxCleared || i === maxCleared + 1;
 }
