@@ -16,10 +16,10 @@ export class LevelView {
   private rows = 0;
   private tweens: Group;
   private geo = new THREE.BoxGeometry(1, 0.25, 1);
-  /** 暖象牙白路径 / 青柠目标 / 珊瑚红砖 */
-  private matX = new THREE.MeshLambertMaterial({ color: 0xfff6e8 });
-  private matO = new THREE.MeshLambertMaterial({ color: 0x4ade80 });
-  private matZ = new THREE.MeshLambertMaterial({ color: 0xff7a6a });
+  /** Cuboid 原作：白路径 / 翠绿目标 / 红砖 */
+  private matX = new THREE.MeshLambertMaterial({ color: 0xffffff });
+  private matO = new THREE.MeshLambertMaterial({ color: 0x27ae60 });
+  private matZ = new THREE.MeshLambertMaterial({ color: 0xe74c3c });
 
   constructor(scene: THREE.Scene, tweens: Group) {
     this.tweens = tweens;

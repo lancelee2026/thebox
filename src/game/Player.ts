@@ -28,7 +28,7 @@ export class Player {
     this.tweens = tweens;
     this.mesh = new THREE.Mesh(
       new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshLambertMaterial({ color: 0xf4a261 }),
+      new THREE.MeshLambertMaterial({ color: 0x555555 }),
     );
     this.mesh.castShadow = true;
     this.pivot.add(this.mesh);

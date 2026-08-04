@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-/** 晴空游乐场：浅天蓝场景底，偏暖主光 */
-export const SCENE_SKY = 0x8fd3f4;
+/** 对齐 Cuboid 原作：中蓝场景底 */
+export const SCENE_SKY = 0x3498db;
 
 export function createScene(canvas: HTMLCanvasElement): {
   scene: THREE.Scene;
@@ -16,8 +16,6 @@ export function createScene(canvas: HTMLCanvasElement): {
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
   renderer.shadowMap.enabled = true;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.15;
 
   const frustum = 6.5;
   const camera = new THREE.OrthographicCamera(-frustum, frustum, frustum, -frustum, 1, 40);
@@ -29,11 +27,12 @@ export function createScene(canvas: HTMLCanvasElement): {
   cameraPivot.rotation.set(0, -Math.PI / 2, 0);
   scene.add(cameraPivot);
 
-  const ambient = new THREE.AmbientLight(0xfff6e8, 0.92);
+  // 略高于原作的环境光，避免深灰砖块发闷，同时保留顶亮侧暗
+  const ambient = new THREE.AmbientLight(0xffffff, 0.75);
   scene.add(ambient);
 
-  const sun = new THREE.DirectionalLight(0xfff2d6, 1.05);
-  sun.position.set(4, 14, 6);
+  const sun = new THREE.DirectionalLight(0xffffff, 0.85);
+  sun.position.set(2, 12, 4);
   sun.castShadow = true;
   sun.shadow.camera.left = -7;
   sun.shadow.camera.right = 7;
@@ -41,10 +40,6 @@ export function createScene(canvas: HTMLCanvasElement): {
   sun.shadow.camera.top = 7;
   sun.shadow.mapSize.set(512, 512);
   scene.add(sun);
-
-  const fill = new THREE.DirectionalLight(0xb8e4ff, 0.45);
-  fill.position.set(-6, 6, -4);
-  scene.add(fill);
 
   const resize = () => {
     const wrap = canvas.parentElement;
