@@ -121,7 +121,10 @@ export class Game {
     this.player.reset(this.world.block);
     this.hud.setLevel(level1Based);
     this.hud.setMoves(0);
-    this.hud.setHint(def.hint ?? '');
+    const coach =
+      def.hint ??
+      (level1Based === 1 ? '站立翻滚，卧倒后两格都进绿格才算过关。' : '');
+    this.hud.setHint(coach);
     this.hud.setSwapVisible(false);
     this.input.setEnabled(true);
   }
@@ -240,6 +243,7 @@ export class Game {
     this.input.setEnabled(false);
     this.sfx.fail();
     this.level.shake();
+    this.hud.showStatus('掉落 · 本关已重开', 'fail', 1600);
     this.player.fall(() => {
       this.history = [];
       this.moves = 0;
@@ -253,6 +257,8 @@ export class Game {
     this.busy = true;
     this.input.setEnabled(false);
     this.sfx.win();
+    const clearedMoves = this.moves;
+    this.hud.showStatus(`过关！本关 ${clearedMoves} 步`, 'win', 900);
 
     if (this.levelNo > this.progress.maxCleared) {
       this.progress.maxCleared = this.levelNo;
@@ -261,14 +267,19 @@ export class Game {
 
     this.player.win(() => {
       if (this.levelNo >= LEVEL_COUNT) {
+        this.hud.clearStatus();
         this.select.showWin(this.totalMoves, this.progress);
         this.busy = false;
         return;
       }
-      this.level.remove(() => {
-        this.loadLevel(this.levelNo + 1);
-        this.busy = false;
-      });
+      const advance = () => {
+        this.level.remove(() => {
+          this.loadLevel(this.levelNo + 1);
+          this.busy = false;
+        });
+      };
+      // 让过关 chip 露一小会儿再切关
+      window.setTimeout(advance, 450);
     });
   }
 

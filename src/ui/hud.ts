@@ -89,7 +89,9 @@ export class Hud {
   private movesLabel = mustEl('moves-label');
   private muteBtn = mustEl<HTMLButtonElement>('btn-mute');
   private hintEl = document.getElementById('hint-mechanic');
+  private toastEl = document.getElementById('status-toast');
   private swapBtn = document.getElementById('btn-swap');
+  private toastTimer = 0;
 
   constructor() {
     setBtnIcon(mustEl('btn-select'), 'icon-grid', '选关');
@@ -107,12 +109,14 @@ export class Hud {
   }
 
   setMuted(muted: boolean): void {
-    setBtnIcon(this.muteBtn, muted ? 'icon-mute' : 'icon-sound', muted ? '静音' : '声音');
+    setBtnIcon(this.muteBtn, muted ? 'icon-mute' : 'icon-sound', '声音');
     this.muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
+    this.muteBtn.title = muted ? '已静音，点击打开声音' : '声音开启，点击静音';
   }
 
   setHint(text: string): void {
     if (!this.hintEl) return;
+    this.hintEl.classList.remove('status-fail', 'status-win');
     if (text) {
       this.hintEl.textContent = text;
       this.hintEl.classList.remove('hidden');
@@ -120,6 +124,28 @@ export class Hud {
       this.hintEl.textContent = '';
       this.hintEl.classList.add('hidden');
     }
+  }
+
+  /** 短寿命状态条：死亡 / 过关反馈 */
+  showStatus(text: string, kind: 'fail' | 'win' | 'info' = 'info', ms = 1400): void {
+    if (!this.toastEl) return;
+    window.clearTimeout(this.toastTimer);
+    this.toastEl.textContent = text;
+    this.toastEl.classList.remove('hidden', 'status-fail', 'status-win', 'status-info');
+    this.toastEl.classList.add(
+      kind === 'fail' ? 'status-fail' : kind === 'win' ? 'status-win' : 'status-info',
+    );
+    this.toastTimer = window.setTimeout(() => {
+      this.toastEl?.classList.add('hidden');
+      if (this.toastEl) this.toastEl.textContent = '';
+    }, ms);
+  }
+
+  clearStatus(): void {
+    window.clearTimeout(this.toastTimer);
+    if (!this.toastEl) return;
+    this.toastEl.classList.add('hidden');
+    this.toastEl.textContent = '';
   }
 
   setSwapVisible(v: boolean): void {
@@ -144,6 +170,16 @@ export class LevelSelect {
     mustEl('btn-win-select').addEventListener('click', () => {
       this.hideWin();
       this.show(this.current, this.progress);
+    });
+    window.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (this.overlay.classList.contains('hidden')) return;
+      e.preventDefault();
+      if (!this.panelWin.classList.contains('hidden')) {
+        this.hide();
+        return;
+      }
+      this.hide();
     });
   }
 
