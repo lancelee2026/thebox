@@ -155,6 +155,7 @@ export class LevelSelect {
     this.current = currentLevel;
     this.progress = progress;
     this.overlay.classList.remove('hidden');
+    this.overlay.inert = false;
     this.overlay.setAttribute('aria-hidden', 'false');
     this.panelSelect.classList.remove('hidden');
     this.panelWin.classList.add('hidden');
@@ -162,15 +163,19 @@ export class LevelSelect {
   }
 
   hide(): void {
+    this.releaseFocusFromOverlay();
     this.overlay.classList.add('hidden');
+    this.overlay.inert = true;
     this.overlay.setAttribute('aria-hidden', 'true');
     this.panelSelect.classList.add('hidden');
     this.panelWin.classList.add('hidden');
+    document.getElementById('btn-select')?.focus({ preventScroll: true });
   }
 
   showWin(totalMoves: number, progress: Progress): void {
     this.progress = progress;
     this.overlay.classList.remove('hidden');
+    this.overlay.inert = false;
     this.overlay.setAttribute('aria-hidden', 'false');
     this.panelSelect.classList.add('hidden');
     this.panelWin.classList.remove('hidden');
@@ -179,6 +184,14 @@ export class LevelSelect {
 
   hideWin(): void {
     this.panelWin.classList.add('hidden');
+  }
+
+  /** 关闭浮层前移走焦点，避免 aria-hidden 祖先仍包着 focused 控件 */
+  private releaseFocusFromOverlay(): void {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement && this.overlay.contains(active)) {
+      active.blur();
+    }
   }
 
   private render(): void {
