@@ -1,4 +1,4 @@
-import { Group } from '@tweenjs/tween.js';
+import { Group, Tween, Easing } from '@tweenjs/tween.js';
 import { createScene } from './setup';
 import { LevelView } from './Level';
 import { Player } from './Player';
@@ -16,6 +16,7 @@ import {
   type WorldSnapshot,
 } from './levelTypes';
 import { applySwitches, effectiveCell, rawCell } from './rules';
+import { animDuration } from './motion';
 import { Input } from '../input/Input';
 import { Sfx } from '../audio/Sfx';
 import { Hud, LevelSelect } from '../ui/hud';
@@ -133,8 +134,31 @@ export class Game {
     this.sfx.unlock();
     if (this.busy || !this.player.canMove) return;
     const before = this.snapshot();
-    const ok = this.player.tryMove(dir, () => this.afterMove(before));
+    const ok = this.player.tryMove(
+      dir,
+      () => this.afterMove(before),
+      () => this.sfx.land(),
+    );
     if (ok) this.sfx.move();
+  }
+
+  /** 过关瞬间镜头轻抬一下 */
+  private punchCamera(): void {
+    const pivot = this.sceneSetup.cameraPivot;
+    const base = pivot.position.y;
+    const t = { y: base };
+    new Tween(t, this.tweens)
+      .to({ y: base + 0.18 }, animDuration(140))
+      .easing(Easing.Quadratic.Out)
+      .yoyo(true)
+      .repeat(1)
+      .onUpdate(() => {
+        pivot.position.y = t.y;
+      })
+      .onComplete(() => {
+        pivot.position.y = base;
+      })
+      .start();
   }
 
   private swapEntity(): void {
@@ -257,8 +281,9 @@ export class Game {
     this.busy = true;
     this.input.setEnabled(false);
     this.sfx.win();
+    this.punchCamera();
     const clearedMoves = this.moves;
-    this.hud.showStatus(`过关！本关 ${clearedMoves} 步`, 'win', 900);
+    this.hud.showStatus(`过关！本关 ${clearedMoves} 步`, 'win', 1400);
 
     if (this.levelNo > this.progress.maxCleared) {
       this.progress.maxCleared = this.levelNo;
@@ -272,14 +297,15 @@ export class Game {
         this.busy = false;
         return;
       }
+      this.sfx.clearLevel();
       const advance = () => {
         this.level.remove(() => {
           this.loadLevel(this.levelNo + 1);
           this.busy = false;
         });
       };
-      // 让过关 chip 露一小会儿再切关
-      window.setTimeout(advance, 450);
+      // 过关 chip 再露一瞬再切关
+      window.setTimeout(advance, 320);
     });
   }
 

@@ -139,7 +139,7 @@ export class Player {
       .start();
   }
 
-  tryMove(dir: Dir, onSettled: () => void): boolean {
+  tryMove(dir: Dir, onSettled: () => void, onLand?: () => void): boolean {
     if (!this.canMove) return false;
     const asCube = this.isSplit;
     const which: 'a' | 'b' = !asCube || this.active === 0 ? 'a' : 'b';
@@ -147,13 +147,17 @@ export class Player {
     const next = asCube ? nextCubeState(cur, dir) : nextState(cur, dir);
     const plan = this.planFlip(cur, next, dir, which, asCube);
     this.canMove = false;
-    this.animateFlip(plan, () => {
-      if (which === 'a') this.state = cloneState(next);
-      else this.stateB = cloneState(next);
-      this.placeEntity(which, next, asCube);
-      this.canMove = true;
-      onSettled();
-    });
+    this.animateFlip(
+      plan,
+      () => {
+        if (which === 'a') this.state = cloneState(next);
+        else this.stateB = cloneState(next);
+        this.placeEntity(which, next, asCube);
+        this.canMove = true;
+        onSettled();
+      },
+      onLand,
+    );
     return true;
   }
 
@@ -207,7 +211,7 @@ export class Player {
     };
   }
 
-  private animateFlip(plan: FlipPlan, onDone: () => void): void {
+  private animateFlip(plan: FlipPlan, onDone: () => void, onLand?: () => void): void {
     const cur = plan.target === 'a' ? this.state : this.stateB!;
     const size = this.sizeOf(cur, plan.asCube);
     const c = this.centerOf(cur, plan.asCube);
@@ -228,10 +232,39 @@ export class Player {
     const target = plan.axis === 'z' ? { z: plan.angle } : { x: plan.angle };
 
     this.activeTween = new Tween(rot, this.tweens)
-      .to(target, animDuration(260))
-      .easing(Easing.Quadratic.In)
+      .to(target, animDuration(230))
+      .easing(Easing.Cubic.In)
       .onUpdate(() => {
         pivot.rotation.set(rot.x, rot.y, rot.z);
+      })
+      .onComplete(() => {
+        this.activeTween = null;
+        onLand?.();
+        this.landSquash(mesh, size, onDone);
+      })
+      .start();
+  }
+
+  /** 落地微挤压：重量感，不弹跳夸张 */
+  private landSquash(
+    mesh: THREE.Mesh,
+    size: { sx: number; sy: number; sz: number },
+    onDone: () => void,
+  ): void {
+    if (animDuration(80) < 80) {
+      onDone();
+      return;
+    }
+    const land = { v: 1 };
+    this.activeTween = new Tween(land, this.tweens)
+      .to({ v: 0.86 }, animDuration(55))
+      .easing(Easing.Quadratic.Out)
+      .yoyo(true)
+      .repeat(1)
+      .onUpdate(() => {
+        const squash = land.v;
+        const widen = 1 + (1 - squash) * 0.08;
+        mesh.scale.set(size.sx * widen, size.sy * squash, size.sz * widen);
       })
       .onComplete(() => {
         this.activeTween = null;
@@ -243,16 +276,21 @@ export class Player {
   fall(onDone: () => void): void {
     this.canMove = false;
     this.stopTween();
-    const s = { v: 1 };
+    const s = { v: 1, y: 0 };
     const targets = [this.mesh, ...(this.pivotB.visible ? [this.meshB] : [])];
+    const pivots = [this.pivot, ...(this.pivotB.visible ? [this.pivotB] : [])];
     const scales = targets.map((m) => ({ x: m.scale.x, y: m.scale.y, z: m.scale.z }));
+    const baseY = pivots.map((p) => p.position.y);
     new Tween(s, this.tweens)
-      .to({ v: 0 }, animDuration(300))
-      .easing(Easing.Quadratic.Out)
+      .to({ v: 0, y: -1.2 }, animDuration(340))
+      .easing(Easing.Quadratic.In)
       .onUpdate(() => {
         targets.forEach((m, i) =>
           m.scale.set(scales[i].x * s.v, scales[i].y * s.v, scales[i].z * s.v),
         );
+        pivots.forEach((p, i) => {
+          p.position.y = baseY[i] + s.y;
+        });
       })
       .onComplete(onDone)
       .start();
@@ -261,23 +299,28 @@ export class Player {
   win(onDone: () => void): void {
     this.canMove = false;
     this.stopTween();
-    const rot = { y: this.pivot.rotation.y };
-    const spin = new Tween(rot, this.tweens)
-      .to({ y: rot.y + Math.PI }, animDuration(500))
-      .easing(Easing.Quadratic.InOut)
-      .onUpdate(() => {
-        this.pivot.rotation.y = rot.y;
-      });
-    const s = { v: 1 };
+    const baseY = this.pivot.position.y;
+    const lift = { y: baseY, spin: 0 };
     const sx = this.mesh.scale.x;
     const sy = this.mesh.scale.y;
     const sz = this.mesh.scale.z;
+
+    const riseSpin = new Tween(lift, this.tweens)
+      .to({ y: baseY + 0.85, spin: Math.PI * 1.5 }, animDuration(520))
+      .easing(Easing.Cubic.Out)
+      .onUpdate(() => {
+        this.pivot.position.y = lift.y;
+        this.pivot.rotation.y = lift.spin;
+      });
+
+    const s = { v: 1 };
     const shrink = new Tween(s, this.tweens)
-      .to({ v: 0 }, animDuration(280))
-      .easing(Easing.Quadratic.InOut)
+      .to({ v: 0 }, animDuration(300))
+      .easing(Easing.Quadratic.In)
       .onUpdate(() => this.mesh.scale.set(sx * s.v, sy * s.v, sz * s.v))
       .onComplete(onDone);
-    spin.chain(shrink).start();
+
+    riseSpin.chain(shrink).start();
   }
 
   private stopTween(): void {

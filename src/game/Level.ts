@@ -97,12 +97,12 @@ export class LevelView {
     mesh.position.set(c, -0.125, r);
     mesh.receiveShadow = true;
     this.layer.add(mesh);
-    const s = { v: 0.75 };
+    const s = { v: 0.72 };
     mesh.scale.set(s.v, 1, s.v);
     new Tween(s, this.tweens)
-      .delay((c + r) * 20)
-      .to({ v: 1 }, animDuration(240))
-      .easing(Easing.Quadratic.Out)
+      .delay((c + r) * 16)
+      .to({ v: 1 }, animDuration(260))
+      .easing(Easing.Cubic.Out)
       .onUpdate(() => mesh.scale.set(s.v, 1, s.v))
       .start();
     return mesh;
@@ -123,26 +123,29 @@ export class LevelView {
   }
 
   shake(): void {
+    const base: Array<{ mesh: THREE.Mesh; x: number; y: number; z: number }> = [];
     for (const e of this.layer.children) {
       const mesh = e as THREE.Mesh;
-      new Tween(mesh.position, this.tweens)
-        .to({ y: Math.random() / 2 - 0.25 }, animDuration(300))
-        .easing(Easing.Quadratic.Out)
-        .yoyo(true)
-        .repeat(1)
-        .start();
-      new Tween(mesh.rotation, this.tweens)
+      base.push({ mesh, x: mesh.position.x, y: mesh.position.y, z: mesh.position.z });
+    }
+    for (const b of base) {
+      const amp = 0.12;
+      new Tween(b.mesh.position, this.tweens)
         .to(
           {
-            x: Math.random() - 0.5,
-            y: Math.random() - 0.5,
-            z: Math.random() - 0.5,
+            x: b.x + (Math.random() - 0.5) * amp,
+            y: b.y + (Math.random() - 0.5) * amp * 0.6,
+            z: b.z + (Math.random() - 0.5) * amp,
           },
-          animDuration(300),
+          animDuration(90),
         )
         .easing(Easing.Quadratic.Out)
         .yoyo(true)
-        .repeat(1)
+        .repeat(3)
+        .onComplete(() => {
+          b.mesh.position.set(b.x, b.y, b.z);
+          b.mesh.rotation.set(0, 0, 0);
+        })
         .start();
     }
   }
