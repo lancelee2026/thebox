@@ -34,9 +34,21 @@ export class Player {
   private tweens: Group;
   private level: LevelView;
   private activeTween: Tween | null = null;
-  private matA = new THREE.MeshLambertMaterial({ color: 0x555555 });
-  private matB = new THREE.MeshLambertMaterial({ color: 0x7f8c8d });
-  private matActive = new THREE.MeshLambertMaterial({ color: 0x2c3e50 });
+  private matA = new THREE.MeshStandardMaterial({
+    color: 0x3a4654,
+    metalness: 0.08,
+    roughness: 0.72,
+  });
+  private matB = new THREE.MeshStandardMaterial({
+    color: 0x6b7c8a,
+    metalness: 0.06,
+    roughness: 0.74,
+  });
+  private matActive = new THREE.MeshStandardMaterial({
+    color: 0x243447,
+    metalness: 0.1,
+    roughness: 0.68,
+  });
 
   constructor(scene: THREE.Scene, level: LevelView, tweens: Group) {
     this.level = level;

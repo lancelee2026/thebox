@@ -22,16 +22,54 @@ export class LevelView {
   parsed: ParsedLevel | null = null;
   private tweens: Group;
   private geo = new THREE.BoxGeometry(1, 0.25, 1);
-  private mats: Record<TileKind, THREE.MeshLambertMaterial> = {
-    x: new THREE.MeshLambertMaterial({ color: 0xffffff }),
-    o: new THREE.MeshLambertMaterial({ color: 0x27ae60 }),
-    z: new THREE.MeshLambertMaterial({ color: 0xe74c3c }),
-    f: new THREE.MeshLambertMaterial({ color: 0xf39c12 }),
-    b: new THREE.MeshLambertMaterial({ color: 0xaed6f1 }),
-    s: new THREE.MeshLambertMaterial({ color: 0xf7dc6f }),
-    S: new THREE.MeshLambertMaterial({ color: 0xe67e22 }),
-    p: new THREE.MeshLambertMaterial({ color: 0xaf7ac5 }),
-    u: new THREE.MeshLambertMaterial({ color: 0x5dade2 }),
+  private mats: Record<TileKind, THREE.MeshStandardMaterial> = {
+    x: new THREE.MeshStandardMaterial({
+      color: 0xf3f5f7,
+      metalness: 0,
+      roughness: 0.82,
+    }),
+    o: new THREE.MeshStandardMaterial({
+      color: 0x1f9b58,
+      emissive: 0x0a4d2c,
+      emissiveIntensity: 0.16,
+      metalness: 0,
+      roughness: 0.72,
+    }),
+    z: new THREE.MeshStandardMaterial({
+      color: 0xd6453a,
+      metalness: 0,
+      roughness: 0.78,
+    }),
+    f: new THREE.MeshStandardMaterial({
+      color: 0xe8a317,
+      metalness: 0,
+      roughness: 0.8,
+    }),
+    b: new THREE.MeshStandardMaterial({
+      color: 0x9ec9e8,
+      metalness: 0,
+      roughness: 0.78,
+    }),
+    s: new THREE.MeshStandardMaterial({
+      color: 0xf0d56a,
+      metalness: 0,
+      roughness: 0.75,
+    }),
+    S: new THREE.MeshStandardMaterial({
+      color: 0xd9782a,
+      metalness: 0,
+      roughness: 0.75,
+    }),
+    p: new THREE.MeshStandardMaterial({
+      color: 0xa78bc0,
+      metalness: 0,
+      roughness: 0.78,
+    }),
+    u: new THREE.MeshStandardMaterial({
+      color: 0x4fa8d8,
+      metalness: 0,
+      roughness: 0.78,
+    }),
   };
   /** key col,row -> mesh for bridges */
   private bridgeMeshes = new Map<string, THREE.Mesh>();
@@ -96,6 +134,7 @@ export class LevelView {
     const mesh = new THREE.Mesh(this.geo, mat);
     mesh.position.set(c, -0.125, r);
     mesh.receiveShadow = true;
+    mesh.castShadow = true;
     this.layer.add(mesh);
     const s = { v: 0.72 };
     mesh.scale.set(s.v, 1, s.v);

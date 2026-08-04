@@ -63,7 +63,8 @@ function mustEl<T extends HTMLElement>(id: string): T {
 
 function setBtnIcon(btn: HTMLElement, iconId: string, label: string): void {
   btn.replaceChildren();
-  btn.append(iconEl(iconId), document.createTextNode(label));
+  btn.append(iconEl(iconId));
+  btn.classList.add('btn-icon');
   btn.setAttribute('aria-label', label);
   btn.title = label;
 }
