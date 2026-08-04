@@ -91,6 +91,16 @@ body {
   border-radius: 12px;
   box-shadow: var(--shadow);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.icon {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+  display: block;
 }
 
 .btn:active {
@@ -256,6 +266,26 @@ body {
   cursor: pointer;
   background: #ecf0f1;
   color: var(--ink);
+  display: grid;
+  place-items: center;
+  position: relative;
+  padding: 0;
+}
+
+.level-cell .icon-lock {
+  width: 1.35rem;
+  height: 1.35rem;
+  opacity: 0.65;
+}
+
+.level-cell .icon-check {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 0.85rem;
+  height: 0.85rem;
+  color: #1e8449;
+  opacity: 0.9;
 }
 
 .level-cell.cleared {

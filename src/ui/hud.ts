@@ -1,12 +1,39 @@
 import { LEVELS, LEVEL_COUNT } from '../game/levels';
 import { isLevelLocked, type Progress } from '../game/progress';
 
+const NS = 'http://www.w3.org/2000/svg';
+
+/** Inline <svg><use href="/icons.svg#id"> — works after Vite copies public/ */
+export function iconEl(id: string, className = 'icon'): SVGSVGElement {
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('class', className);
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('focusable', 'false');
+  const use = document.createElementNS(NS, 'use');
+  use.setAttribute('href', `#${id}`);
+  svg.appendChild(use);
+  return svg;
+}
+
+function setBtnIcon(btn: HTMLElement, iconId: string, label: string): void {
+  btn.replaceChildren();
+  btn.append(iconEl(iconId), document.createTextNode(label));
+  btn.setAttribute('aria-label', label);
+}
+
 export class Hud {
   private levelLabel = document.getElementById('level-label')!;
   private movesLabel = document.getElementById('moves-label')!;
   private muteBtn = document.getElementById('btn-mute')!;
   private hintEl = document.getElementById('hint-mechanic');
   private swapBtn = document.getElementById('btn-swap');
+
+  constructor() {
+    setBtnIcon(document.getElementById('btn-select')!, 'icon-grid', '选关');
+    setBtnIcon(document.getElementById('btn-undo')!, 'icon-undo', '撤销');
+    setBtnIcon(document.getElementById('btn-restart')!, 'icon-restart', '重来');
+    if (this.swapBtn) setBtnIcon(this.swapBtn, 'icon-swap', '切换');
+  }
 
   setLevel(level1Based: number): void {
     this.levelLabel.textContent = `第 ${level1Based} / ${LEVEL_COUNT} 关`;
@@ -17,7 +44,7 @@ export class Hud {
   }
 
   setMuted(muted: boolean): void {
-    this.muteBtn.textContent = muted ? '静音' : '声音';
+    setBtnIcon(this.muteBtn, muted ? 'icon-mute' : 'icon-sound', muted ? '静音' : '声音');
     this.muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
   }
 
@@ -109,14 +136,20 @@ export class LevelSelect {
       const locked = isLevelLocked(i, maxCleared);
       if (locked) {
         btn.classList.add('locked');
-        btn.textContent = '锁';
+        btn.append(iconEl('icon-lock', 'icon icon-lock'));
         btn.title = '先通关前面的关卡';
+        btn.setAttribute('aria-label', `第 ${i} 关已锁定`);
       } else if (i <= maxCleared) {
         btn.classList.add('cleared');
-        btn.textContent = String(i);
+        const num = document.createElement('span');
+        num.className = 'level-num';
+        num.textContent = String(i);
+        btn.append(num, iconEl('icon-check', 'icon icon-check'));
+        btn.setAttribute('aria-label', `第 ${i} 关，已通关`);
       } else {
         btn.classList.add('next');
         btn.textContent = String(i);
+        btn.setAttribute('aria-label', `第 ${i} 关`);
       }
       if (i === this.current) btn.classList.add('current');
       btn.addEventListener('click', () => {
