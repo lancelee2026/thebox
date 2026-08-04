@@ -43,6 +43,10 @@ npm run preview
 
 Vite · TypeScript · Three.js · @tweenjs/tween.js
 
+## 架构文档
+
+后续开发与 agent 请先读：[docs/architecture.md](docs/architecture.md)（模块职责、规则、数据流、二期扩展点）。
+
 ## 二期预留
 
 脆弱砖、开关桥、分裂传送、多层楼（尚未实现）。
