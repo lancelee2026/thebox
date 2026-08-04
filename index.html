@@ -17,49 +17,6 @@
     />
   </head>
   <body>
-    <!-- Inline sprite so currentColor inherits into <use> -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute">
-      <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="5" y="11" width="14" height="10" rx="2"/>
-        <path d="M8 11V8a4 4 0 0 1 8 0v3"/>
-      </symbol>
-      <symbol id="icon-grid" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect x="3" y="3" width="7" height="7" rx="1.5"/>
-        <rect x="14" y="3" width="7" height="7" rx="1.5"/>
-        <rect x="3" y="14" width="7" height="7" rx="1.5"/>
-        <rect x="14" y="14" width="7" height="7" rx="1.5"/>
-      </symbol>
-      <symbol id="icon-undo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 14 4 9l5-5"/>
-        <path d="M4 9h10.5a5.5 5.5 0 1 1 0 11H12"/>
-      </symbol>
-      <symbol id="icon-restart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12a9 9 0 1 1-2.6-6.4"/>
-        <path d="M21 3v6h-6"/>
-      </symbol>
-      <symbol id="icon-swap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M16 3h5v5"/>
-        <path d="M8 21H3v-5"/>
-        <path d="M21 3 14 10"/>
-        <path d="m3 21 7-7"/>
-        <rect x="8.5" y="8.5" width="3" height="3" rx="0.5"/>
-        <rect x="12.5" y="12.5" width="3" height="3" rx="0.5"/>
-      </symbol>
-      <symbol id="icon-sound" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M11 5 6 9H3v6h3l5 4V5z"/>
-        <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
-        <path d="M18.5 5.5a9 9 0 0 1 0 13"/>
-      </symbol>
-      <symbol id="icon-mute" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M11 5 6 9H3v6h3l5 4V5z"/>
-        <path d="m22 9-6 6"/>
-        <path d="m16 9 6 6"/>
-      </symbol>
-      <symbol id="icon-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 13.5 9.5 18 19 7"/>
-      </symbol>
-    </svg>
-
     <div id="app">
       <header class="top-bar">
         <h1 class="brand">翻砖块</h1>
@@ -97,12 +54,17 @@
     </div>
 
     <div id="overlay" class="overlay hidden" aria-hidden="true">
-      <div class="panel" id="panel-select">
-        <h2>选择关卡</h2>
-        <div id="level-grid" class="level-grid"></div>
-        <button type="button" class="btn primary" id="btn-close-select">关闭</button>
+      <div class="panel panel-select" id="panel-select">
+        <header class="panel-head">
+          <h2>选择关卡</h2>
+          <p id="select-progress" class="select-progress">已通关 0 / 55</p>
+        </header>
+        <div id="level-chapters" class="level-chapters"></div>
+        <footer class="panel-foot">
+          <button type="button" class="btn btn-ghost" id="btn-close-select">关闭</button>
+        </footer>
       </div>
-      <div class="panel hidden" id="panel-win">
+      <div class="panel panel-win hidden" id="panel-win">
         <h2>全部通关！</h2>
         <p id="win-text">你真棒</p>
         <button type="button" class="btn primary" id="btn-win-select">再玩一次</button>

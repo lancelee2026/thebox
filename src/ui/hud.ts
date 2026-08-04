@@ -3,15 +3,37 @@ import { isLevelLocked, type Progress } from '../game/progress';
 
 const NS = 'http://www.w3.org/2000/svg';
 
-/** Inline <svg><use href="/icons.svg#id"> — works after Vite copies public/ */
+const ICON_PATHS: Record<string, string> = {
+  'icon-lock':
+    '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
+  'icon-grid':
+    '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/>',
+  'icon-undo':
+    '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 1 1 0 11H12"/>',
+  'icon-restart':
+    '<path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v6h-6"/>',
+  'icon-swap':
+    '<path d="M16 3h5v5"/><path d="M8 21H3v-5"/><path d="M21 3 14 10"/><path d="m3 21 7-7"/><rect x="8.5" y="8.5" width="3" height="3" rx="0.5"/><rect x="12.5" y="12.5" width="3" height="3" rx="0.5"/>',
+  'icon-sound':
+    '<path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
+  'icon-mute':
+    '<path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>',
+  'icon-check': '<path d="M5 13.5 9.5 18 19 7"/>',
+};
+
+/** Inline path SVG — avoids &lt;use&gt; sprite failures that leave empty/broken glyphs */
 export function iconEl(id: string, className = 'icon'): SVGSVGElement {
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', className);
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('fill', 'none');
+  svg.setAttribute('stroke', 'currentColor');
+  svg.setAttribute('stroke-width', id === 'icon-check' ? '2.5' : '2');
+  svg.setAttribute('stroke-linecap', 'round');
+  svg.setAttribute('stroke-linejoin', 'round');
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
-  const use = document.createElementNS(NS, 'use');
-  use.setAttribute('href', `#${id}`);
-  svg.appendChild(use);
+  svg.innerHTML = ICON_PATHS[id] ?? '';
   return svg;
 }
 
@@ -19,6 +41,23 @@ function setBtnIcon(btn: HTMLElement, iconId: string, label: string): void {
   btn.replaceChildren();
   btn.append(iconEl(iconId), document.createTextNode(label));
   btn.setAttribute('aria-label', label);
+  btn.title = label;
+}
+
+function chapterRanges(): Array<{ name: string; start: number; end: number }> {
+  const out: Array<{ name: string; start: number; end: number }> = [];
+  let name = '';
+  let start = 1;
+  for (let i = 0; i < LEVEL_COUNT; i++) {
+    const ch = LEVELS[i].chapter ?? '关卡';
+    if (ch !== name) {
+      if (name) out.push({ name, start, end: i });
+      name = ch;
+      start = i + 1;
+    }
+  }
+  if (name) out.push({ name, start, end: LEVEL_COUNT });
+  return out;
 }
 
 export class Hud {
@@ -69,7 +108,8 @@ export class LevelSelect {
   private overlay = document.getElementById('overlay')!;
   private panelSelect = document.getElementById('panel-select')!;
   private panelWin = document.getElementById('panel-win')!;
-  private grid = document.getElementById('level-grid')!;
+  private chaptersEl = document.getElementById('level-chapters')!;
+  private progressEl = document.getElementById('select-progress');
   private winText = document.getElementById('win-text')!;
   private onPick: ((level1Based: number) => void) | null = null;
   private current = 1;
@@ -119,56 +159,78 @@ export class LevelSelect {
 
   private render(): void {
     const maxCleared = this.progress.maxCleared;
-    this.grid.replaceChildren();
-    let lastChapter = '';
-    for (let i = 1; i <= LEVEL_COUNT; i++) {
-      const chapter = LEVELS[i - 1].chapter ?? '';
-      if (chapter && chapter !== lastChapter) {
-        lastChapter = chapter;
-        const label = document.createElement('div');
-        label.className = 'chapter-label';
-        label.textContent = chapter;
-        this.grid.appendChild(label);
-      }
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = 'level-cell';
-      const locked = isLevelLocked(i, maxCleared);
-      if (locked) {
-        btn.classList.add('locked');
-        btn.append(iconEl('icon-lock', 'icon icon-lock'));
-        btn.title = '先通关前面的关卡';
-        btn.setAttribute('aria-label', `第 ${i} 关已锁定`);
-      } else if (i <= maxCleared) {
-        btn.classList.add('cleared');
-        const num = document.createElement('span');
-        num.className = 'level-num';
-        num.textContent = String(i);
-        btn.append(num, iconEl('icon-check', 'icon icon-check'));
-        btn.setAttribute('aria-label', `第 ${i} 关，已通关`);
-      } else {
-        btn.classList.add('next');
-        btn.textContent = String(i);
-        btn.setAttribute('aria-label', `第 ${i} 关`);
-      }
-      if (i === this.current) btn.classList.add('current');
-      btn.addEventListener('click', () => {
-        if (locked) {
-          btn.animate(
-            [
-              { transform: 'translateX(0)' },
-              { transform: 'translateX(-4px)' },
-              { transform: 'translateX(4px)' },
-              { transform: 'translateX(0)' },
-            ],
-            { duration: 200 },
-          );
-          return;
-        }
-        this.hide();
-        this.onPick?.(i);
-      });
-      this.grid.appendChild(btn);
+    if (this.progressEl) {
+      this.progressEl.textContent = `已通关 ${maxCleared} / ${LEVEL_COUNT}`;
     }
+    this.chaptersEl.replaceChildren();
+
+    for (const chapter of chapterRanges()) {
+      const section = document.createElement('section');
+      section.className = 'level-chapter';
+
+      const head = document.createElement('header');
+      head.className = 'chapter-head';
+      const title = document.createElement('span');
+      title.className = 'chapter-name';
+      title.textContent = chapter.name;
+      const range = document.createElement('span');
+      range.className = 'chapter-range';
+      range.textContent = `${chapter.start}–${chapter.end}`;
+      head.append(title, range);
+      section.appendChild(head);
+
+      const grid = document.createElement('div');
+      grid.className = 'level-grid';
+
+      for (let i = chapter.start; i <= chapter.end; i++) {
+        grid.appendChild(this.makeCell(i, maxCleared));
+      }
+      section.appendChild(grid);
+      this.chaptersEl.appendChild(section);
+    }
+  }
+
+  private makeCell(i: number, maxCleared: number): HTMLButtonElement {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'level-cell';
+    const locked = isLevelLocked(i, maxCleared);
+    const num = document.createElement('span');
+    num.className = 'level-num';
+    num.textContent = String(i);
+
+    if (locked) {
+      btn.classList.add('locked');
+      btn.append(num, iconEl('icon-lock', 'icon icon-badge'));
+      btn.title = '先通关前面的关卡';
+      btn.setAttribute('aria-label', `第 ${i} 关已锁定`);
+    } else if (i <= maxCleared) {
+      btn.classList.add('cleared');
+      btn.append(num, iconEl('icon-check', 'icon icon-badge'));
+      btn.setAttribute('aria-label', `第 ${i} 关，已通关`);
+    } else {
+      btn.classList.add('next');
+      btn.append(num);
+      btn.setAttribute('aria-label', `第 ${i} 关，可挑战`);
+    }
+    if (i === this.current) btn.classList.add('current');
+
+    btn.addEventListener('click', () => {
+      if (locked) {
+        btn.animate(
+          [
+            { transform: 'translateX(0)' },
+            { transform: 'translateX(-4px)' },
+            { transform: 'translateX(4px)' },
+            { transform: 'translateX(0)' },
+          ],
+          { duration: 200 },
+        );
+        return;
+      }
+      this.hide();
+      this.onPick?.(i);
+    });
+    return btn;
   }
 }
