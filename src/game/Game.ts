@@ -124,7 +124,7 @@ export class Game {
     this.hud.setMoves(0);
     const coach =
       def.hint ??
-      (level1Based === 1 ? '站立翻滚，卧倒后两格都进绿格才算过关。' : '');
+      (level1Based === 1 ? '尝试滚动砖块，让它刚好躺进绿色区域' : '');
     this.hud.setHint(coach);
     this.hud.setSwapVisible(false);
     this.input.setEnabled(true);
