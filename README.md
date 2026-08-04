@@ -1,0 +1,2 @@
+# thecube
+game for children
