@@ -143,12 +143,12 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@xx', 'xff', '.oo'],
     chapter: '脆弱',
-    hint: '橙色脆弱砖：躺着可以经过，站立会碎裂。',
+    hint: '橙色脆弱砖：只能躺着经过，站上去会碎裂',
   },
   {
     map: ['@x.x', 'xff.', '..oo'],
     chapter: '脆弱',
-    hint: '绕开脆弱砖时走旁边的白砖，不要站立在橙色砖上。',
+    hint: '这条可以绕：旁边的白砖更安全',
   },
   { map: ['@xff', 'x..x', '.xoo'], chapter: '脆弱' },
   { map: ['@xxx', 'xffx', '..oo'], chapter: '脆弱' },
@@ -161,7 +161,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@sbboo'],
     chapter: '桥梁',
-    hint: '黄色轻开关：踩到就切换桥。蓝色是桥面，关掉时是虚空。',
+    hint: '黄格一踩，蓝桥就会开或关；桥没了就会掉',
     bridges: [{ id: 'A', cells: [[2, 0], [3, 0]], initiallyOpen: false }],
     switches: [{ col: 1, row: 0, type: 'soft', bridgeIds: ['A'], mode: 'toggle' }],
   },
@@ -210,7 +210,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@..x', 'xxSx', 'bb.x', '..oo'],
     chapter: '桥梁',
-    hint: '橙色重开关：只有站立踩上去才会切换桥。',
+    hint: '橙格要竖着踩才管用，躺着压过去不算',
     bridges: [{ id: 'A', cells: [[0, 2], [1, 2]], initiallyOpen: false }],
     switches: [{ col: 3, row: 1, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
   },
@@ -255,7 +255,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@pxxx', 'x...x', 'xx.oo'],
     chapter: '分裂',
-    hint: '踩到紫色分裂台会变成两颗小方块。空格或「切换」换操控，靠在一起可合并。',
+    hint: '踩紫格会裂成两块。点切换（或空格）换操控，靠在一起又能合回',
     splitPads: [{ col: 1, row: 0, destA: [0, 1], destB: [4, 1] }],
   },
   {
@@ -316,7 +316,7 @@ export const LEVELS: LevelDef[] = [
       ['.xu', 'oo.'],
     ],
     chapter: '多层',
-    hint: '蓝色楼梯 u：站立踩上去会换到另一层。两层楼梯格子要对齐。',
+    hint: '蓝楼梯：竖着踩会换层，两层楼梯要对齐',
   },
   {
     layers: [

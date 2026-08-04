@@ -112,7 +112,6 @@ export class Hud {
   setMuted(muted: boolean): void {
     setBtnIcon(this.muteBtn, muted ? 'icon-mute' : 'icon-sound', '声音');
     this.muteBtn.setAttribute('aria-pressed', muted ? 'true' : 'false');
-    this.muteBtn.title = muted ? '已静音，点击打开声音' : '声音开启，点击静音';
   }
 
   setHint(text: string): void {

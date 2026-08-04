@@ -267,7 +267,6 @@ export class Game {
     this.input.setEnabled(false);
     this.sfx.fail();
     this.level.shake();
-    this.hud.showStatus('掉落 · 本关已重开', 'fail', 1600);
     this.player.fall(() => {
       this.history = [];
       this.moves = 0;
@@ -283,7 +282,7 @@ export class Game {
     this.sfx.win();
     this.punchCamera();
     const clearedMoves = this.moves;
-    this.hud.showStatus(`过关！本关 ${clearedMoves} 步`, 'win', 1400);
+    this.hud.showStatus(`恭喜过关！共用 ${clearedMoves} 步`, 'win', 1400);
 
     if (this.levelNo > this.progress.maxCleared) {
       this.progress.maxCleared = this.levelNo;
