@@ -148,7 +148,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@x.x', 'xff.', '..oo'],
     chapter: '脆弱',
-    hint: '这条可以绕：旁边的白砖更安全',
+    hint: '可从旁边的白砖绕过，那里更安全',
   },
   { map: ['@xff', 'x..x', '.xoo'], chapter: '脆弱' },
   { map: ['@xxx', 'xffx', '..oo'], chapter: '脆弱' },
@@ -161,7 +161,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@sbboo'],
     chapter: '桥梁',
-    hint: '黄格一踩，蓝桥就会开或关；桥没了就会掉',
+    hint: '桥梁·轻开关 黄色按钮控制蓝桥开闭，砖块压上即可触发',
     bridges: [{ id: 'A', cells: [[2, 0], [3, 0]], initiallyOpen: false }],
     switches: [{ col: 1, row: 0, type: 'soft', bridgeIds: ['A'], mode: 'toggle' }],
   },
@@ -210,7 +210,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@..x', 'xxSx', 'bb.x', '..oo'],
     chapter: '桥梁',
-    hint: '橙格要竖着踩才管用，躺着压过去不算',
+    hint: '桥梁·重开关 橙色按钮同样控制蓝桥，必须站上才可触发',
     bridges: [{ id: 'A', cells: [[0, 2], [1, 2]], initiallyOpen: false }],
     switches: [{ col: 3, row: 1, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
   },
@@ -255,7 +255,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@pxxx', 'x...x', 'xx.oo'],
     chapter: '分裂',
-    hint: '踩紫格会裂成两块。点切换（或空格）换操控，靠在一起又能合回',
+    hint: '分身术 踩到紫色分裂台会变成两颗小方砖，「切换」或空格可分别控制，相遇可重新合并',
     splitPads: [{ col: 1, row: 0, destA: [0, 1], destB: [4, 1] }],
   },
   {
@@ -316,7 +316,7 @@ export const LEVELS: LevelDef[] = [
       ['.xu', 'oo.'],
     ],
     chapter: '多层',
-    hint: '蓝楼梯：竖着踩会换层，两层楼梯要对齐',
+    hint: '多层 蓝色楼梯：竖着踩会换层，两层楼梯要对齐',
   },
   {
     layers: [
