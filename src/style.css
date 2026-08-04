@@ -157,12 +157,21 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 0;
+  width: 100%;
 }
 
+/*
+ * 正方形舞台：把高度上限并进 width 的 min()，
+ * 避免单独 max-height 把盒子压成扁矩形（否则 canvas 100% 拉伸会压扁砖块）。
+ */
 #canvas-wrap {
-  width: min(100%, 650px);
-  aspect-ratio: 1;
-  max-height: min(100%, 70vh);
+  display: grid;
+  place-items: center;
+  width: min(100%, 650px, calc(100dvh - 220px), 70vh);
+  aspect-ratio: 1 / 1;
+  height: auto;
+  max-height: none;
+  flex-shrink: 1;
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow);
@@ -171,8 +180,10 @@ body {
 
 #game-canvas {
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 100% !important;
+  height: 100% !important;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
 }
 
 .controls {

@@ -49,11 +49,18 @@ export function createScene(canvas: HTMLCanvasElement): {
 
   const resize = () => {
     const wrap = canvas.parentElement;
-    const size = wrap
-      ? Math.floor(Math.min(wrap.clientWidth, wrap.clientHeight))
-      : Math.min(650, window.innerWidth);
-    const s = Math.max(120, size);
+    const cw = wrap?.clientWidth ?? 0;
+    const ch = wrap?.clientHeight ?? 0;
+    // 始终按正方形缓冲绘制；取 wrap 较短边，避免非方容器下被 CSS 纵向拉伸
+    const side = Math.min(cw || Infinity, ch || Infinity);
+    const s = Math.max(
+      120,
+      Math.floor(Number.isFinite(side) ? side : Math.min(650, window.innerWidth)),
+    );
     renderer.setSize(s, s, false);
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.aspectRatio = '1 / 1';
   };
 
   resize();
