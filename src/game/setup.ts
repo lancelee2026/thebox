@@ -23,7 +23,7 @@ export function createScene(canvas: HTMLCanvasElement): {
   });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
 
   const frustum = 6.5;
   const camera = new THREE.OrthographicCamera(-frustum, frustum, frustum, -frustum, 1, 40);
