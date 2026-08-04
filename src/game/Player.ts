@@ -252,34 +252,6 @@ export class Player {
       .onComplete(() => {
         this.activeTween = null;
         onLand?.();
-        this.landSquash(mesh, size, onDone);
-      })
-      .start();
-  }
-
-  /** 落地微挤压：重量感，不弹跳夸张 */
-  private landSquash(
-    mesh: THREE.Mesh,
-    size: { sx: number; sy: number; sz: number },
-    onDone: () => void,
-  ): void {
-    if (animDuration(80) < 80) {
-      onDone();
-      return;
-    }
-    const land = { v: 1 };
-    this.activeTween = new Tween(land, this.tweens)
-      .to({ v: 0.86 }, animDuration(55))
-      .easing(Easing.Quadratic.Out)
-      .yoyo(true)
-      .repeat(1)
-      .onUpdate(() => {
-        const squash = land.v;
-        const widen = 1 + (1 - squash) * 0.08;
-        mesh.scale.set(size.sx * widen, size.sy * squash, size.sz * widen);
-      })
-      .onComplete(() => {
-        this.activeTween = null;
         onDone();
       })
       .start();
