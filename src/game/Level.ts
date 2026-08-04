@@ -2,8 +2,13 @@ import * as THREE from 'three';
 import { Group, Tween, Easing } from '@tweenjs/tween.js';
 import type { LevelMap } from './levels';
 import type { BlockState } from './blockLogic';
-import { occupiedCells } from './blockLogic';
 import { animDuration } from './motion';
+import {
+  isDeath as rulesIsDeath,
+  isWin as rulesIsWin,
+  parseLevel,
+  type ParsedLevel,
+} from './rules';
 
 export class LevelView {
   readonly layer = new THREE.Group();
@@ -11,9 +16,7 @@ export class LevelView {
   startRow = 0;
   offsetX = 0;
   offsetZ = 0;
-  private grid: string[][] = [];
-  private cols = 0;
-  private rows = 0;
+  private parsed: ParsedLevel | null = null;
   private tweens: Group;
   private geo = new THREE.BoxGeometry(1, 0.25, 1);
   /** Cuboid 原作：白路径 / 翠绿目标 / 红砖 */
@@ -28,26 +31,17 @@ export class LevelView {
 
   load(map: LevelMap): void {
     this.clearImmediate();
-    this.rows = map.length;
-    this.cols = Math.max(...map.map((r) => r.length));
-    this.grid = map.map((row) => {
-      const cells = row.split('');
-      while (cells.length < this.cols) cells.push('.');
-      return cells;
-    });
-
-    this.offsetX = -this.cols / 2 + 0.5;
-    this.offsetZ = -this.rows / 2 + 0.5;
+    this.parsed = parseLevel(map);
+    this.startCol = this.parsed.startCol;
+    this.startRow = this.parsed.startRow;
+    this.offsetX = -this.parsed.cols / 2 + 0.5;
+    this.offsetZ = -this.parsed.rows / 2 + 0.5;
     this.layer.position.set(this.offsetX, 0, this.offsetZ);
 
-    for (let r = 0; r < this.rows; r++) {
-      for (let c = 0; c < this.cols; c++) {
-        const ch = this.grid[r][c];
-        if (ch === '@') {
-          this.startCol = c;
-          this.startRow = r;
-          this.createTile(this.matX, c, r);
-        } else if (ch === 'x') {
+    for (let r = 0; r < this.parsed.rows; r++) {
+      for (let c = 0; c < this.parsed.cols; c++) {
+        const ch = this.parsed.grid[r][c];
+        if (ch === '@' || ch === 'x') {
           this.createTile(this.matX, c, r);
         } else if (ch === 'o') {
           this.createTile(this.matO, c, r);
@@ -65,7 +59,6 @@ export class LevelView {
     mesh.receiveShadow = true;
     this.layer.add(mesh);
 
-    // 从略小弹到 1，用普通对象驱动，避免直接 tween Three.Vector3
     const s = { v: 0.7 };
     mesh.scale.setScalar(s.v);
     new Tween(s, this.tweens)
@@ -76,30 +69,14 @@ export class LevelView {
       .start();
   }
 
-  getCell(col: number, row: number): string {
-    if (col < 0 || row < 0 || col >= this.cols || row >= this.rows) return '.';
-    return this.grid[row][col];
-  }
-
   isDeath(state: BlockState): boolean {
-    const cells = occupiedCells(state);
-    if (cells.length === 1) {
-      const t = this.getCell(cells[0].col, cells[0].row);
-      return t === '.' || t === 'z';
-    }
-    const a = this.getCell(cells[0].col, cells[0].row);
-    const b = this.getCell(cells[1].col, cells[1].row);
-    if (a === 'z' || b === 'z') return true;
-    return a === '.' && b === '.';
+    if (!this.parsed) return true;
+    return rulesIsDeath(this.parsed, state);
   }
 
   isWin(state: BlockState): boolean {
-    const cells = occupiedCells(state);
-    if (cells.length !== 2) return false;
-    return (
-      this.getCell(cells[0].col, cells[0].row) === 'o' &&
-      this.getCell(cells[1].col, cells[1].row) === 'o'
-    );
+    if (!this.parsed) return false;
+    return rulesIsWin(this.parsed, state);
   }
 
   toWorld(gridX: number, gridZ: number): { x: number; z: number } {

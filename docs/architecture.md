@@ -136,7 +136,13 @@ interface BlockState { col: number; row: number; ori: Ori }
 
 关卡是 `string[]`，每行一串；短行右侧按 `.` 补齐。起点站立。
 
-设计关卡时注意 Bloxorz **奇偶性**：直线路径上站立格与躺倒覆盖范围受限。改关后建议对 `LEVELS` 做 BFS 可达性检查（本地曾用 `blockLogic` + 判定脚本校验）。
+设计关卡时注意 Bloxorz **奇偶性**：直线路径上站立格与躺倒覆盖范围受限。改关后运行：
+
+```bash
+npm run check-levels
+```
+
+该脚本用 BFS 与游戏共用 [`rules.ts`](../src/game/rules.ts) 判定，**不进入** Cloudflare Pages 构建产物。
 
 ### 5.4 选关解锁
 
@@ -200,8 +206,8 @@ ASCII → mesh；`offsetX/Z` 居中整张图。特效：砖块 stagger 放大、
 
 | 目标 | 文件 |
 |---|---|
-| 增删改关卡 | `src/game/levels.ts` |
-| 改半悬空 / 红砖 / 过关条件 | `src/game/Level.ts`（及文档本节） |
+| 增删改关卡 | `src/game/levels.ts`，然后 `npm run check-levels` |
+| 改半悬空 / 红砖 / 过关条件 | `src/game/rules.ts`（游戏与验关共用） |
 | 改翻边位移 | `src/game/blockLogic.ts`（慎改） |
 | 改翻转动画手感 | `src/game/Player.ts`、`motion.ts` |
 | 改解锁规则 | `src/game/progress.ts`、`ui/hud.ts` |
