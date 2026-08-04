@@ -30,7 +30,11 @@ export function loadProgress(): Progress {
 }
 
 export function saveProgress(p: Progress): void {
-  localStorage.setItem(KEY, JSON.stringify(p));
+  try {
+    localStorage.setItem(KEY, JSON.stringify(p));
+  } catch {
+    /* 隐私模式 / 配额满时忽略 */
+  }
 }
 
 export function isLevelPlayable(i: number, maxCleared: number): boolean {

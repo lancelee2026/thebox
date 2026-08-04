@@ -21,20 +21,44 @@ const ICON_PATHS: Record<string, string> = {
   'icon-check': '<path d="M5 13.5 9.5 18 19 7"/>',
 };
 
-/** Inline path SVG — avoids &lt;use&gt; sprite failures that leave empty/broken glyphs */
+/** Build icon via createElementNS — no SVG innerHTML (Trusted Types / older WebKit) */
 export function iconEl(id: string, className = 'icon'): SVGSVGElement {
   const svg = document.createElementNS(NS, 'svg');
   svg.setAttribute('class', className);
   svg.setAttribute('viewBox', '0 0 24 24');
   svg.setAttribute('fill', 'none');
-  svg.setAttribute('stroke', 'currentColor');
-  svg.setAttribute('stroke-width', id === 'icon-check' ? '2.5' : '2');
-  svg.setAttribute('stroke-linecap', 'round');
-  svg.setAttribute('stroke-linejoin', 'round');
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
-  svg.innerHTML = ICON_PATHS[id] ?? '';
+  const stroke = id === 'icon-check' ? '2.5' : '2';
+  const raw = ICON_PATHS[id] ?? '';
+  // Parse as XML fragment under svg root
+  const parsed = new DOMParser().parseFromString(
+    `<svg xmlns="${NS}">${raw}</svg>`,
+    'image/svg+xml',
+  );
+  const root = parsed.documentElement;
+  if (root.querySelector('parsererror')) {
+    return svg;
+  }
+  for (const child of Array.from(root.childNodes)) {
+    const imported = document.importNode(child, true);
+    if (imported.nodeType === Node.ELEMENT_NODE) {
+      const el = imported as Element;
+      el.setAttribute('stroke', 'currentColor');
+      el.setAttribute('stroke-width', stroke);
+      el.setAttribute('stroke-linecap', 'round');
+      el.setAttribute('stroke-linejoin', 'round');
+      el.setAttribute('fill', 'none');
+    }
+    svg.appendChild(imported);
+  }
   return svg;
+}
+
+function mustEl<T extends HTMLElement>(id: string): T {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`缺少页面元素 #${id}，请强制刷新后重试`);
+  return el as T;
 }
 
 function setBtnIcon(btn: HTMLElement, iconId: string, label: string): void {
@@ -61,16 +85,16 @@ function chapterRanges(): Array<{ name: string; start: number; end: number }> {
 }
 
 export class Hud {
-  private levelLabel = document.getElementById('level-label')!;
-  private movesLabel = document.getElementById('moves-label')!;
-  private muteBtn = document.getElementById('btn-mute')!;
+  private levelLabel = mustEl('level-label');
+  private movesLabel = mustEl('moves-label');
+  private muteBtn = mustEl<HTMLButtonElement>('btn-mute');
   private hintEl = document.getElementById('hint-mechanic');
   private swapBtn = document.getElementById('btn-swap');
 
   constructor() {
-    setBtnIcon(document.getElementById('btn-select')!, 'icon-grid', '选关');
-    setBtnIcon(document.getElementById('btn-undo')!, 'icon-undo', '撤销');
-    setBtnIcon(document.getElementById('btn-restart')!, 'icon-restart', '重来');
+    setBtnIcon(mustEl('btn-select'), 'icon-grid', '选关');
+    setBtnIcon(mustEl('btn-undo'), 'icon-undo', '撤销');
+    setBtnIcon(mustEl('btn-restart'), 'icon-restart', '重来');
     if (this.swapBtn) setBtnIcon(this.swapBtn, 'icon-swap', '切换');
   }
 
@@ -105,19 +129,19 @@ export class Hud {
 }
 
 export class LevelSelect {
-  private overlay = document.getElementById('overlay')!;
-  private panelSelect = document.getElementById('panel-select')!;
-  private panelWin = document.getElementById('panel-win')!;
-  private chaptersEl = document.getElementById('level-chapters')!;
+  private overlay = mustEl('overlay');
+  private panelSelect = mustEl('panel-select');
+  private panelWin = mustEl('panel-win');
+  private chaptersEl = mustEl('level-chapters');
   private progressEl = document.getElementById('select-progress');
-  private winText = document.getElementById('win-text')!;
+  private winText = mustEl('win-text');
   private onPick: ((level1Based: number) => void) | null = null;
   private current = 1;
   private progress: Progress = { maxCleared: 0, lastPlayed: 1, muted: false };
 
   constructor() {
-    document.getElementById('btn-close-select')!.addEventListener('click', () => this.hide());
-    document.getElementById('btn-win-select')!.addEventListener('click', () => {
+    mustEl('btn-close-select').addEventListener('click', () => this.hide());
+    mustEl('btn-win-select').addEventListener('click', () => {
       this.hideWin();
       this.show(this.current, this.progress);
     });

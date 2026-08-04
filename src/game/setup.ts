@@ -13,7 +13,13 @@ export function createScene(canvas: HTMLCanvasElement): {
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(SCENE_SKY);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  const renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: true,
+    alpha: false,
+    powerPreference: 'high-performance',
+    failIfMajorPerformanceCaveat: false,
+  });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
   renderer.shadowMap.enabled = true;
 
