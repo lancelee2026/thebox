@@ -118,9 +118,9 @@ body {
 }
 
 #canvas-wrap {
-  width: min(100%, 100cqh, 650px);
+  width: min(100%, 650px);
   aspect-ratio: 1;
-  max-height: 100%;
+  max-height: min(100%, 70vh);
   border-radius: 16px;
   overflow: hidden;
   box-shadow: var(--shadow);

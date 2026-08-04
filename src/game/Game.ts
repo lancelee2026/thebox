@@ -64,7 +64,7 @@ export class Game {
       LEVEL_COUNT,
     );
     this.loadLevel(start);
-    this.loop(0);
+    requestAnimationFrame(this.loop);
   }
 
   private loadLevel(level1Based: number): void {

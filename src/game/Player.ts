@@ -50,11 +50,16 @@ export class Player {
   reset(state: BlockState, onDone?: () => void): void {
     this.stopTween();
     this.canMove = false;
-    this.place(state, 0);
+    this.place(state, 1);
     const size = blockSize(state);
-    new Tween(this.mesh.scale, this.tweens)
-      .to({ x: size.sx, y: size.sy, z: size.sz }, animDuration(300))
-      .easing(Easing.Quadratic.InOut)
+    const s = { v: 0.75 };
+    this.mesh.scale.set(size.sx * s.v, size.sy * s.v, size.sz * s.v);
+    new Tween(s, this.tweens)
+      .to({ v: 1 }, animDuration(250))
+      .easing(Easing.Quadratic.Out)
+      .onUpdate(() => {
+        this.mesh.scale.set(size.sx * s.v, size.sy * s.v, size.sz * s.v);
+      })
       .onComplete(() => {
         this.canMove = true;
         onDone?.();
@@ -151,9 +156,14 @@ export class Player {
   fall(onDone: () => void): void {
     this.canMove = false;
     this.stopTween();
-    new Tween(this.mesh.scale, this.tweens)
-      .to({ x: 0, y: 0, z: 0 }, animDuration(300))
+    const s = { v: 1 };
+    const sx = this.mesh.scale.x;
+    const sy = this.mesh.scale.y;
+    const sz = this.mesh.scale.z;
+    new Tween(s, this.tweens)
+      .to({ v: 0 }, animDuration(300))
       .easing(Easing.Quadratic.Out)
+      .onUpdate(() => this.mesh.scale.set(sx * s.v, sy * s.v, sz * s.v))
       .onComplete(onDone)
       .start();
   }
@@ -168,9 +178,14 @@ export class Player {
       .onUpdate(() => {
         this.pivot.rotation.y = rot.y;
       });
-    const shrink = new Tween(this.mesh.scale, this.tweens)
-      .to({ x: 0, y: 0, z: 0 }, animDuration(280))
+    const s = { v: 1 };
+    const sx = this.mesh.scale.x;
+    const sy = this.mesh.scale.y;
+    const sz = this.mesh.scale.z;
+    const shrink = new Tween(s, this.tweens)
+      .to({ v: 0 }, animDuration(280))
       .easing(Easing.Quadratic.InOut)
+      .onUpdate(() => this.mesh.scale.set(sx * s.v, sy * s.v, sz * s.v))
       .onComplete(onDone);
     spin.chain(shrink).start();
   }

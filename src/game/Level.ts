@@ -61,14 +61,18 @@ export class LevelView {
   private createTile(mat: THREE.Material, c: number, r: number): void {
     const mesh = new THREE.Mesh(this.geo, mat);
     mesh.position.set(c, -0.125, r);
-    mesh.scale.set(0, 1, 0);
+    mesh.scale.set(1, 1, 1);
     mesh.receiveShadow = true;
     this.layer.add(mesh);
 
-    new Tween(mesh.scale, this.tweens)
-      .delay((c + r) * 30)
-      .to({ x: 1, z: 1 }, animDuration(300))
-      .easing(Easing.Quadratic.InOut)
+    // 从略小弹到 1，用普通对象驱动，避免直接 tween Three.Vector3
+    const s = { v: 0.7 };
+    mesh.scale.setScalar(s.v);
+    new Tween(s, this.tweens)
+      .delay((c + r) * 25)
+      .to({ v: 1 }, animDuration(280))
+      .easing(Easing.Quadratic.Out)
+      .onUpdate(() => mesh.scale.set(s.v, 1, s.v))
       .start();
   }
 
@@ -129,9 +133,12 @@ export class LevelView {
 
   remove(onDone: () => void): void {
     for (const e of this.layer.children) {
-      new Tween(e.scale, this.tweens)
-        .to({ x: 0, y: 0, z: 0 }, animDuration(300))
+      const mesh = e as THREE.Mesh;
+      const s = { v: 1 };
+      new Tween(s, this.tweens)
+        .to({ v: 0 }, animDuration(300))
         .easing(Easing.Quadratic.InOut)
+        .onUpdate(() => mesh.scale.setScalar(s.v))
         .start();
     }
     new Tween({ t: 0 }, this.tweens)
