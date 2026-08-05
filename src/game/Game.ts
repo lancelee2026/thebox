@@ -195,17 +195,29 @@ export class Game {
       const cells = occupiedCells(this.player.state);
       for (const pad of parsed.splitPads) {
         if (cells.some((c) => c.col === pad.col && c.row === pad.row)) {
-          this.player.placeSplit(
-            { col: pad.destA[0], row: pad.destA[1], ori: 'standing' },
-            { col: pad.destB[0], row: pad.destB[1], ori: 'standing' },
-            0,
-          );
-          this.world.block = cloneState(this.player.state);
-          this.world.blockB = cloneState(this.player.stateB!);
-          this.world.active = 0;
-          this.hud.setSwapVisible(true);
+          const destA = { col: pad.destA[0], row: pad.destA[1], ori: 'standing' as const };
+          const destB = { col: pad.destB[0], row: pad.destB[1], ori: 'standing' as const };
+          this.busy = true;
+          this.input.setEnabled(false);
           this.sfx.beep(320, 80, 0.2);
-          break;
+          this.player.animateSplit(destA, destB, () => {
+            this.world.block = cloneState(this.player.state);
+            this.world.blockB = this.player.stateB ? cloneState(this.player.stateB) : null;
+            this.world.active = this.player.active;
+            this.hud.setSwapVisible(true);
+            this.busy = false;
+            this.input.setEnabled(true);
+            if (
+              this.cubeDead(this.player.state) ||
+              (this.player.stateB && this.cubeDead(this.player.stateB))
+            ) {
+              this.onDeath();
+            }
+          });
+          this.world.block = cloneState(destA);
+          this.world.blockB = cloneState(destB);
+          this.world.active = 0;
+          return;
         }
       }
     }

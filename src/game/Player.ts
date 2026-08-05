@@ -116,6 +116,101 @@ export class Player {
     this.refreshMaterials();
   }
 
+  /** 在紫台原位裂成两半，再滑到 dest。逻辑状态立刻分裂。 */
+  animateSplit(a: BlockState, b: BlockState, onDone: () => void): void {
+    this.canMove = false;
+    this.stopTween();
+    const from = cloneState(this.state);
+    const [originA, originB] = this.splitStartCenters(from, a, b);
+
+    this.state = cloneState(a);
+    this.stateB = cloneState(b);
+    this.active = 0;
+
+    const startAW = this.level.toWorld(originA.x, originA.z);
+    const startBW = this.level.toWorld(originB.x, originB.z);
+    const endAW = this.level.toWorld(a.col, a.row);
+    const endBW = this.level.toWorld(b.col, b.row);
+
+    this.pivot.visible = true;
+    this.pivotB.visible = true;
+    this.pivot.rotation.set(0, 0, 0);
+    this.pivotB.rotation.set(0, 0, 0);
+    this.mesh.position.set(0, 0, 0);
+    this.meshB.position.set(0, 0, 0);
+    this.mesh.rotation.set(0, 0, 0);
+    this.meshB.rotation.set(0, 0, 0);
+    this.mesh.scale.set(1, 1, 1);
+    this.meshB.scale.set(1, 1, 1);
+    this.pivot.position.set(startAW.x, originA.y, startAW.z);
+    this.pivotB.position.set(startBW.x, originB.y, startBW.z);
+    this.refreshMaterials();
+
+    const dist = Math.max(
+      Math.hypot(endAW.x - startAW.x, endAW.z - startAW.z),
+      Math.hypot(endBW.x - startBW.x, endBW.z - startBW.z),
+    );
+    const ms = animDuration(Math.min(460, 280 + dist * 50));
+    const t = { u: 0 };
+    this.activeTween = new Tween(t, this.tweens)
+      .to({ u: 1 }, ms)
+      .easing(Easing.Cubic.Out)
+      .onUpdate(() => {
+        const u = t.u;
+        const arc = Math.sin(Math.PI * u) * 0.28;
+        this.pivot.position.set(
+          startAW.x + (endAW.x - startAW.x) * u,
+          originA.y + (0.5 - originA.y) * u + arc,
+          startAW.z + (endAW.z - startAW.z) * u,
+        );
+        this.pivotB.position.set(
+          startBW.x + (endBW.x - startBW.x) * u,
+          originB.y + (0.5 - originB.y) * u + arc,
+          startBW.z + (endBW.z - startBW.z) * u,
+        );
+      })
+      .onComplete(() => {
+        this.activeTween = null;
+        this.placeEntity('a', a, true);
+        this.placeEntity('b', b, true);
+        this.canMove = true;
+        onDone();
+      })
+      .start();
+  }
+
+  private splitStartCenters(
+    from: BlockState,
+    destA: BlockState,
+    destB: BlockState,
+  ): [{ x: number; y: number; z: number }, { x: number; y: number; z: number }] {
+    const pair =
+      from.ori === 'standing'
+        ? [
+            { x: from.col, y: 0.5, z: from.row },
+            { x: from.col, y: 1.5, z: from.row },
+          ]
+        : from.ori === 'flatX'
+          ? [
+              { x: from.col, y: 0.5, z: from.row },
+              { x: from.col + 1, y: 0.5, z: from.row },
+            ]
+          : [
+              { x: from.col, y: 0.5, z: from.row },
+              { x: from.col, y: 0.5, z: from.row + 1 },
+            ];
+
+    const score = (
+      origin: { x: number; y: number; z: number },
+      dest: BlockState,
+    ) => (origin.x - dest.col) ** 2 + (origin.z - dest.row) ** 2;
+
+    const straight = score(pair[0], destA) + score(pair[1], destB);
+    const crossed = score(pair[0], destB) + score(pair[1], destA);
+    if (crossed < straight) return [pair[1], pair[0]];
+    return [pair[0], pair[1]];
+  }
+
   refreshMaterials(): void {
     if (!this.isSplit) {
       this.mesh.material = this.matA;
