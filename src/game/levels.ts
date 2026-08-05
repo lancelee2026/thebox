@@ -58,6 +58,7 @@ export const LEVELS: LevelDef[] = [
       'x@.xoo',
     ],
     chapter: '基础',
+    hint: '不要触碰红色区域，危险',
   },
   {
     map: [
