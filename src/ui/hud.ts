@@ -21,6 +21,7 @@ const ICON_PATHS: Record<string, string> = {
     '<path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>',
   'icon-star':
     '<path d="M12 3.2 14.4 9l6.1.5-4.7 3.9 1.5 5.9L12 15.8 6.7 19.3l1.5-5.9L3.5 9.5 9.6 9z"/>',
+  'icon-check': '<path d="M5 13.5 9.5 18 19 7"/>',
 };
 
 /** Build icon via createElementNS — no SVG innerHTML (Trusted Types / older WebKit) */
@@ -61,6 +62,37 @@ function mustEl<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
   if (!el) throw new Error(`缺少页面元素 #${id}，请强制刷新后重试`);
   return el as T;
+}
+
+function fillSelectStat(
+  el: HTMLElement | null,
+  iconId: string,
+  label: string,
+  value: number,
+  cap: number,
+): void {
+  if (!el) return;
+  const nums = document.createElement('span');
+  nums.className = 'select-stat-nums';
+  const strong = document.createElement('strong');
+  strong.textContent = String(value);
+  const sep = document.createElement('span');
+  sep.className = 'select-stat-sep';
+  sep.textContent = '/';
+  const total = document.createElement('span');
+  total.className = 'select-stat-cap';
+  total.textContent = String(cap);
+  nums.append(strong, sep, total);
+
+  const meta = document.createElement('span');
+  meta.className = 'select-stat-meta';
+  const lab = document.createElement('span');
+  lab.className = 'select-stat-label';
+  lab.textContent = label;
+  meta.append(lab, nums);
+
+  el.replaceChildren(iconEl(iconId, 'select-stat-icon'), meta);
+  el.setAttribute('aria-label', `${label} ${value} / ${cap}`);
 }
 
 function starRow(litCount: number, className: string): HTMLSpanElement {
@@ -246,12 +278,8 @@ export class LevelSelect {
 
   private render(): void {
     const maxCleared = this.progress.maxCleared;
-    if (this.progressEl) {
-      this.progressEl.textContent = `已通关 ${maxCleared} / ${LEVEL_COUNT}`;
-    }
-    if (this.starsEl) {
-      this.starsEl.textContent = `星 ${totalStars(this.progress.stars)} / ${STAR_CAP}`;
-    }
+    fillSelectStat(this.progressEl, 'icon-check', '已通关', maxCleared, LEVEL_COUNT);
+    fillSelectStat(this.starsEl, 'icon-star', '星星', totalStars(this.progress.stars), STAR_CAP);
     this.chaptersEl.replaceChildren();
 
     for (const chapter of chapterRanges()) {

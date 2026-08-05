@@ -63,8 +63,10 @@
       <div class="panel panel-select" id="panel-select">
         <header class="panel-head">
           <h2>选择关卡</h2>
-          <p id="select-progress" class="select-progress">已通关 0 / 55</p>
-          <p id="select-stars" class="select-stars">星 0 / 165</p>
+          <div class="select-stats" role="group" aria-label="通关进度">
+            <p id="select-progress" class="select-stat select-stat--clear"></p>
+            <p id="select-stars" class="select-stat select-stat--stars"></p>
+          </div>
         </header>
         <div id="level-chapters" class="level-chapters"></div>
         <footer class="panel-foot">
