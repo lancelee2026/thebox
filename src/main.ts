@@ -1,8 +1,10 @@
 import './style.css';
 import { Game } from './game/Game';
+import { mountVisitCount } from './ui/visits';
 
 try {
   new Game();
+  void mountVisitCount(document.getElementById('visit-count'));
 } catch (err) {
   const message = err instanceof Error ? err.message : String(err);
   console.error('[翻砖块]', message, err);

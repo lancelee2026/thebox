@@ -291,6 +291,16 @@ body {
   font-weight: 600;
 }
 
+.visit-count {
+  margin: 4px 0 0;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
 .clear-fanfare {
   position: absolute;
   top: 14%;
