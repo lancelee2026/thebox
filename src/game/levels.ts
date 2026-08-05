@@ -149,7 +149,6 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@x.x', 'xff.', '..oo'],
     chapter: '脆弱',
-    hint: '这条没法躲开橙砖，躺着压过去就安全',
   },
   { map: ['@xff', 'x..x', '.xoo'], chapter: '脆弱' },
   { map: ['@xxx', 'xffx', '..oo'], chapter: '脆弱' },
