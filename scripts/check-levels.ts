@@ -142,7 +142,30 @@ function clone(s: BlockState): BlockState {
   return { col: s.col, row: s.row, ori: s.ori };
 }
 
+function assertSwitchTiles(): string[] {
+  const errors: string[] = [];
+  LEVELS.forEach((def, i) => {
+    const parsed = parseLevel(def, 0);
+    for (const sw of def.switches ?? []) {
+      const ch = rawCell(parsed, sw.col, sw.row);
+      const expect = sw.type === 'hard' ? 'S' : 's';
+      if (ch !== expect) {
+        errors.push(
+          `Level ${i + 1}: ${sw.type} switch at (${sw.col},${sw.row}) is '${ch}', expected '${expect}'`,
+        );
+      }
+    }
+  });
+  return errors;
+}
+
 function main(): void {
+  const switchErrors = assertSwitchTiles();
+  if (switchErrors.length) {
+    console.error(switchErrors.join('\n'));
+    process.exit(1);
+  }
+
   let failed = 0;
   console.log(`Checking ${LEVELS.length} levels...\n`);
   LEVELS.forEach((def, i) => {
