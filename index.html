@@ -37,7 +37,10 @@
       <main class="stage">
         <p id="hint-mechanic" class="mechanic-hint hidden" aria-live="polite"></p>
         <div id="canvas-wrap">
-          <p id="status-toast" class="status-toast hidden" role="status" aria-live="assertive"></p>
+          <div id="clear-fanfare" class="clear-fanfare hidden" role="status" aria-live="assertive">
+            <div class="clear-stars" id="clear-stars" aria-hidden="true"></div>
+            <p class="clear-caption" id="clear-caption"></p>
+          </div>
           <canvas id="game-canvas" aria-label="游戏棋盘"></canvas>
         </div>
       </main>
@@ -61,6 +64,7 @@
         <header class="panel-head">
           <h2>选择关卡</h2>
           <p id="select-progress" class="select-progress">已通关 0 / 55</p>
+          <p id="select-stars" class="select-stars">星 0 / 165</p>
         </header>
         <div id="level-chapters" class="level-chapters"></div>
         <footer class="panel-foot">

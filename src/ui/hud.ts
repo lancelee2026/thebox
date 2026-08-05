@@ -1,5 +1,6 @@
 import { LEVELS, LEVEL_COUNT } from '../game/levels';
 import { isLevelLocked, type Progress } from '../game/progress';
+import { STAR_CAP, totalStars } from '../game/stars';
 
 const NS = 'http://www.w3.org/2000/svg';
 
@@ -18,7 +19,8 @@ const ICON_PATHS: Record<string, string> = {
     '<path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
   'icon-mute':
     '<path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="m22 9-6 6"/><path d="m16 9 6 6"/>',
-  'icon-check': '<path d="M5 13.5 9.5 18 19 7"/>',
+  'icon-star':
+    '<path d="M12 3.2 14.4 9l6.1.5-4.7 3.9 1.5 5.9L12 15.8 6.7 19.3l1.5-5.9L3.5 9.5 9.6 9z"/>',
 };
 
 /** Build icon via createElementNS — no SVG innerHTML (Trusted Types / older WebKit) */
@@ -29,7 +31,7 @@ export function iconEl(id: string, className = 'icon'): SVGSVGElement {
   svg.setAttribute('fill', 'none');
   svg.setAttribute('aria-hidden', 'true');
   svg.setAttribute('focusable', 'false');
-  const stroke = id === 'icon-check' ? '2.5' : '2';
+  const stroke = '2';
   const raw = ICON_PATHS[id] ?? '';
   // Parse as XML fragment under svg root
   const parsed = new DOMParser().parseFromString(
@@ -48,7 +50,7 @@ export function iconEl(id: string, className = 'icon'): SVGSVGElement {
       el.setAttribute('stroke-width', stroke);
       el.setAttribute('stroke-linecap', 'round');
       el.setAttribute('stroke-linejoin', 'round');
-      el.setAttribute('fill', 'none');
+      el.setAttribute('fill', id === 'icon-star' ? 'currentColor' : 'none');
     }
     svg.appendChild(imported);
   }
@@ -59,6 +61,16 @@ function mustEl<T extends HTMLElement>(id: string): T {
   const el = document.getElementById(id);
   if (!el) throw new Error(`缺少页面元素 #${id}，请强制刷新后重试`);
   return el as T;
+}
+
+function starRow(litCount: number, className: string): HTMLSpanElement {
+  const row = document.createElement('span');
+  row.className = className;
+  for (let i = 0; i < 3; i++) {
+    const star = iconEl('icon-star', i < litCount ? 'cell-star lit' : 'cell-star');
+    row.append(star);
+  }
+  return row;
 }
 
 function setBtnIcon(btn: HTMLElement, iconId: string, label: string): void {
@@ -90,9 +102,10 @@ export class Hud {
   private movesLabel = mustEl('moves-label');
   private muteBtn = mustEl<HTMLButtonElement>('btn-mute');
   private hintEl = document.getElementById('hint-mechanic');
-  private toastEl = document.getElementById('status-toast');
+  private fanfareEl = document.getElementById('clear-fanfare');
+  private fanfareStars = document.getElementById('clear-stars');
+  private fanfareCaption = document.getElementById('clear-caption');
   private swapBtn = document.getElementById('btn-swap');
-  private toastTimer = 0;
 
   constructor() {
     setBtnIcon(mustEl('btn-select'), 'icon-grid', '选关');
@@ -116,7 +129,6 @@ export class Hud {
 
   setHint(text: string): void {
     if (!this.hintEl) return;
-    this.hintEl.classList.remove('status-fail', 'status-win');
     if (text) {
       this.hintEl.textContent = text;
       this.hintEl.classList.remove('hidden');
@@ -126,26 +138,21 @@ export class Hud {
     }
   }
 
-  /** 短寿命状态条：死亡 / 过关反馈 */
-  showStatus(text: string, kind: 'fail' | 'win' | 'info' = 'info', ms = 1400): void {
-    if (!this.toastEl) return;
-    window.clearTimeout(this.toastTimer);
-    this.toastEl.textContent = text;
-    this.toastEl.classList.remove('hidden', 'status-fail', 'status-win', 'status-info');
-    this.toastEl.classList.add(
-      kind === 'fail' ? 'status-fail' : kind === 'win' ? 'status-win' : 'status-info',
-    );
-    this.toastTimer = window.setTimeout(() => {
-      this.toastEl?.classList.add('hidden');
-      if (this.toastEl) this.toastEl.textContent = '';
-    }, ms);
+  showClear(stars: number, moves: number): void {
+    if (!this.fanfareEl || !this.fanfareStars || !this.fanfareCaption) return;
+    this.fanfareStars.replaceChildren();
+    for (let i = 0; i < 3; i++) {
+      const star = iconEl('icon-star', i < stars ? 'clear-star lit' : 'clear-star');
+      this.fanfareStars.append(star);
+    }
+    this.fanfareCaption.textContent = `恭喜过关！共用 ${moves} 步`;
+    this.fanfareEl.classList.remove('hidden');
   }
 
-  clearStatus(): void {
-    window.clearTimeout(this.toastTimer);
-    if (!this.toastEl) return;
-    this.toastEl.classList.add('hidden');
-    this.toastEl.textContent = '';
+  hideClear(): void {
+    this.fanfareEl?.classList.add('hidden');
+    this.fanfareStars?.replaceChildren();
+    if (this.fanfareCaption) this.fanfareCaption.textContent = '';
   }
 
   setSwapVisible(v: boolean): void {
@@ -160,10 +167,16 @@ export class LevelSelect {
   private panelWin = mustEl('panel-win');
   private chaptersEl = mustEl('level-chapters');
   private progressEl = document.getElementById('select-progress');
+  private starsEl = document.getElementById('select-stars');
   private winText = mustEl('win-text');
   private onPick: ((level1Based: number) => void) | null = null;
   private current = 1;
-  private progress: Progress = { maxCleared: 0, lastPlayed: 1, muted: false };
+  private progress: Progress = {
+    maxCleared: 0,
+    lastPlayed: 1,
+    muted: false,
+    stars: Array.from({ length: LEVEL_COUNT }, () => 0),
+  };
 
   constructor() {
     mustEl('btn-close-select').addEventListener('click', () => this.hide());
@@ -215,7 +228,8 @@ export class LevelSelect {
     this.overlay.setAttribute('aria-hidden', 'false');
     this.panelSelect.classList.add('hidden');
     this.panelWin.classList.remove('hidden');
-    this.winText.textContent = `你一共走了 ${totalMoves} 步，太厉害了！`;
+    const lit = totalStars(progress.stars);
+    this.winText.textContent = `你一共走了 ${totalMoves} 步，点亮了 ${lit} / ${STAR_CAP} 颗星。太厉害了！`;
   }
 
   hideWin(): void {
@@ -234,6 +248,9 @@ export class LevelSelect {
     const maxCleared = this.progress.maxCleared;
     if (this.progressEl) {
       this.progressEl.textContent = `已通关 ${maxCleared} / ${LEVEL_COUNT}`;
+    }
+    if (this.starsEl) {
+      this.starsEl.textContent = `星 ${totalStars(this.progress.stars)} / ${STAR_CAP}`;
     }
     this.chaptersEl.replaceChildren();
 
@@ -278,9 +295,10 @@ export class LevelSelect {
       btn.title = '先通关前面的关卡';
       btn.setAttribute('aria-label', `第 ${i} 关已锁定`);
     } else if (i <= maxCleared) {
+      const earned = this.progress.stars[i - 1] ?? 1;
       btn.classList.add('cleared');
-      btn.append(num, iconEl('icon-check', 'icon icon-badge'));
-      btn.setAttribute('aria-label', `第 ${i} 关，已通关`);
+      btn.append(num, starRow(earned, 'cell-stars'));
+      btn.setAttribute('aria-label', `第 ${i} 关，已通关，${earned} 星`);
     } else {
       btn.classList.add('next');
       btn.append(num);

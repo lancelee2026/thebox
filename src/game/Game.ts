@@ -20,7 +20,8 @@ import { animDuration } from './motion';
 import { Input } from '../input/Input';
 import { Sfx } from '../audio/Sfx';
 import { Hud, LevelSelect } from '../ui/hud';
-import { loadProgress, saveProgress, type Progress } from './progress';
+import { loadProgress, recordStars, saveProgress, type Progress } from './progress';
+import { starsForMoves } from './stars';
 
 export class Game {
   private tweens = new Group();
@@ -126,6 +127,7 @@ export class Game {
       def.hint ??
       (level1Based === 1 ? '尝试滚动砖块，让它刚好躺进绿色区域' : '');
     this.hud.setHint(coach);
+    this.hud.hideClear();
     this.hud.setSwapVisible(false);
     this.input.setEnabled(true);
   }
@@ -282,29 +284,29 @@ export class Game {
     this.sfx.win();
     this.punchCamera();
     const clearedMoves = this.moves;
-    this.hud.showStatus(`恭喜过关！共用 ${clearedMoves} 步`, 'win', 1400);
-
+    const earned = starsForMoves(clearedMoves, this.levelNo);
+    this.progress = recordStars(this.progress, this.levelNo, earned);
     if (this.levelNo > this.progress.maxCleared) {
       this.progress.maxCleared = this.levelNo;
-      saveProgress(this.progress);
     }
+    saveProgress(this.progress);
+    this.hud.showClear(earned, clearedMoves);
 
     this.player.win(() => {
       if (this.levelNo >= LEVEL_COUNT) {
-        this.hud.clearStatus();
+        this.hud.hideClear();
         this.select.showWin(this.totalMoves, this.progress);
         this.busy = false;
         return;
       }
       this.sfx.clearLevel();
-      const advance = () => {
+      window.setTimeout(() => {
+        this.hud.hideClear();
         this.level.remove(() => {
           this.loadLevel(this.levelNo + 1);
           this.busy = false;
         });
-      };
-      // 过关 chip 再露一瞬再切关
-      window.setTimeout(advance, 320);
+      }, 800);
     });
   }
 
