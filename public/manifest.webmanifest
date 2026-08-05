@@ -1,7 +1,7 @@
 {
   "name": "翻砖块",
   "short_name": "翻砖块",
-  "description": "翻转长砖块，让它刚好躺进绿色区域。55 关。无广告，点击即玩。",
+  "description": "翻转长砖块，让它刚好躺进绿色区域。55 关无广告，点击即玩。",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1f6fa8",
