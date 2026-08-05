@@ -189,9 +189,9 @@ export class Game {
     this.level.syncBridges(bridges);
 
     // split pad
-    if (!this.player.isSplit && def.splitPads?.length) {
+    if (!this.player.isSplit && parsed.splitPads.length) {
       const cells = occupiedCells(this.player.state);
-      for (const pad of def.splitPads) {
+      for (const pad of parsed.splitPads) {
         if (cells.some((c) => c.col === pad.col && c.row === pad.row)) {
           this.player.placeSplit(
             { col: pad.destA[0], row: pad.destA[1], ori: 'standing' },

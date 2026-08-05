@@ -1,6 +1,6 @@
 import type { BlockState } from './blockLogic';
 import { occupiedCells } from './blockLogic';
-import type { LevelDef, LevelMap } from './levelTypes';
+import type { LevelDef, LevelMap, SplitPadDef, SwitchDef } from './levelTypes';
 
 export interface ParsedLevel {
   def: LevelDef;
@@ -14,6 +14,10 @@ export interface ParsedLevel {
   bridgeCells: Map<string, Array<[number, number]>>;
   /** "col,row" -> bridgeId */
   cellToBridge: Map<string, string>;
+  /** 已对齐到地图 s/S 的开关 */
+  switches: SwitchDef[];
+  /** 已对齐到地图 p 的分裂台 */
+  splitPads: SplitPadDef[];
 }
 
 function padGrid(map: LevelMap): { grid: string[][]; cols: number; rows: number } {
@@ -25,6 +29,16 @@ function padGrid(map: LevelMap): { grid: string[][]; cols: number; rows: number 
     return cells;
   });
   return { grid, cols, rows };
+}
+
+function collectCells(grid: string[][], ch: string): Array<[number, number]> {
+  const out: Array<[number, number]> = [];
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < grid[r].length; c++) {
+      if (grid[r][c] === ch) out.push([c, r]);
+    }
+  }
+  return out;
 }
 
 export function parseLevel(def: LevelDef, layer = 0): ParsedLevel {
@@ -42,6 +56,21 @@ export function parseLevel(def: LevelDef, layer = 0): ParsedLevel {
       }
     }
   }
+
+  const softTiles = collectCells(grid, 's');
+  const hardTiles = collectCells(grid, 'S');
+  let softI = 0;
+  let hardI = 0;
+  const switches: SwitchDef[] = (def.switches ?? []).map((sw) => {
+    const tile = sw.type === 'hard' ? hardTiles[hardI++] : softTiles[softI++];
+    return tile ? { ...sw, col: tile[0], row: tile[1] } : { ...sw };
+  });
+
+  const padTiles = collectCells(grid, 'p');
+  const splitPads: SplitPadDef[] = (def.splitPads ?? []).map((pad, i) => {
+    const tile = padTiles[i];
+    return tile ? { ...pad, col: tile[0], row: tile[1] } : { ...pad };
+  });
 
   const bridgeCells = new Map<string, Array<[number, number]>>();
   const cellToBridge = new Map<string, string>();
@@ -61,6 +90,8 @@ export function parseLevel(def: LevelDef, layer = 0): ParsedLevel {
     startRow,
     bridgeCells,
     cellToBridge,
+    switches,
+    splitPads,
   };
 }
 
@@ -144,8 +175,8 @@ export function applySwitches(
   bridges: Record<string, boolean>,
   isCube = false,
 ): Record<string, boolean> {
-  const switches = level.def.switches;
-  if (!switches?.length) return bridges;
+  const switches = level.switches;
+  if (!switches.length) return bridges;
 
   const cells = occupiedCells(state);
   let next = { ...bridges };

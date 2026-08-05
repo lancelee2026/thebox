@@ -142,17 +142,41 @@ function clone(s: BlockState): BlockState {
   return { col: s.col, row: s.row, ori: s.ori };
 }
 
-function assertSwitchTiles(): string[] {
+function assertTileBindings(): string[] {
   const errors: string[] = [];
   LEVELS.forEach((def, i) => {
+    const n = i + 1;
     const parsed = parseLevel(def, 0);
-    for (const sw of def.switches ?? []) {
+    for (const sw of parsed.switches) {
       const ch = rawCell(parsed, sw.col, sw.row);
       const expect = sw.type === 'hard' ? 'S' : 's';
       if (ch !== expect) {
         errors.push(
-          `Level ${i + 1}: ${sw.type} switch at (${sw.col},${sw.row}) is '${ch}', expected '${expect}'`,
+          `Level ${n}: ${sw.type} switch at (${sw.col},${sw.row}) is '${ch}', expected '${expect}'`,
         );
+      }
+    }
+    for (const pad of parsed.splitPads) {
+      const ch = rawCell(parsed, pad.col, pad.row);
+      if (ch !== 'p') {
+        errors.push(`Level ${n}: split pad at (${pad.col},${pad.row}) is '${ch}', expected 'p'`);
+      }
+    }
+    const claimed = new Set<string>();
+    for (const [id, cells] of parsed.bridgeCells) {
+      for (const [c, r] of cells) {
+        claimed.add(`${c},${r}`);
+        const ch = rawCell(parsed, c, r);
+        if (ch !== 'b') {
+          errors.push(`Level ${n}: bridge ${id} cell (${c},${r}) is '${ch}', expected 'b'`);
+        }
+      }
+    }
+    for (let r = 0; r < parsed.rows; r++) {
+      for (let c = 0; c < parsed.cols; c++) {
+        if (parsed.grid[r][c] === 'b' && !claimed.has(`${c},${r}`)) {
+          errors.push(`Level ${n}: map b at (${c},${r}) is not bound to any bridge`);
+        }
       }
     }
   });
@@ -160,11 +184,25 @@ function assertSwitchTiles(): string[] {
 }
 
 function main(): void {
-  const switchErrors = assertSwitchTiles();
-  if (switchErrors.length) {
-    console.error(switchErrors.join('\n'));
+  const bindErrors = assertTileBindings();
+  if (bindErrors.length) {
+    console.error(bindErrors.join('\n'));
     process.exit(1);
   }
+
+  console.log('Bridge / switch audit (resolved to map tiles):');
+  LEVELS.forEach((def, i) => {
+    if (!def.switches?.length && !def.bridges?.length) return;
+    const parsed = parseLevel(def, 0);
+    const sw = parsed.switches
+      .map((s) => `${s.type}@(${s.col},${s.row})→${s.bridgeIds.join('+')}`)
+      .join(' ');
+    const br = [...parsed.bridgeCells.entries()]
+      .map(([id, cells]) => `${id}[${cells.map(([c, r]) => `${c},${r}`).join(' ')}]`)
+      .join(' ');
+    console.log(`  L${i + 1}: ${sw} | ${br}`);
+  });
+  console.log('');
 
   let failed = 0;
   console.log(`Checking ${LEVELS.length} levels...\n`);
