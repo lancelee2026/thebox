@@ -293,12 +293,25 @@ body {
 
 .visit-count {
   margin: 4px 0 0;
+  min-height: 0.9rem;
   text-align: center;
   color: rgba(255, 255, 255, 0.52);
   font-size: 0.72rem;
   font-weight: 700;
+  line-height: 1.25;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.18s ease-out, transform 0.18s ease-out;
+}
+
+/* 预留计数行，异步请求完成时不再压缩舞台。 */
+.visit-count[hidden] {
+  display: block;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(2px);
 }
 
 .clear-fanfare {
