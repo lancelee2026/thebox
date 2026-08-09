@@ -58,7 +58,6 @@ npm run check-levels   # 本地 BFS，不进 Pages 构建
     input/Input.ts
     audio/Sfx.ts
     ui/hud.ts           # 提示条、过关反馈、切换按钮、章节选关
-    ui/visits.ts        # 会话访问计数（失败时静默）
   docs/architecture.md
 ```
 
@@ -155,7 +154,6 @@ npm run check-levels
 | `Level.ts` | mesh；`syncBridges`；`setLayer` |
 | `rules.ts` | 与 `check-levels` 共用判定 |
 | `hud.ts` | `setHint` / `setSwapVisible`；过关和全通关反馈；选关按 `chapter` 分组 |
-| `visits.ts` | 每个浏览器会话计一次访问；加载失败时不影响游戏 |
 
 ---
 
@@ -164,14 +162,13 @@ npm run check-levels
 - 竖屏 / 粗指针 / 宽 &lt; 900px：显示底部方向键
 - 宽屏细指针：隐藏触控键
 - 机制提示条 `#hint-mechanic`；分裂时显示「切换」
-- 访问计数 `#visit-count` 始终预留一行高度，网络返回后淡入，不能挤压棋盘
 - 壳层中文；画布为唯一 3D 视图
 
 ### 7.1 玩家文案与分享文案
 
 - 面向玩家的文字必须使用日常中文：直接说「翻进绿色终点」「横躺通过」「竖着站上去」，不展示 `toggle`、`layer`、`BFS` 等实现词或缩略语。
 - 机制提示按「颜色或物件 → 要做什么 → 会发生什么」组织；一句只解释一个新规则。复杂机制可用两句，但先说变化，再说控制方式。
-- 首关提示在 `Game.ts`；各章节首次机制提示在 `levels.ts` 的 `hint`；过关、全通关、锁关和选关提示在 `ui/hud.ts`；访问计数在 `ui/visits.ts`。
+- 首关提示在 `Game.ts`；各章节首次机制提示在 `levels.ts` 的 `hint`；过关、全通关、锁关和选关提示在 `ui/hud.ts`。
 - 页面标题、描述、分享卡片和结构化数据以 `index.html` 为单一文案源；安装描述同步维护在 `public/manifest.webmanifest`。
 - 分享图使用版本化文件名。替换图片时新增 `public/og-YYYYMMDD.png`，再同步更新 `index.html` 中的 OG、Twitter、`itemprop` 和 JSON-LD 图片地址，避免平台缓存旧图。
 
