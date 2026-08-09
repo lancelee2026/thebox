@@ -125,7 +125,7 @@ export class Game {
     this.hud.setMoves(0);
     const coach =
       def.hint ??
-      (level1Based === 1 ? '尝试滚动砖块，让它刚好躺进绿色区域' : '');
+      (level1Based === 1 ? '把砖块翻进绿色终点。' : '');
     this.hud.setHint(coach);
     this.hud.hideClear();
     this.hud.setSwapVisible(false);

@@ -23,7 +23,7 @@ export async function mountVisitCount(el: HTMLElement | null): Promise<void> {
     const count = fresh ? await readCount(UP_URL) : await readCount(GET_URL);
     if (count == null) return;
     if (fresh) sessionStorage.setItem(SESSION_KEY, '1');
-    el.textContent = `已被打开 ${count.toLocaleString('zh-CN')} 次`;
+    el.textContent = `已开启 ${count.toLocaleString('zh-CN')} 次`;
     el.hidden = false;
   } catch {
     /* 计数失败不影响游戏 */

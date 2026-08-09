@@ -177,7 +177,7 @@ export class Hud {
       const star = iconEl('icon-star', i < stars ? 'clear-star lit' : 'clear-star');
       this.fanfareStars.append(star);
     }
-    this.fanfareCaption.textContent = `恭喜过关！共用 ${moves} 步`;
+    this.fanfareCaption.textContent = `本关用了 ${moves} 步，顺利到家！`;
     this.fanfareEl.classList.remove('hidden');
   }
 
@@ -261,7 +261,7 @@ export class LevelSelect {
     this.panelSelect.classList.add('hidden');
     this.panelWin.classList.remove('hidden');
     const lit = totalStars(progress.stars);
-    this.winText.textContent = `你一共走了 ${totalMoves} 步，点亮了 ${lit} / ${STAR_CAP} 颗星。太厉害了！`;
+    this.winText.textContent = `共走 ${totalMoves} 步，点亮 ${lit} / ${STAR_CAP} 颗星。`;
   }
 
   hideWin(): void {
@@ -320,7 +320,7 @@ export class LevelSelect {
     if (locked) {
       btn.classList.add('locked');
       btn.append(num, iconEl('icon-lock', 'icon icon-badge'));
-      btn.title = '先通关前面的关卡';
+      btn.title = '先完成前面的关卡';
       btn.setAttribute('aria-label', `第 ${i} 关已锁定`);
     } else if (i <= maxCleared) {
       const earned = this.progress.stars[i - 1] ?? 1;
