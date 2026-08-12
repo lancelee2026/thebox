@@ -198,7 +198,7 @@ npm run check-levels
 
 | 目标 | 文件 |
 |---|---|
-| 增删改关卡 | `levels.ts` → `npm run check-levels` |
+| 增删改关卡 | `levels.ts` → `npm run check-levels`（含「本章机关不可绕过」） |
 | 改胜负 / 开关 | `rules.ts` |
 | 改翻边 / 合并 | `blockLogic.ts`（慎改） |
 | 改动画 | `Player.ts`、`motion.ts` |

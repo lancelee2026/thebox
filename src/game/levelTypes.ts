@@ -27,8 +27,9 @@ export interface SplitPadDef {
 }
 
 export interface TeleportDef {
-  col: number;
-  row: number;
+  /** 由地图 `t` 格按扫描序绑定；手写时可省略 */
+  col?: number;
+  row?: number;
   dest: [number, number];
 }
 

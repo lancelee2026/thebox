@@ -161,7 +161,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@sbboo'],
     chapter: '桥梁',
-    hint: '黄色按钮会切换蓝桥，经过就触发。',
+    hint: '踩上黄色按钮，会开关隐藏的蓝桥。',
     bridges: [{ id: 'A', cells: [[2, 0], [3, 0]], initiallyOpen: false }],
     switches: [{ col: 1, row: 0, type: 'soft', bridgeIds: ['A'], mode: 'toggle' }],
   },
@@ -210,7 +210,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@..x', 'xxSx', 'bb.x', '..oo'],
     chapter: '桥梁',
-    hint: '橙色按钮要竖着站上去，才能切换蓝桥。',
+    hint: '橙色按钮要竖着踩上去，才会开关蓝桥。',
     bridges: [{ id: 'A', cells: [[0, 2], [1, 2]], initiallyOpen: false }],
     switches: [{ col: 2, row: 1, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
   },
@@ -221,16 +221,17 @@ export const LEVELS: LevelDef[] = [
     switches: [{ col: 2, row: 1, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
   },
   {
-    map: ['@x.x', 'xS.x', 'bb.x', '..oo'],
+    map: ['@x.x', 'xS..', 'bb.x', '..oo'],
     chapter: '桥梁',
     bridges: [{ id: 'A', cells: [[0, 2], [1, 2]], initiallyOpen: false }],
     switches: [{ col: 1, row: 1, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
   },
   {
-    map: ['@x.x', 'x.Sx', 'bb.x', '..oo'],
+    // 右列不能当捷径：起点与终点隔两格空，必须先站上 S 再走桥
+    map: ['@xxS', '....', 'bb.x', '..oo'],
     chapter: '桥梁',
     bridges: [{ id: 'A', cells: [[0, 2], [1, 2]], initiallyOpen: false }],
-    switches: [{ col: 2, row: 1, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
+    switches: [{ col: 3, row: 0, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
   },
   {
     map: ['@x.x', 'x.Sx', 'bb.x', 'x.oo'],
@@ -255,7 +256,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: ['@pxxx', 'x...x', 'xx.oo'],
     chapter: '分裂',
-    hint: '触到紫台，砖块会分成两块。按空格或“切换”换一块控制；相遇会合回去。',
+    hint: '碰到紫砖会分成两块。按“切换”换一块控制；两块相遇会合成一块。',
     splitPads: [{ col: 1, row: 0, destA: [0, 1], destB: [4, 1] }],
   },
   {
@@ -264,7 +265,7 @@ export const LEVELS: LevelDef[] = [
     splitPads: [{ col: 2, row: 0, destA: [0, 1], destB: [4, 1] }],
   },
   {
-    map: ['@xxpx', 'x...x', '.xoo.x'],
+    map: ['@xxpx', 'x...x', 'xx.oo'],
     chapter: '分裂',
     splitPads: [{ col: 3, row: 0, destA: [0, 1], destB: [4, 1] }],
   },
@@ -289,7 +290,7 @@ export const LEVELS: LevelDef[] = [
     splitPads: [{ col: 1, row: 0, destA: [0, 2], destB: [4, 2] }],
   },
   {
-    map: ['@xpx.', 'x..x.', 'x..x.', 'xoo.x'],
+    map: ['@xpx.', 'x..x.', 'x..x.', 'x.oo.'],
     chapter: '分裂',
     splitPads: [{ col: 2, row: 0, destA: [0, 1], destB: [3, 2] }],
   },
@@ -304,7 +305,7 @@ export const LEVELS: LevelDef[] = [
     splitPads: [{ col: 3, row: 0, destA: [0, 2], destB: [4, 2] }],
   },
   {
-    map: ['@xp.x', 'x.z.x', 'xx.xx', '..oo.'],
+    map: ['@xp.x', 'x.z.x', 'x...x', 'xx.oo'],
     chapter: '分裂',
     splitPads: [{ col: 2, row: 0, destA: [0, 1], destB: [4, 1] }],
   },
@@ -316,7 +317,7 @@ export const LEVELS: LevelDef[] = [
       ['.xu', 'oo.'],
     ],
     chapter: '多层',
-    hint: '竖着踏上蓝色楼梯就会换层；两边楼梯要对齐。',
+    hint: '竖着踩蓝色砖，会切换到另一层。',
   },
   {
     layers: [
@@ -362,141 +363,116 @@ export const LEVELS: LevelDef[] = [
   },
 
   // ── 56–68 传送（竖着踩青色台，整块出现在另一边）──────────
-  // 站上 t：需先横躺盖住 t 与邻格，再朝 t 翻起立。章末才用红/脆挡捷径。
+  // 起点岛与终点岛之间至少两格空，避免半悬空蹭过去。
   {
-    map: [
-      '@xxxtx',
-      '.....x',
-      '...xoo',
-    ],
+    map: ['@xxt..xoo'],
     chapter: '传送',
-    hint: '竖着踏上青色台，砖块会整块出现在另一边。',
-    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+    hint: '竖着踩上青色砖，整块砖会出现在另一边。',
+    teleports: [{ dest: [6, 0] }],
   },
   {
     map: [
-      '@xxx.x',
-      '....tx',
-      'x...xx',
-      '...xoo',
+      '@xx...',
+      'x.x...',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxtx.',
-      '...x.x',
-      '....xx',
-      '...xoo',
+      '@xx...',
+      'xxx...',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxxtx',
-      'x...x.',
-      'x..xxx',
-      '....oo',
+      '@xx...',
+      '.xx...',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxxtxx',
-      '......x',
-      '....xoo',
+      '@x.x..',
+      'xxx...',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [6, 1] }],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxxt.',
-      'x...tx',
-      'x....x',
-      '....oo',
+      '@xxx..',
+      'x.x...',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [
-      { col: 0, row: 0, dest: [0, 2] },
-      { col: 0, row: 0, dest: [5, 2] },
-    ],
+    teleports: [{ dest: [5, 2] }],
+  },
+  {
+    map: ['@xxt..xxxt..xoo'],
+    chapter: '传送',
+    teleports: [{ dest: [6, 0] }, { dest: [12, 0] }],
   },
   {
     map: [
-      '@xxt.x',
-      '...xtx',
-      '....xx',
-      '...xoo',
+      '@x....',
+      'x.xx..',
+      'x.t..xoo',
     ],
     chapter: '传送',
-    teleports: [
-      { col: 0, row: 0, dest: [5, 1] },
-      { col: 0, row: 0, dest: [4, 2] },
-    ],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxxx.',
-      '....tx',
-      'xx..xx',
-      '..x.oo',
+      '@xxx..',
+      'x.....',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxxtxx',
-      'x.....x',
-      'x...xxx',
-      '.....oo',
+      '@xx...',
+      'x..x..',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [6, 2] }],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxxtx',
-      '....x.',
-      '...xzx',
-      '...xoo',
+      '@xxz..',
+      'x.x...',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+    teleports: [{ dest: [5, 2] }],
   },
   {
     map: [
-      '@xxx.t',
-      'x...xx',
-      'x.z..x',
-      '...xoo',
+      '@xx...',
+      'x.t..xoo',
+      'x...z...',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+    teleports: [{ dest: [5, 1] }],
   },
   {
     map: [
-      '@xxxtx',
-      'x.z.x.',
-      'x...xx',
-      '....oo',
+      '@xx...',
+      'x.f...',
+      'xxt..xoo',
     ],
     chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
-  },
-  {
-    map: [
-      '@xxxtx',
-      '...f.x',
-      'x..xxx',
-      '....oo',
-    ],
-    chapter: '传送',
-    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+    teleports: [{ dest: [5, 2] }],
   },
 
   // ── 69–78 崩塌（灰色裂砖离开后塌掉）─────────────────────
@@ -577,7 +553,7 @@ export const LEVELS: LevelDef[] = [
   {
     map: [
       '@xccc',
-      'xxxxz',
+      '.xxxz',
       '.xxoo',
     ],
     chapter: '崩塌',

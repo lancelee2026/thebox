@@ -5,6 +5,7 @@ import { LEVELS } from '../src/game/levels.ts';
 import { PAR } from '../src/game/par.ts';
 import { parseLevel, rawCell } from '../src/game/rules.ts';
 import { solveMinMoves } from '../src/game/solve.ts';
+import { mechanicSkipErrors } from './audit-mechanics.ts';
 
 function assertTileBindings(): string[] {
   const errors: string[] = [];
@@ -72,6 +73,12 @@ function main(): void {
   const bindErrors = assertTileBindings();
   if (bindErrors.length) {
     console.error(bindErrors.join('\n'));
+    process.exit(1);
+  }
+
+  const skipErrors = mechanicSkipErrors();
+  if (skipErrors.length) {
+    console.error(skipErrors.join('\n'));
     process.exit(1);
   }
 
