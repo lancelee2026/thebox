@@ -52,6 +52,8 @@ export interface WorldSnapshot {
   blockB: BlockState | null;
   active: 0 | 1;
   bridges: Record<string, boolean>;
+  /** "col,row" -> 已塌掉的裂砖 */
+  collapsed: Record<string, boolean>;
   layer: number;
 }
 
@@ -63,12 +65,21 @@ export function emptyBridges(def: LevelDef): Record<string, boolean> {
   return out;
 }
 
+export function emptyCollapsed(): Record<string, boolean> {
+  return {};
+}
+
+export function cloneCollapsed(c: Record<string, boolean>): Record<string, boolean> {
+  return { ...c };
+}
+
 export function initialSnapshot(def: LevelDef, startCol: number, startRow: number): WorldSnapshot {
   return {
     block: { col: startCol, row: startRow, ori: 'standing' },
     blockB: null,
     active: 0,
     bridges: emptyBridges(def),
+    collapsed: emptyCollapsed(),
     layer: 0,
   };
 }

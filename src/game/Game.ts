@@ -12,10 +12,11 @@ import {
 } from './blockLogic';
 import {
   emptyBridges,
+  emptyCollapsed,
   initialSnapshot,
   type WorldSnapshot,
 } from './levelTypes';
-import { applySwitches, applyTeleport, effectiveCell, rawCell } from './rules';
+import { applyCollapse, applySwitches, applyTeleport, effectiveCell, rawCell } from './rules';
 import { animDuration } from './motion';
 import { Input } from '../input/Input';
 import { Sfx } from '../audio/Sfx';
@@ -87,6 +88,7 @@ export class Game {
       blockB: this.player.stateB ? cloneState(this.player.stateB) : null,
       active: this.player.active,
       bridges: { ...this.world.bridges },
+      collapsed: { ...this.world.collapsed },
       layer: this.world.layer,
     };
   }
@@ -97,6 +99,7 @@ export class Game {
       blockB: snap.blockB ? cloneState(snap.blockB) : null,
       active: snap.active,
       bridges: { ...snap.bridges },
+      collapsed: { ...snap.collapsed },
       layer: snap.layer,
     };
     if (snap.blockB) {
@@ -105,6 +108,7 @@ export class Game {
       this.player.placeMerged(snap.block);
     }
     this.level.syncBridges(snap.bridges);
+    this.level.syncCollapsed(snap.collapsed);
   }
 
   private loadLevel(level1Based: number): void {
@@ -117,9 +121,11 @@ export class Game {
 
     const def = getLevel(level1Based - 1);
     const bridges = emptyBridges(def);
-    this.level.load(def, 0, bridges);
+    const collapsed = emptyCollapsed();
+    this.level.load(def, 0, bridges, collapsed);
     this.world = initialSnapshot(def, this.level.startCol, this.level.startRow);
     this.world.bridges = bridges;
+    this.world.collapsed = collapsed;
     this.player.reset(this.world.block);
     this.hud.setLevel(level1Based);
     this.hud.setMoves(0);
@@ -180,6 +186,14 @@ export class Game {
     const def = getLevel(this.levelNo - 1);
     const parsed = this.level.parsed!;
     let bridges = { ...this.world.bridges };
+    let collapsed = { ...this.world.collapsed };
+
+    const prevMoving = before.blockB
+      ? before.active === 0
+        ? before.block
+        : before.blockB
+      : before.block;
+    const prevCells = occupiedCells(prevMoving);
 
     const moving = this.player.isSplit
       ? this.player.active === 0
@@ -192,6 +206,10 @@ export class Game {
 
     const warped = applyTeleport(parsed, this.player.state, this.player.isSplit);
     if (warped) {
+      const stay = occupiedCells(warped);
+      collapsed = applyCollapse(parsed, prevCells, stay, collapsed);
+      this.world.collapsed = collapsed;
+      this.level.syncCollapsed(collapsed);
       this.busy = true;
       this.input.setEnabled(false);
       this.sfx.beep(560, 70, 0.16, 'sine');
@@ -201,11 +219,11 @@ export class Game {
         this.world.active = 0;
         this.busy = false;
         this.input.setEnabled(true);
-        if (this.level.isDeath(this.player.state, bridges)) {
+        if (this.level.isDeath(this.player.state, bridges, collapsed)) {
           this.onDeath();
           return;
         }
-        if (this.level.isWin(this.player.state, bridges)) {
+        if (this.level.isWin(this.player.state, bridges, collapsed)) {
           this.onWin();
         }
       });
@@ -220,6 +238,10 @@ export class Game {
         if (cells.some((c) => c.col === pad.col && c.row === pad.row)) {
           const destA = { col: pad.destA[0], row: pad.destA[1], ori: 'standing' as const };
           const destB = { col: pad.destB[0], row: pad.destB[1], ori: 'standing' as const };
+          const stay = [...occupiedCells(destA), ...occupiedCells(destB)];
+          collapsed = applyCollapse(parsed, prevCells, stay, collapsed);
+          this.world.collapsed = collapsed;
+          this.level.syncCollapsed(collapsed);
           this.busy = true;
           this.input.setEnabled(false);
           this.sfx.beep(320, 80, 0.2);
@@ -263,12 +285,23 @@ export class Game {
         const nextLayer = (this.world.layer + 1) % def.layers.length;
         if (nextLayer !== this.world.layer) {
           this.world.layer = nextLayer;
-          this.level.setLayer(nextLayer, this.world.bridges);
+          this.level.setLayer(nextLayer, this.world.bridges, collapsed);
           // keep position; re-place
           this.player.placeMerged(this.player.state);
           this.sfx.beep(280, 70, 0.15);
         }
       }
+    }
+
+    const stay = this.player.stateB
+      ? [...occupiedCells(this.player.state), ...occupiedCells(this.player.stateB)]
+      : occupiedCells(this.player.state);
+    const prevCollapsed = this.world.collapsed;
+    collapsed = applyCollapse(parsed, prevCells, stay, prevCollapsed);
+    if (collapsed !== prevCollapsed) {
+      this.world.collapsed = collapsed;
+      this.level.syncCollapsed(collapsed);
+      this.sfx.beep(150, 50, 0.12, 'triangle');
     }
 
     this.world.block = cloneState(this.player.state);
@@ -285,17 +318,23 @@ export class Game {
       return;
     }
 
-    if (this.level.isDeath(this.player.state, bridges)) {
+    if (this.level.isDeath(this.player.state, bridges, collapsed)) {
       this.onDeath();
       return;
     }
-    if (this.level.isWin(this.player.state, bridges)) {
+    if (this.level.isWin(this.player.state, bridges, collapsed)) {
       this.onWin();
     }
   }
 
   private cubeDead(state: { col: number; row: number }): boolean {
-    const t = effectiveCell(this.level.parsed!, state.col, state.row, this.world.bridges);
+    const t = effectiveCell(
+      this.level.parsed!,
+      state.col,
+      state.row,
+      this.world.bridges,
+      this.world.collapsed,
+    );
     return t === '.' || t === 'z';
   }
 
@@ -353,7 +392,7 @@ export class Game {
     this.hud.setMoves(this.moves);
     const def = getLevel(this.levelNo - 1);
     if (def.layers && prev.layer !== this.world.layer) {
-      this.level.setLayer(prev.layer, prev.bridges);
+      this.level.setLayer(prev.layer, prev.bridges, prev.collapsed);
     }
     this.applySnapshot(prev);
     this.hud.setSwapVisible(!!prev.blockB);

@@ -10,7 +10,7 @@ import {
   type ParsedLevel,
 } from './rules';
 
-type TileKind = 'x' | 'o' | 'z' | 'f' | 'b' | 's' | 'S' | 'p' | 'u' | 't';
+type TileKind = 'x' | 'o' | 'z' | 'f' | 'b' | 's' | 'S' | 'p' | 'u' | 't' | 'c';
 
 export class LevelView {
   readonly layer = new THREE.Group();
@@ -77,6 +77,11 @@ export class LevelView {
       metalness: 0.05,
       roughness: 0.62,
     }),
+    c: new THREE.MeshStandardMaterial({
+      color: 0x9aa3ad,
+      metalness: 0,
+      roughness: 0.92,
+    }),
   };
   private ringGeo = new THREE.TorusGeometry(0.28, 0.045, 8, 20);
   private ringMat = new THREE.MeshStandardMaterial({
@@ -88,15 +93,23 @@ export class LevelView {
   });
   /** key col,row -> mesh for bridges */
   private bridgeMeshes = new Map<string, THREE.Mesh>();
+  /** key col,row -> mesh for crumble tiles */
+  private crumbleMeshes = new Map<string, THREE.Mesh>();
 
   constructor(scene: THREE.Scene, tweens: Group) {
     this.tweens = tweens;
     scene.add(this.layer);
   }
 
-  load(def: LevelDef, layer = 0, bridges: Record<string, boolean> = {}): void {
+  load(
+    def: LevelDef,
+    layer = 0,
+    bridges: Record<string, boolean> = {},
+    collapsed: Record<string, boolean> = {},
+  ): void {
     this.clearImmediate();
     this.bridgeMeshes.clear();
+    this.crumbleMeshes.clear();
     this.def = def;
     this.parsed = parseLevel(def, layer);
     this.startCol = this.parsed.startCol;
@@ -119,14 +132,26 @@ export class LevelView {
         if (this.mats[kind]) {
           const mesh = this.createTile(this.mats[kind], c, r);
           if (ch === 't') this.addTeleportRing(mesh);
+          if (ch === 'c') {
+            const key = `${c},${r}`;
+            this.crumbleMeshes.set(key, mesh);
+            if (collapsed[key]) {
+              mesh.visible = false;
+              mesh.scale.set(0.05, 1, 0.05);
+            }
+          }
         }
       }
     }
   }
 
-  setLayer(layer: number, bridges: Record<string, boolean>): void {
+  setLayer(
+    layer: number,
+    bridges: Record<string, boolean>,
+    collapsed: Record<string, boolean> = {},
+  ): void {
     if (!this.def) return;
-    this.load(this.def, layer, bridges);
+    this.load(this.def, layer, bridges, collapsed);
   }
 
   syncBridges(bridges: Record<string, boolean>): void {
@@ -143,6 +168,32 @@ export class LevelView {
         .onComplete(() => {
           mesh.visible = open;
           if (open) mesh.scale.set(1, 1, 1);
+        })
+        .start();
+    }
+  }
+
+  syncCollapsed(collapsed: Record<string, boolean>): void {
+    for (const [key, mesh] of this.crumbleMeshes) {
+      const down = !!collapsed[key];
+      if (!down) {
+        mesh.visible = true;
+        mesh.scale.set(1, 1, 1);
+        mesh.position.y = -0.125;
+        continue;
+      }
+      if (!mesh.visible && mesh.scale.x < 0.1) continue;
+      mesh.visible = true;
+      const s = { v: 1, y: -0.125 };
+      new Tween(s, this.tweens)
+        .to({ v: 0.05, y: -0.55 }, animDuration(260))
+        .easing(Easing.Quadratic.In)
+        .onUpdate(() => {
+          mesh.scale.set(s.v, 1, s.v);
+          mesh.position.y = s.y;
+        })
+        .onComplete(() => {
+          mesh.visible = false;
         })
         .start();
     }
@@ -174,14 +225,22 @@ export class LevelView {
     tile.add(ring);
   }
 
-  isDeath(state: BlockState, bridges: Record<string, boolean>): boolean {
+  isDeath(
+    state: BlockState,
+    bridges: Record<string, boolean>,
+    collapsed: Record<string, boolean> = {},
+  ): boolean {
     if (!this.parsed) return true;
-    return rulesIsDeath(this.parsed, state, bridges);
+    return rulesIsDeath(this.parsed, state, bridges, collapsed);
   }
 
-  isWin(state: BlockState, bridges: Record<string, boolean>): boolean {
+  isWin(
+    state: BlockState,
+    bridges: Record<string, boolean>,
+    collapsed: Record<string, boolean> = {},
+  ): boolean {
     if (!this.parsed) return false;
-    return rulesIsWin(this.parsed, state, bridges);
+    return rulesIsWin(this.parsed, state, bridges, collapsed);
   }
 
   toWorld(gridX: number, gridZ: number): { x: number; z: number } {

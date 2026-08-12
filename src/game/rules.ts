@@ -1,5 +1,5 @@
 import type { BlockState } from './blockLogic';
-import { occupiedCells } from './blockLogic';
+import { occupiedCells, type Cell } from './blockLogic';
 import type { LevelDef, LevelMap, SplitPadDef, SwitchDef, TeleportDef } from './levelTypes';
 
 export interface ParsedLevel {
@@ -111,15 +111,17 @@ export function rawCell(level: ParsedLevel, col: number, row: number): string {
 }
 
 /**
- * 考虑桥开关后的有效格类型。
- * 关闭的桥视为虚空；开关格 s/S 视为可走（等同 x）。
+ * 考虑桥开关与崩塌后的有效格类型。
+ * 关闭的桥 / 已塌裂砖视为虚空；开关格 s/S、裂砖 c 未塌时视为可走（等同 x）。
  */
 export function effectiveCell(
   level: ParsedLevel,
   col: number,
   row: number,
   bridges: Record<string, boolean>,
+  collapsed: Record<string, boolean> = {},
 ): string {
+  if (collapsed[`${col},${row}`]) return '.';
   const ch = rawCell(level, col, row);
   if (ch === 'b') {
     const id = level.cellToBridge.get(`${col},${row}`);
@@ -127,13 +129,13 @@ export function effectiveCell(
     return 'x';
   }
   if (ch === 's' || ch === 'S') return 'x';
-  if (ch === 'p' || ch === 'u' || ch === 't') return 'x';
+  if (ch === 'p' || ch === 'u' || ch === 't' || ch === 'c') return 'x';
   if (ch === '@') return 'x';
   return ch;
 }
 
 export function isSupport(ch: string): boolean {
-  return ch === 'x' || ch === 'o' || ch === 'f' || ch === 'z';
+  return ch === 'x' || ch === 'o' || ch === 'f' || ch === 'z' || ch === 'c';
 }
 
 /** 死亡判定：半悬空存活；站立踩 f / z / 空；躺倒踩 z 或双空 */
@@ -141,14 +143,15 @@ export function isDeath(
   level: ParsedLevel,
   state: BlockState,
   bridges: Record<string, boolean> = {},
+  collapsed: Record<string, boolean> = {},
 ): boolean {
   const cells = occupiedCells(state);
   if (cells.length === 1) {
-    const t = effectiveCell(level, cells[0].col, cells[0].row, bridges);
+    const t = effectiveCell(level, cells[0].col, cells[0].row, bridges, collapsed);
     return t === '.' || t === 'z' || t === 'f';
   }
-  const a = effectiveCell(level, cells[0].col, cells[0].row, bridges);
-  const b = effectiveCell(level, cells[1].col, cells[1].row, bridges);
+  const a = effectiveCell(level, cells[0].col, cells[0].row, bridges, collapsed);
+  const b = effectiveCell(level, cells[1].col, cells[1].row, bridges, collapsed);
   if (a === 'z' || b === 'z') return true;
   return a === '.' && b === '.';
 }
@@ -159,8 +162,9 @@ export function isDeathCube(
   col: number,
   row: number,
   bridges: Record<string, boolean>,
+  collapsed: Record<string, boolean> = {},
 ): boolean {
-  const t = effectiveCell(level, col, row, bridges);
+  const t = effectiveCell(level, col, row, bridges, collapsed);
   return t === '.' || t === 'z';
 }
 
@@ -168,12 +172,13 @@ export function isWin(
   level: ParsedLevel,
   state: BlockState,
   bridges: Record<string, boolean> = {},
+  collapsed: Record<string, boolean> = {},
 ): boolean {
   const cells = occupiedCells(state);
   if (cells.length !== 2) return false;
   return (
-    effectiveCell(level, cells[0].col, cells[0].row, bridges) === 'o' &&
-    effectiveCell(level, cells[1].col, cells[1].row, bridges) === 'o'
+    effectiveCell(level, cells[0].col, cells[0].row, bridges, collapsed) === 'o' &&
+    effectiveCell(level, cells[1].col, cells[1].row, bridges, collapsed) === 'o'
   );
 }
 
@@ -221,6 +226,30 @@ export function applyTeleport(
     return { col, row, ori: 'standing' };
   }
   return null;
+}
+
+/** 离开裂砖后塌掉；仍踩着的格不塌。本关内不恢复。 */
+export function applyCollapse(
+  level: ParsedLevel,
+  leftCells: Cell[],
+  stillOccupied: Cell[],
+  collapsed: Record<string, boolean>,
+): Record<string, boolean> {
+  if (!leftCells.length) return collapsed;
+  const stay = new Set(stillOccupied.map((c) => `${c.col},${c.row}`));
+  let next = collapsed;
+  let changed = false;
+  for (const cell of leftCells) {
+    const key = `${cell.col},${cell.row}`;
+    if (stay.has(key) || collapsed[key]) continue;
+    if (rawCell(level, cell.col, cell.row) !== 'c') continue;
+    if (!changed) {
+      next = { ...collapsed };
+      changed = true;
+    }
+    next[key] = true;
+  }
+  return next;
 }
 
 export function cloneBridges(b: Record<string, boolean>): Record<string, boolean> {

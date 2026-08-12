@@ -5,7 +5,7 @@
 仓库：https://github.com/lancelee2026/thecube  
 站点品牌：thebox  
 灵感：[Cuboid](https://www.thomasfriday.com/cuboid/)（Bloxorz 简化变体）  
-现状：一期基础 + 二期机制（脆弱 / 桥 / 分裂 / 多层）+ 传送章，共 68 关。
+现状：一期基础 + 二期机制（脆弱 / 桥 / 分裂 / 多层）+ 传送 + 崩塌，共 78 关。
 
 ---
 
@@ -52,7 +52,7 @@ npm run check-levels   # 本地 BFS，不进 Pages 构建
       levelTypes.ts     # LevelDef、WorldSnapshot、桥/开关/分裂元数据
       Level.ts          # 地图 mesh、桥显隐、层切换
       Player.ts         # 单砖 / 双小方块动画
-      levels.ts         # 68 关 LEVELS
+      levels.ts         # 78 关 LEVELS
       progress.ts       # localStorage v2
       setup.ts / motion.ts
     input/Input.ts
@@ -85,7 +85,7 @@ flowchart TB
   Game --> UI
 ```
 
-撤销快照类型为 `WorldSnapshot`（block / blockB / active / bridges / layer），不是单块 `BlockState`。
+撤销快照类型为 `WorldSnapshot`（block / blockB / active / bridges / collapsed / layer），不是单块 `BlockState`。
 
 ---
 
@@ -125,6 +125,7 @@ interface BlockState { col: number; row: number; ori: Ori }
 | `s` / `S` | 轻/重开关（可走） |
 | `p` | 分裂台 |
 | `t` | 传送台（仅整砖站立触发） |
+| `c` | 裂砖：离开后塌掉（本关不恢复） |
 | `u` | 楼梯（站立切换 `layers`） |
 
 `LevelDef` 还可含 `bridges` / `switches` / `splitPads` / `teleports` / `layers` / `hint` / `chapter`。有 `layers` 时可省略 `map`。
@@ -132,6 +133,8 @@ interface BlockState { col: number; row: number; ori: Ori }
 轻开关：任意姿态踩到即 toggle。重开关：仅**整砖站立**（非小方块）才 toggle。
 
 传送：仅**整砖站立**踩 `t` 时，整块出现在 `dest`（保持站立）；躺着或小方块不触发；落地后不连环传送。
+
+崩塌：踩过 `c` 后**离开**该格，裂砖变为虚空；仍站在上面时安全；撤销可恢复。
 
 楼梯：未分裂且站立踩 `u` 时 `layer = (layer+1) % n`；两层的 `u` 应对齐同一格。
 
@@ -187,6 +190,7 @@ npm run check-levels
 | 38–48 | 分裂 |
 | 49–55 | 多层 |
 | 56–68 | 传送 |
+| 69–78 | 崩塌 |
 
 ---
 

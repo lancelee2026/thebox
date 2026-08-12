@@ -498,6 +498,90 @@ export const LEVELS: LevelDef[] = [
     chapter: '传送',
     teleports: [{ col: 0, row: 0, dest: [5, 1] }],
   },
+
+  // ── 69–78 崩塌（灰色裂砖离开后塌掉）─────────────────────
+  // 横躺在一段路上，再翻滚对齐进 oo；离开的 c 会塌。
+  {
+    map: [
+      '@cc',
+      '..x',
+      '.oo',
+    ],
+    chapter: '崩塌',
+    hint: '灰色裂砖离开后会塌掉，别把自己堵死。',
+  },
+  {
+    map: [
+      '@cc.',
+      '.xx.',
+      '.oo.',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@xcc',
+      '.xxx',
+      '.xoo',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@cccx',
+      '.xxx.',
+      '.xoo.',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@xccc',
+      '.xxxx',
+      '.xxoo',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@cc.c',
+      'xx.xx',
+      '.xoo.',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@cccc',
+      'x.xxx',
+      '..xoo',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@xccx',
+      'cxxxx',
+      '..xoo',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@ccc.',
+      '.x.x.',
+      '.xoo.',
+    ],
+    chapter: '崩塌',
+  },
+  {
+    map: [
+      '@xccc',
+      'xxxxz',
+      '.xxoo',
+    ],
+    chapter: '崩塌',
+  },
 ];
 
 export const LEVEL_COUNT = LEVELS.length;
