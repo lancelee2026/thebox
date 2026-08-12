@@ -15,7 +15,7 @@ import {
   initialSnapshot,
   type WorldSnapshot,
 } from './levelTypes';
-import { applySwitches, effectiveCell, rawCell } from './rules';
+import { applySwitches, applyTeleport, effectiveCell, rawCell } from './rules';
 import { animDuration } from './motion';
 import { Input } from '../input/Input';
 import { Sfx } from '../audio/Sfx';
@@ -189,6 +189,29 @@ export class Game {
     bridges = applySwitches(parsed, moving, bridges, this.player.isSplit);
     this.world.bridges = bridges;
     this.level.syncBridges(bridges);
+
+    const warped = applyTeleport(parsed, this.player.state, this.player.isSplit);
+    if (warped) {
+      this.busy = true;
+      this.input.setEnabled(false);
+      this.sfx.beep(560, 70, 0.16, 'sine');
+      this.player.animateTeleport(warped, () => {
+        this.world.block = cloneState(this.player.state);
+        this.world.blockB = null;
+        this.world.active = 0;
+        this.busy = false;
+        this.input.setEnabled(true);
+        if (this.level.isDeath(this.player.state, bridges)) {
+          this.onDeath();
+          return;
+        }
+        if (this.level.isWin(this.player.state, bridges)) {
+          this.onWin();
+        }
+      });
+      this.world.block = cloneState(warped);
+      return;
+    }
 
     // split pad
     if (!this.player.isSplit && parsed.splitPads.length) {

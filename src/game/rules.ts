@@ -1,6 +1,6 @@
 import type { BlockState } from './blockLogic';
 import { occupiedCells } from './blockLogic';
-import type { LevelDef, LevelMap, SplitPadDef, SwitchDef } from './levelTypes';
+import type { LevelDef, LevelMap, SplitPadDef, SwitchDef, TeleportDef } from './levelTypes';
 
 export interface ParsedLevel {
   def: LevelDef;
@@ -18,6 +18,8 @@ export interface ParsedLevel {
   switches: SwitchDef[];
   /** 已对齐到地图 p 的分裂台 */
   splitPads: SplitPadDef[];
+  /** 已对齐到地图 t 的传送台 */
+  teleports: TeleportDef[];
 }
 
 function padGrid(map: LevelMap): { grid: string[][]; cols: number; rows: number } {
@@ -72,6 +74,12 @@ export function parseLevel(def: LevelDef, layer = 0): ParsedLevel {
     return tile ? { ...pad, col: tile[0], row: tile[1] } : { ...pad };
   });
 
+  const teleportTiles = collectCells(grid, 't');
+  const teleports: TeleportDef[] = (def.teleports ?? []).map((pad, i) => {
+    const tile = teleportTiles[i];
+    return tile ? { ...pad, col: tile[0], row: tile[1] } : { ...pad };
+  });
+
   const bridgeCells = new Map<string, Array<[number, number]>>();
   const cellToBridge = new Map<string, string>();
   for (const b of def.bridges ?? []) {
@@ -92,6 +100,7 @@ export function parseLevel(def: LevelDef, layer = 0): ParsedLevel {
     cellToBridge,
     switches,
     splitPads,
+    teleports,
   };
 }
 
@@ -118,7 +127,7 @@ export function effectiveCell(
     return 'x';
   }
   if (ch === 's' || ch === 'S') return 'x';
-  if (ch === 'p' || ch === 'u') return 'x';
+  if (ch === 'p' || ch === 'u' || ch === 't') return 'x';
   if (ch === '@') return 'x';
   return ch;
 }
@@ -196,6 +205,22 @@ export function applySwitches(
     }
   }
   return changed ? next : bridges;
+}
+
+/** 整砖站立踩传送台时，出现在 dest；躺着或小方块不触发。不连环传送。 */
+export function applyTeleport(
+  level: ParsedLevel,
+  state: BlockState,
+  isCube = false,
+): BlockState | null {
+  if (isCube || state.ori !== 'standing' || !level.teleports.length) return null;
+  for (const pad of level.teleports) {
+    if (state.col !== pad.col || state.row !== pad.row) continue;
+    const [col, row] = pad.dest;
+    if (col === state.col && row === state.row) return null;
+    return { col, row, ori: 'standing' };
+  }
+  return null;
 }
 
 export function cloneBridges(b: Record<string, boolean>): Record<string, boolean> {

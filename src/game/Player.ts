@@ -179,6 +179,49 @@ export class Player {
       .start();
   }
 
+  /** 整砖收起，再在 dest 长出来。逻辑状态立刻改到 dest。 */
+  animateTeleport(dest: BlockState, onDone: () => void): void {
+    this.canMove = false;
+    this.stopTween();
+    const from = cloneState(this.state);
+    this.state = cloneState(dest);
+    this.stateB = null;
+    this.active = 0;
+    this.pivotB.visible = false;
+
+    const startC = this.centerOf(from, false);
+    const endC = this.centerOf(dest, false);
+    const startW = this.level.toWorld(startC.x, startC.z);
+    const endW = this.level.toWorld(endC.x, endC.z);
+    const size = this.sizeOf(from, false);
+
+    this.placeEntity('a', from, false);
+    this.refreshMaterials();
+
+    const t = { u: 0 };
+    const ms = animDuration(420);
+    this.activeTween = new Tween(t, this.tweens)
+      .to({ u: 1 }, ms)
+      .easing(Easing.Cubic.InOut)
+      .onUpdate(() => {
+        const u = t.u;
+        const squeeze = u < 0.45 ? 1 - (u / 0.45) * 0.88 : ((u - 0.45) / 0.55) * 0.88 + 0.12;
+        const travel = u < 0.45 ? 0 : (u - 0.45) / 0.55;
+        const x = startW.x + (endW.x - startW.x) * travel;
+        const z = startW.z + (endW.z - startW.z) * travel;
+        const y = startC.y + (endC.y - startC.y) * travel + Math.sin(Math.PI * travel) * 0.55;
+        this.mesh.scale.set(size.sx * squeeze, size.sy * squeeze, size.sz * squeeze);
+        this.pivot.position.set(x, y, z);
+      })
+      .onComplete(() => {
+        this.activeTween = null;
+        this.placeEntity('a', dest, false);
+        this.canMove = true;
+        onDone();
+      })
+      .start();
+  }
+
   private splitStartCenters(
     from: BlockState,
     destA: BlockState,

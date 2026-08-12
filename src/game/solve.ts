@@ -8,7 +8,7 @@ import {
   type Dir,
 } from './blockLogic';
 import { emptyBridges, type LevelDef } from './levelTypes';
-import { applySwitches, effectiveCell, isDeath, isWin, parseLevel, rawCell } from './rules';
+import { applySwitches, applyTeleport, effectiveCell, isDeath, isWin, parseLevel, rawCell } from './rules';
 
 const DIRS: Dir[] = ['left', 'right', 'up', 'down'];
 
@@ -88,6 +88,11 @@ export function solveMinMoves(def: LevelDef): number | null {
         bridges = applySwitches(parsed, moving, bridges, movingCube);
 
         let layer = base.layer;
+
+        if (!b) {
+          const warped = applyTeleport(parsed, a, false);
+          if (warped) a = warped;
+        }
 
         if (!b && parsed.splitPads.length) {
           const cells = occupiedCells(a);

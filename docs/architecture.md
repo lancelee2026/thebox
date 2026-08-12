@@ -5,7 +5,7 @@
 仓库：https://github.com/lancelee2026/thecube  
 站点品牌：thebox  
 灵感：[Cuboid](https://www.thomasfriday.com/cuboid/)（Bloxorz 简化变体）  
-现状：一期基础 + 二期机制（脆弱 / 桥 / 分裂 / 多层）共 55 关已交付。
+现状：一期基础 + 二期机制（脆弱 / 桥 / 分裂 / 多层）+ 传送章，共 68 关。
 
 ---
 
@@ -52,7 +52,7 @@ npm run check-levels   # 本地 BFS，不进 Pages 构建
       levelTypes.ts     # LevelDef、WorldSnapshot、桥/开关/分裂元数据
       Level.ts          # 地图 mesh、桥显隐、层切换
       Player.ts         # 单砖 / 双小方块动画
-      levels.ts         # 55 关 LEVELS
+      levels.ts         # 68 关 LEVELS
       progress.ts       # localStorage v2
       setup.ts / motion.ts
     input/Input.ts
@@ -124,11 +124,14 @@ interface BlockState { col: number; row: number; ori: Ori }
 | `b` | 桥面（开/关由 `bridges` 状态决定） |
 | `s` / `S` | 轻/重开关（可走） |
 | `p` | 分裂台 |
+| `t` | 传送台（仅整砖站立触发） |
 | `u` | 楼梯（站立切换 `layers`） |
 
-`LevelDef` 还可含 `bridges` / `switches` / `splitPads` / `layers` / `hint` / `chapter`。有 `layers` 时可省略 `map`。
+`LevelDef` 还可含 `bridges` / `switches` / `splitPads` / `teleports` / `layers` / `hint` / `chapter`。有 `layers` 时可省略 `map`。
 
 轻开关：任意姿态踩到即 toggle。重开关：仅**整砖站立**（非小方块）才 toggle。
+
+传送：仅**整砖站立**踩 `t` 时，整块出现在 `dest`（保持站立）；躺着或小方块不触发；落地后不连环传送。
 
 楼梯：未分裂且站立踩 `u` 时 `layer = (layer+1) % n`；两层的 `u` 应对齐同一格。
 
@@ -141,7 +144,7 @@ npm run check-levels
 ### 5.4 选关解锁
 
 `progress.maxCleared`（1-based）。可选：`i <= maxCleared` 或 `i === maxCleared + 1`。  
-存储键：`fan-zhuan-kuai-progress-v2`（可读 v1 迁移）。
+存储键：`fan-zhuan-kuai-progress-v3`（可读 v2 / v1 迁移）。
 
 ---
 
@@ -183,6 +186,7 @@ npm run check-levels
 | 24–37 | 桥梁 |
 | 38–48 | 分裂 |
 | 49–55 | 多层 |
+| 56–68 | 传送 |
 
 ---
 

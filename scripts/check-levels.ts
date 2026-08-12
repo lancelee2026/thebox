@@ -26,6 +26,27 @@ function assertTileBindings(): string[] {
         errors.push(`Level ${n}: split pad at (${pad.col},${pad.row}) is '${ch}', expected 'p'`);
       }
     }
+    for (const pad of parsed.teleports) {
+      const ch = rawCell(parsed, pad.col, pad.row);
+      if (ch !== 't') {
+        errors.push(`Level ${n}: teleport at (${pad.col},${pad.row}) is '${ch}', expected 't'`);
+      }
+      const [dc, dr] = pad.dest;
+      if (dc < 0 || dr < 0 || dc >= parsed.cols || dr >= parsed.rows) {
+        errors.push(`Level ${n}: teleport dest (${dc},${dr}) is off the map`);
+      }
+    }
+    const teleportTiles = [];
+    for (let r = 0; r < parsed.rows; r++) {
+      for (let c = 0; c < parsed.cols; c++) {
+        if (parsed.grid[r][c] === 't') teleportTiles.push(`${c},${r}`);
+      }
+    }
+    if (teleportTiles.length !== parsed.teleports.length) {
+      errors.push(
+        `Level ${n}: map has ${teleportTiles.length} t tiles but ${parsed.teleports.length} teleports`,
+      );
+    }
     const claimed = new Set<string>();
     for (const [id, cells] of parsed.bridgeCells) {
       for (const [c, r] of cells) {

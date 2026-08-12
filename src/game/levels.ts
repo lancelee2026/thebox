@@ -360,6 +360,144 @@ export const LEVELS: LevelDef[] = [
     ],
     chapter: '多层',
   },
+
+  // ── 56–68 传送（竖着踩青色台，整块出现在另一边）──────────
+  // 站上 t：需先横躺盖住 t 与邻格，再朝 t 翻起立。章末才用红/脆挡捷径。
+  {
+    map: [
+      '@xxxtx',
+      '.....x',
+      '...xoo',
+    ],
+    chapter: '传送',
+    hint: '竖着踏上青色台，砖块会整块出现在另一边。',
+    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+  },
+  {
+    map: [
+      '@xxx.x',
+      '....tx',
+      'x...xx',
+      '...xoo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+  },
+  {
+    map: [
+      '@xxtx.',
+      '...x.x',
+      '....xx',
+      '...xoo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+  },
+  {
+    map: [
+      '@xxxtx',
+      'x...x.',
+      'x..xxx',
+      '....oo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+  },
+  {
+    map: [
+      '@xxxtxx',
+      '......x',
+      '....xoo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [6, 1] }],
+  },
+  {
+    map: [
+      '@xxxt.',
+      'x...tx',
+      'x....x',
+      '....oo',
+    ],
+    chapter: '传送',
+    teleports: [
+      { col: 0, row: 0, dest: [0, 2] },
+      { col: 0, row: 0, dest: [5, 2] },
+    ],
+  },
+  {
+    map: [
+      '@xxt.x',
+      '...xtx',
+      '....xx',
+      '...xoo',
+    ],
+    chapter: '传送',
+    teleports: [
+      { col: 0, row: 0, dest: [5, 1] },
+      { col: 0, row: 0, dest: [4, 2] },
+    ],
+  },
+  {
+    map: [
+      '@xxxx.',
+      '....tx',
+      'xx..xx',
+      '..x.oo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+  },
+  {
+    map: [
+      '@xxxtxx',
+      'x.....x',
+      'x...xxx',
+      '.....oo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [6, 2] }],
+  },
+  {
+    map: [
+      '@xxxtx',
+      '....x.',
+      '...xzx',
+      '...xoo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+  },
+  {
+    map: [
+      '@xxx.t',
+      'x...xx',
+      'x.z..x',
+      '...xoo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+  },
+  {
+    map: [
+      '@xxxtx',
+      'x.z.x.',
+      'x...xx',
+      '....oo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 2] }],
+  },
+  {
+    map: [
+      '@xxxtx',
+      '...f.x',
+      'x..xxx',
+      '....oo',
+    ],
+    chapter: '传送',
+    teleports: [{ col: 0, row: 0, dest: [5, 1] }],
+  },
 ];
 
 export const LEVEL_COUNT = LEVELS.length;

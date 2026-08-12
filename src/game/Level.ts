@@ -10,7 +10,7 @@ import {
   type ParsedLevel,
 } from './rules';
 
-type TileKind = 'x' | 'o' | 'z' | 'f' | 'b' | 's' | 'S' | 'p' | 'u';
+type TileKind = 'x' | 'o' | 'z' | 'f' | 'b' | 's' | 'S' | 'p' | 'u' | 't';
 
 export class LevelView {
   readonly layer = new THREE.Group();
@@ -70,7 +70,22 @@ export class LevelView {
       metalness: 0,
       roughness: 0.78,
     }),
+    t: new THREE.MeshStandardMaterial({
+      color: 0x2ec8c0,
+      emissive: 0x0f6f6a,
+      emissiveIntensity: 0.28,
+      metalness: 0.05,
+      roughness: 0.62,
+    }),
   };
+  private ringGeo = new THREE.TorusGeometry(0.28, 0.045, 8, 20);
+  private ringMat = new THREE.MeshStandardMaterial({
+    color: 0xd8fffb,
+    emissive: 0x5eead4,
+    emissiveIntensity: 0.45,
+    metalness: 0.1,
+    roughness: 0.4,
+  });
   /** key col,row -> mesh for bridges */
   private bridgeMeshes = new Map<string, THREE.Mesh>();
 
@@ -101,7 +116,10 @@ export class LevelView {
           continue;
         }
         const kind = (ch === '@' ? 'x' : ch) as TileKind;
-        if (this.mats[kind]) this.createTile(this.mats[kind], c, r);
+        if (this.mats[kind]) {
+          const mesh = this.createTile(this.mats[kind], c, r);
+          if (ch === 't') this.addTeleportRing(mesh);
+        }
       }
     }
   }
@@ -145,6 +163,15 @@ export class LevelView {
       .onUpdate(() => mesh.scale.set(s.v, 1, s.v))
       .start();
     return mesh;
+  }
+
+  private addTeleportRing(tile: THREE.Mesh): void {
+    const ring = new THREE.Mesh(this.ringGeo, this.ringMat);
+    ring.rotation.x = Math.PI / 2;
+    ring.position.y = 0.18;
+    ring.castShadow = false;
+    ring.receiveShadow = false;
+    tile.add(ring);
   }
 
   isDeath(state: BlockState, bridges: Record<string, boolean>): boolean {

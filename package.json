@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "check-levels": "tsx scripts/check-levels.ts"
+    "check-levels": "tsx scripts/check-levels.ts",
+    "dump-par": "tsx scripts/dump-par.ts"
   },
   "devDependencies": {
     "@types/three": "^0.185.3",

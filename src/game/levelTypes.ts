@@ -26,6 +26,12 @@ export interface SplitPadDef {
   destB: [number, number];
 }
 
+export interface TeleportDef {
+  col: number;
+  row: number;
+  dest: [number, number];
+}
+
 export interface LevelDef {
   /** 单层地图；有 layers 时可省略 */
   map?: LevelMap;
@@ -36,6 +42,7 @@ export interface LevelDef {
   bridges?: BridgeDef[];
   switches?: SwitchDef[];
   splitPads?: SplitPadDef[];
+  teleports?: TeleportDef[];
 }
 
 /** 撤销 / 求解器用的世界快照（一期仅 block） */
