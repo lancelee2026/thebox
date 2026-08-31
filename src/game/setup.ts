@@ -109,7 +109,12 @@ export function createScene(canvas: HTMLCanvasElement): {
     scene.background = enabled ? null : skyColor;
     scene.fog = enabled ? null : sceneFog;
     renderer.setClearColor(SCENE_SKY, enabled ? 0 : 1);
-    catcherMaterial.opacity = enabled ? 0.13 : 0.22;
+    // 高空模式没有真实地板：把接影面抬到砖块底部附近，并让日光更接近顶光，
+    // 只留下短而淡的接触阴影，避免整条路径投出“隐形平台”。
+    catcher.position.y = enabled ? -0.31 : -0.82;
+    catcherMaterial.opacity = enabled ? 0.055 : 0.22;
+    sun.position.set(enabled ? 3 : 5, enabled ? 18 : 14, enabled ? 4 : 6);
+    sun.shadow.radius = enabled ? 3 : 1;
   };
 
   return { scene, renderer, camera, cameraPivot, frameBoard, setHighAltitude, resize };
