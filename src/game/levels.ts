@@ -130,11 +130,11 @@ export const LEVELS: LevelDef[] = [
   {
     map: [
       '..x..x..',
-      '@xxxxxx.',
-      '..x..x.x',
+      '@xxxxxz.',
+      '..x..xzx',
       '.....x.x',
-      '.z...x.x',
-      '.z.oox.x',
+      '.....x.x',
+      '...oox.x',
       '...xxxx.',
     ],
     chapter: '基础',
