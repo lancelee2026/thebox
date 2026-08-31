@@ -155,6 +155,8 @@ npm run check-levels
 
 `rules.deathCause()` 在不改变胜负结果的前提下把死亡分为 `fall` 与 `hazard`。高空模式仅对 `fall` 调用 `Player.fallHighAltitude()`：固定正交相机，以重力位移、透视比例缩小和恒定角动量表现远离；分裂时逐块分类。`Sfx.fallWind()` 使用本地 Web Audio 噪声合成，不引入媒体资源。修改死亡规则后同时运行 `npm run check-death-feedback` 与 `npm run check-levels`。
 
+橙色 `f` 脆弱砖属于承重破裂而非持久坍塌：`Game.onDeath()` 检出当前占格中的 `f` 后调用 `LevelView.fractureFragile()`，以四块碎片的短暂下沉解释失败；规则、求解器和 `WorldSnapshot` 不记录该演出。灰色 `c` 裂砖继续由 `applyCollapse()` 和 `syncCollapsed()` 维护其关内持久坍塌状态。
+
 ---
 
 ## 6. 模块职责速查

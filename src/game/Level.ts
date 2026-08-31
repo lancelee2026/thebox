@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { Group, Tween, Easing } from '@tweenjs/tween.js';
-import type { BlockState } from './blockLogic';
-import { animDuration } from './motion';
+import type { BlockState, Cell } from './blockLogic';
+import { animDuration, prefersReducedMotion } from './motion';
 import type { LevelDef } from './levelTypes';
 import {
   isDeath as rulesIsDeath,
@@ -119,6 +119,7 @@ export class LevelView {
     }),
   };
   private ringGeo = new THREE.TorusGeometry(0.28, 0.045, 8, 20);
+  private fragileShardGeo = new RoundedBoxGeometry(0.4, 0.23, 0.4, 3, 0.05);
   private ringMat = new THREE.MeshStandardMaterial({
     color: 0xd8fffb,
     emissive: 0x5eead4,
@@ -130,6 +131,8 @@ export class LevelView {
   private bridgeMeshes = new Map<string, THREE.Mesh>();
   /** key col,row -> mesh for crumble tiles */
   private crumbleMeshes = new Map<string, THREE.Mesh>();
+  /** key col,row -> mesh for orange fragile tiles */
+  private fragileMeshes = new Map<string, THREE.Mesh>();
 
   constructor(scene: THREE.Scene, tweens: Group) {
     this.tweens = tweens;
@@ -145,6 +148,7 @@ export class LevelView {
     this.clearImmediate();
     this.bridgeMeshes.clear();
     this.crumbleMeshes.clear();
+    this.fragileMeshes.clear();
     this.def = def;
     this.parsed = parseLevel(def, layer);
     this.startCol = this.parsed.startCol;
@@ -176,6 +180,7 @@ export class LevelView {
               mesh.scale.set(0.05, 1, 0.05);
             }
           }
+          if (ch === 'f') this.fragileMeshes.set(`${c},${r}`, mesh);
         }
       }
     }
@@ -304,6 +309,83 @@ export class LevelView {
         .onComplete(() => {
           mesh.visible = false;
         })
+        .start();
+    }
+  }
+
+  /**
+   * 橙色脆弱砖只在长方体竖立压碎它时触发。原砖立即裂成四片，
+   * 让失败原因在角色下落前可读；不修改关卡状态，也不延迟重开。
+   */
+  fractureFragile(cells: Cell[]): void {
+    if (!this.parsed) return;
+    const keys = new Set(
+      cells
+        .filter((cell) => this.parsed && this.parsed.grid[cell.row]?.[cell.col] === 'f')
+        .map((cell) => `${cell.col},${cell.row}`),
+    );
+    const reduced = prefersReducedMotion();
+
+    for (const key of keys) {
+      const tile = this.fragileMeshes.get(key);
+      if (!tile?.visible) continue;
+      tile.visible = false;
+
+      const debris = new THREE.Group();
+      debris.position.copy(tile.position);
+      const offsets = [
+        [-0.23, -0.23],
+        [0.23, -0.23],
+        [-0.23, 0.23],
+        [0.23, 0.23],
+      ] as const;
+      const fragments: THREE.Mesh[] = [];
+      for (const [x, z] of offsets) {
+        const fragment = new THREE.Mesh(this.fragileShardGeo, this.mats.f);
+        fragment.position.set(x, 0, z);
+        fragment.castShadow = true;
+        fragment.receiveShadow = true;
+        debris.add(fragment);
+        fragments.push(fragment);
+      }
+      this.layer.add(debris);
+
+      fragments.forEach((fragment, index) => {
+        const start = {
+          x: fragment.position.x,
+          y: fragment.position.y,
+          z: fragment.position.z,
+          rx: fragment.rotation.x,
+          rz: fragment.rotation.z,
+          scale: 1,
+        };
+        const driftX = (index % 2 === 0 ? -1 : 1) * (reduced ? 0.05 : 0.14);
+        const driftZ = (index < 2 ? -1 : 1) * (reduced ? 0.04 : 0.1);
+        new Tween(start, this.tweens)
+          .delay(reduced ? 0 : index * 22)
+          .to(
+            {
+              x: start.x + driftX,
+              y: reduced ? -0.34 : -0.68 - index * 0.04,
+              z: start.z + driftZ,
+              rx: reduced ? 0 : (index < 2 ? 1 : -1) * 0.35,
+              rz: reduced ? 0 : (index % 2 === 0 ? -1 : 1) * 0.28,
+              scale: reduced ? 0.78 : 0.72,
+            },
+            animDuration(reduced ? 150 : 320),
+          )
+          .easing(Easing.Quadratic.In)
+          .onUpdate(() => {
+            fragment.position.set(start.x, start.y, start.z);
+            fragment.rotation.set(start.rx, 0, start.rz);
+            fragment.scale.setScalar(start.scale);
+          })
+          .start();
+      });
+
+      new Tween({ t: 0 }, this.tweens)
+        .to({ t: 1 }, animDuration(reduced ? 190 : 430))
+        .onComplete(() => this.layer.remove(debris))
         .start();
     }
   }

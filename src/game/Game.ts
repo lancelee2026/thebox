@@ -3,7 +3,7 @@ import { createScene } from './setup';
 import { LevelView } from './Level';
 import { Player, type PlayerEntity } from './Player';
 import { LEVELS, LEVEL_COUNT, getLevel } from './levels';
-import type { BlockState, Dir } from './blockLogic';
+import type { BlockState, Cell, Dir } from './blockLogic';
 import {
   canMerge,
   cloneState,
@@ -443,6 +443,14 @@ export class Game {
       if (outcome[target] === 'fall') fallTargets.push(target);
       if (outcome[target] === 'hazard') hazardTargets.push(target);
     }
+
+    const occupied = this.player.stateB
+      ? [...occupiedCells(this.player.state), ...occupiedCells(this.player.stateB)]
+      : occupiedCells(this.player.state);
+    const fragileCells: Cell[] = occupied.filter(
+      (cell) => rawCell(this.level.parsed!, cell.col, cell.row) === 'f',
+    );
+    if (fragileCells.length) this.level.fractureFragile(fragileCells);
 
     const reset = () => {
       this.history = [];
