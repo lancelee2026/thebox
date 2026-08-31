@@ -111,7 +111,9 @@ export function createScene(canvas: HTMLCanvasElement): {
 
   const frameBoard = (cols: number, rows: number) => {
     const projectedSpan = Math.max(1, cols + rows);
-    boardZoom = THREE.MathUtils.clamp(12 / projectedSpan, 0.76, 1.35);
+    // 短关不再因线性放大而让角色显得过大；长关仍保留足够视野完整呈现路径。
+    // 这条缓和曲线将常见短关的取景收敛到约 1.15，而中长关维持原有可读性。
+    boardZoom = THREE.MathUtils.clamp(12 / (8.2 + projectedSpan * 0.375), 0.76, 1.16);
     syncCameraZoom();
   };
 
