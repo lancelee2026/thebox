@@ -55,6 +55,8 @@ export class LevelView {
     roughness: 0.64,
   });
   private trayMeshes: THREE.Mesh[] = [];
+  private trayTweens: Tween<{ y: number; scale: number }>[] = [];
+  private highAltitude = false;
   private mats: Record<TileKind, THREE.MeshStandardMaterial> = {
     x: new THREE.MeshStandardMaterial({
       color: 0xf7fbff,
@@ -193,6 +195,7 @@ export class LevelView {
     base.castShadow = true;
     base.receiveShadow = true;
     base.userData.trayGeometry = baseGeo;
+    base.userData.trayBaseY = base.position.y;
     this.layer.add(base);
 
     const rim = new THREE.Mesh(rimGeo, this.trayRimMat);
@@ -200,6 +203,7 @@ export class LevelView {
     rim.castShadow = true;
     rim.receiveShadow = true;
     rim.userData.trayGeometry = rimGeo;
+    rim.userData.trayBaseY = rim.position.y;
     this.layer.add(rim);
 
     const inset = new THREE.Mesh(insetGeo, this.trayInsetMat);
@@ -207,8 +211,47 @@ export class LevelView {
     inset.castShadow = false;
     inset.receiveShadow = true;
     inset.userData.trayGeometry = insetGeo;
+    inset.userData.trayBaseY = inset.position.y;
     this.layer.add(inset);
     this.trayMeshes.push(base, rim, inset);
+    for (const mesh of this.trayMeshes) mesh.visible = !this.highAltitude;
+  }
+
+  /** 高空模式下让树脂托盘下沉退场，只留下仍带侧面与阴影的路径砖。 */
+  setHighAltitude(enabled: boolean): void {
+    if (this.highAltitude === enabled && this.trayMeshes.every((mesh) => mesh.visible !== enabled)) {
+      return;
+    }
+    this.highAltitude = enabled;
+    for (const tween of this.trayTweens) tween.stop();
+    this.trayTweens.length = 0;
+
+    for (const mesh of this.trayMeshes) {
+      const baseY = mesh.userData.trayBaseY as number;
+      if (!enabled) {
+        mesh.visible = true;
+        mesh.position.y = baseY - 0.28;
+        mesh.scale.set(0.96, 1, 0.96);
+      }
+      const state = { y: mesh.position.y, scale: mesh.scale.x };
+      const tween = new Tween(state, this.tweens)
+        .to(
+          enabled ? { y: baseY - 0.32, scale: 0.96 } : { y: baseY, scale: 1 },
+          animDuration(enabled ? 240 : 320),
+        )
+        .easing(enabled ? Easing.Quadratic.In : Easing.Cubic.Out)
+        .onUpdate(() => {
+          mesh.position.y = state.y;
+          mesh.scale.set(state.scale, 1, state.scale);
+        })
+        .onComplete(() => {
+          mesh.visible = !enabled;
+          mesh.position.y = baseY;
+          mesh.scale.set(1, 1, 1);
+        })
+        .start();
+      this.trayTweens.push(tween);
+    }
   }
 
   setLayer(
@@ -375,6 +418,8 @@ export class LevelView {
   }
 
   clearImmediate(): void {
+    for (const tween of this.trayTweens) tween.stop();
+    this.trayTweens.length = 0;
     while (this.layer.children.length) {
       const child = this.layer.children[0] as THREE.Mesh;
       const trayGeometry = child.userData.trayGeometry as THREE.BufferGeometry | undefined;

@@ -21,7 +21,9 @@
     ],
     "motion": [
       { "name": "press", "value": "100ms ease", "purpose": "按钮按下位移和缩放。" },
-      { "name": "panel-enter", "value": "420ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "面板轻快进入；reduced-motion 下关闭。" }
+      { "name": "panel-enter", "value": "420ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "面板轻快进入；reduced-motion 下关闭。" },
+      { "name": "sky-drift", "value": "46000ms ease-in-out alternate", "purpose": "背景云层以小幅 transform 缓慢漂移；reduced-motion 下静止。" },
+      { "name": "cloud-pass", "value": "19000ms linear", "purpose": "仅在玩家主动开启云雾挑战时穿过路径；reduced-motion 下静止。" }
     ],
     "breakpoints": [
       { "name": "mobile-header", "value": "640px" },
@@ -67,6 +69,13 @@
       "description": "选关和通关信息的云白浮层。",
       "html": "<section class=\"ds-panel\"><h2>选择关卡</h2><p>已通关 1 / 78</p><button>关闭</button></section>",
       "css": ".ds-panel{width:320px;padding:20px;border-radius:24px;background:#f9fcff;color:#17395d;box-shadow:0 24px 56px rgba(7,54,94,.34),inset 0 2px 0 #fff;font-family:Nunito,'PingFang SC',sans-serif}.ds-panel h2{margin:0 0 12px;font:800 1.55rem 'ZCOOL KuaiLe',Nunito,sans-serif}.ds-panel p{color:#58718b;font-weight:700}.ds-panel button{width:100%;min-height:44px;border:1px solid #d9e8f4;border-radius:16px;background:transparent;color:#58718b;font-weight:800}.ds-panel button:hover{background:#f4f7fa;color:#17395d}.ds-panel button:focus-visible{outline:3px solid #ffd45a;outline-offset:2px}"
+    },
+    {
+      "name": "Scene Toggle",
+      "kind": "switch",
+      "description": "选关面板中的场景偏好开关；高空模式控制云雾挑战的可用状态。",
+      "html": "<label class=\"ds-toggle\"><span><strong>高空模式</strong><small>隐藏托盘，让路径悬浮在云端</small></span><input type=\"checkbox\" role=\"switch\"><i aria-hidden=\"true\"></i></label>",
+      "css": ".ds-toggle{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;min-height:52px;color:#17395d;font:700 .9rem Nunito,'PingFang SC',sans-serif}.ds-toggle span{display:grid}.ds-toggle small{color:#58718b;font-size:.72rem}.ds-toggle input{position:absolute;opacity:0}.ds-toggle i{width:48px;height:28px;border:1px solid #b8cbd9;border-radius:999px;background:#dce7ee}.ds-toggle input:checked+i{background:#32c990;border-color:#16a978}.ds-toggle input:focus-visible+i{outline:3px solid #ffd45a;outline-offset:2px}"
     }
   ],
   "narrative": {
@@ -75,7 +84,7 @@
     "keyCharacteristics": ["清透晴空蓝和青蓝角色", "三层树脂托盘", "圆润但克制", "双入口一致"],
     "rules": [
       { "name": "One Warm Accent", "body": "暖色只服务于成功、星级和键盘焦点。", "section": "colors" },
-      { "name": "Molded Stage", "body": "路径不能直接漂在纯色卡片上。", "section": "elevation" }
+      { "name": "Molded Stage", "body": "默认模式保留树脂托盘；只有玩家主动开启高空模式后才让路径悬浮，并继续保留砖块侧面和轻阴影。", "section": "elevation" }
     ],
     "dos": ["Do 让角色表情在 390px 宽度下仍可读。", "Do 同时用形体、亮度和微光表达终点。"],
     "donts": ["Don't 使用学龄前角色符号或彩虹糖果色。", "Don't 为追求萌感牺牲关卡判断。"]

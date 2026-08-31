@@ -119,6 +119,7 @@
             <p class="clear-caption" id="clear-caption"></p>
           </div>
           <canvas id="game-canvas" aria-label="游戏棋盘"></canvas>
+          <div id="foreground-clouds" class="foreground-clouds" aria-hidden="true"></div>
         </div>
       </main>
 
@@ -147,6 +148,25 @@
         </header>
         <div id="level-chapters" class="level-chapters"></div>
         <footer class="panel-foot">
+          <section class="scene-settings" aria-labelledby="scene-settings-title">
+            <h3 id="scene-settings-title">场景设置</h3>
+            <label class="scene-toggle" for="toggle-high-altitude">
+              <span class="scene-toggle-copy">
+                <strong>高空模式</strong>
+                <small>隐藏托盘，让路径悬浮在云端</small>
+              </span>
+              <input id="toggle-high-altitude" type="checkbox" role="switch" />
+              <span class="toggle-track" aria-hidden="true"><span></span></span>
+            </label>
+            <label class="scene-toggle" for="toggle-cloud-challenge">
+              <span class="scene-toggle-copy">
+                <strong>云雾挑战</strong>
+                <small>前景云会短暂遮挡部分路径</small>
+              </span>
+              <input id="toggle-cloud-challenge" type="checkbox" role="switch" disabled />
+              <span class="toggle-track" aria-hidden="true"><span></span></span>
+            </label>
+          </section>
           <button type="button" class="btn btn-ghost" id="btn-close-select">关闭</button>
         </footer>
       </div>

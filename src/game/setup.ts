@@ -9,16 +9,19 @@ export function createScene(canvas: HTMLCanvasElement): {
   camera: THREE.OrthographicCamera;
   cameraPivot: THREE.Group;
   frameBoard: (cols: number, rows: number) => void;
+  setHighAltitude: (enabled: boolean) => void;
   resize: () => void;
 } {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(SCENE_SKY);
-  scene.fog = new THREE.Fog(SCENE_SKY, 22, 38);
+  const skyColor = new THREE.Color(SCENE_SKY);
+  const sceneFog = new THREE.Fog(SCENE_SKY, 22, 38);
+  scene.background = skyColor;
+  scene.fog = sceneFog;
 
   const renderer = new THREE.WebGLRenderer({
     canvas,
     antialias: true,
-    alpha: false,
+    alpha: true,
     powerPreference: 'high-performance',
     failIfMajorPerformanceCaveat: false,
   });
@@ -28,6 +31,7 @@ export function createScene(canvas: HTMLCanvasElement): {
   renderer.toneMappingExposure = 1.08;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.setClearColor(SCENE_SKY, 1);
 
   const frustum = 6.5;
   const camera = new THREE.OrthographicCamera(-frustum, frustum, frustum, -frustum, 1, 40);
@@ -61,9 +65,10 @@ export function createScene(canvas: HTMLCanvasElement): {
   scene.add(sun);
 
   // 极淡阴影承接面：托盘下方仍保留一层软阴影，不抢舞台本身的层次。
+  const catcherMaterial = new THREE.ShadowMaterial({ opacity: 0.22 });
   const catcher = new THREE.Mesh(
     new THREE.PlaneGeometry(48, 48),
-    new THREE.ShadowMaterial({ opacity: 0.22 }),
+    catcherMaterial,
   );
   catcher.rotation.x = -Math.PI / 2;
   catcher.position.y = -0.82;
@@ -100,5 +105,12 @@ export function createScene(canvas: HTMLCanvasElement): {
     camera.updateProjectionMatrix();
   };
 
-  return { scene, renderer, camera, cameraPivot, frameBoard, resize };
+  const setHighAltitude = (enabled: boolean) => {
+    scene.background = enabled ? null : skyColor;
+    scene.fog = enabled ? null : sceneFog;
+    renderer.setClearColor(SCENE_SKY, enabled ? 0 : 1);
+    catcherMaterial.opacity = enabled ? 0.13 : 0.22;
+  };
+
+  return { scene, renderer, camera, cameraPivot, frameBoard, setHighAltitude, resize };
 }

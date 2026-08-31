@@ -24,6 +24,13 @@ import { Hud, LevelSelect } from '../ui/hud';
 import { loadProgress, recordStars, saveProgress, type Progress } from './progress';
 import { starsForMoves } from './stars';
 
+const SCENE_PREFS_KEY = 'thebox:scene-prefs:v1';
+
+interface ScenePrefs {
+  highAltitude: boolean;
+  cloudChallenge: boolean;
+}
+
 export class Game {
   private tweens = new Group();
   private sceneSetup: ReturnType<typeof createScene>;
@@ -40,6 +47,7 @@ export class Game {
   private history: WorldSnapshot[] = [];
   private world: WorldSnapshot = initialSnapshot(LEVELS[0], 0, 0);
   private busy = false;
+  private scenePrefs: ScenePrefs = { highAltitude: false, cloudChallenge: false };
 
   constructor() {
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
@@ -49,6 +57,9 @@ export class Game {
     this.progress = loadProgress();
     this.sfx.setMuted(this.progress.muted);
     this.hud.setMuted(this.progress.muted);
+    this.scenePrefs = this.loadScenePrefs();
+    this.bindScenePrefs();
+    this.applyScenePrefs(false);
 
     this.input.onMove((dir) => this.handleDir(dir));
     this.select.onSelect((n) => this.loadLevel(n));
@@ -80,6 +91,57 @@ export class Game {
     );
     this.loadLevel(start);
     requestAnimationFrame(this.loop);
+  }
+
+  private loadScenePrefs(): ScenePrefs {
+    try {
+      const stored = JSON.parse(localStorage.getItem(SCENE_PREFS_KEY) ?? '{}') as Partial<ScenePrefs>;
+      const highAltitude = stored.highAltitude === true;
+      return {
+        highAltitude,
+        cloudChallenge: highAltitude && stored.cloudChallenge === true,
+      };
+    } catch {
+      return { highAltitude: false, cloudChallenge: false };
+    }
+  }
+
+  private bindScenePrefs(): void {
+    const highToggle = document.getElementById('toggle-high-altitude') as HTMLInputElement;
+    const cloudToggle = document.getElementById('toggle-cloud-challenge') as HTMLInputElement;
+
+    highToggle.addEventListener('change', () => {
+      this.scenePrefs.highAltitude = highToggle.checked;
+      if (!highToggle.checked) this.scenePrefs.cloudChallenge = false;
+      this.applyScenePrefs(true);
+    });
+    cloudToggle.addEventListener('change', () => {
+      this.scenePrefs.cloudChallenge = this.scenePrefs.highAltitude && cloudToggle.checked;
+      this.applyScenePrefs(true);
+    });
+  }
+
+  private applyScenePrefs(persist: boolean): void {
+    const root = document.documentElement;
+    const highToggle = document.getElementById('toggle-high-altitude') as HTMLInputElement;
+    const cloudToggle = document.getElementById('toggle-cloud-challenge') as HTMLInputElement;
+
+    highToggle.checked = this.scenePrefs.highAltitude;
+    cloudToggle.disabled = !this.scenePrefs.highAltitude;
+    cloudToggle.checked = this.scenePrefs.highAltitude && this.scenePrefs.cloudChallenge;
+    cloudToggle.closest('.scene-toggle')?.classList.toggle('is-disabled', cloudToggle.disabled);
+    root.classList.toggle('high-altitude', this.scenePrefs.highAltitude);
+    root.classList.toggle('cloud-challenge', this.scenePrefs.cloudChallenge);
+    this.level.setHighAltitude(this.scenePrefs.highAltitude);
+    this.sceneSetup.setHighAltitude(this.scenePrefs.highAltitude);
+
+    if (persist) {
+      try {
+        localStorage.setItem(SCENE_PREFS_KEY, JSON.stringify(this.scenePrefs));
+      } catch {
+        // 离线容器禁用存储时仍允许本次会话正常切换。
+      }
+    }
   }
 
   private snapshot(): WorldSnapshot {

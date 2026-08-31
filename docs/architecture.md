@@ -11,7 +11,7 @@
 
 ## 1. 一句话总览
 
-纯静态 Web 小游戏。`Game` 协调输入与胜负；`blockLogic` 用显式网格状态算翻转；`rules` 做胜负与开关（与验关共用）；`LevelView` / `Player` 负责 Three.js 表现；进度与选关走 `localStorage`。无后端、无 Workers。
+纯静态 Web 小游戏。`Game` 协调输入与胜负；`blockLogic` 用显式网格状态算翻转；`rules` 做胜负与开关（与验关共用）；`LevelView` / `Player` 负责 Three.js 表现；进度、选关与场景偏好走 `localStorage`。无后端、无 Workers。
 
 ---
 
@@ -149,6 +149,10 @@ npm run check-levels
 `progress.maxCleared`（1-based）。可选：`i <= maxCleared` 或 `i === maxCleared + 1`。  
 存储键：`fan-zhuan-kuai-progress-v3`（可读 v2 / v1 迁移）。
 
+### 5.5 场景偏好
+
+选关面板提供「高空模式」和从属的「云雾挑战」，存储键为 `thebox:scene-prefs:v1`。`Game.ts` 负责读取、约束与持久化；`LevelView.setHighAltitude()` 只控制托盘 mesh 的退场；`setup.ts` 只切换 WebGL 透明底、雾与阴影承接面。两项设置不得进入 `WorldSnapshot`，也不得影响规则、撤销、步数和星级。
+
 ---
 
 ## 6. 模块职责速查
@@ -169,6 +173,7 @@ npm run check-levels
 - 宽屏细指针：隐藏触控键
 - 机制提示条 `#hint-mechanic`；分裂时显示「切换」
 - 壳层中文；画布为唯一 3D 视图
+- 场景开关 DOM 必须同时维护在 `index.html` 与 `xhs/index.html`；关闭高空模式时云雾挑战必须禁用并清空
 
 ### 7.1 玩家文案与分享文案
 
@@ -204,6 +209,7 @@ npm run check-levels
 | 改动画 | `Player.ts`、`motion.ts` |
 | 改解锁 | `progress.ts`、`hud.ts` |
 | 文案布局 | `index.html`、`style.css` |
+| 改高空 / 云雾场景 | `Game.ts`、`Level.ts`、`setup.ts`、`style.css`，并同步双入口 HTML |
 | 部署 | Pages：`npm run build` → `dist` |
 
 ---
