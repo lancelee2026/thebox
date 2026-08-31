@@ -1,3 +1,7 @@
+import cloudFarUrl from '../assets/cloud-far.png';
+import cloudMidUrl from '../assets/cloud-mid.png';
+import cloudNearUrl from '../assets/cloud-near.png';
+
 type CloudDepth = 'far' | 'mid' | 'near';
 
 interface CloudProfile {
@@ -32,7 +36,7 @@ const PROFILES: Record<CloudDepth, CloudProfile> = {
   },
 };
 
-const SHAPE_POSITIONS = ['0%', '50%', '100%'] as const;
+const CLOUD_ASSETS = [cloudFarUrl, cloudMidUrl, cloudNearUrl] as const;
 
 function between(min: number, max: number): number {
   return min + Math.random() * (max - min);
@@ -52,9 +56,9 @@ export class CloudField {
 
   constructor() {
     this.sprites = Array.from(document.querySelectorAll<HTMLElement>('[data-cloud-depth]'));
-    const shapeRotation = Math.floor(Math.random() * SHAPE_POSITIONS.length);
+    const shapeRotation = Math.floor(Math.random() * CLOUD_ASSETS.length);
     this.shapeIndexes = this.sprites.map(
-      (_, index) => (index + shapeRotation) % SHAPE_POSITIONS.length,
+      (_, index) => (index + shapeRotation) % CLOUD_ASSETS.length,
     );
     this.reducedMotion.addEventListener('change', this.refresh);
     document.addEventListener('visibilitychange', this.refresh);
@@ -107,7 +111,8 @@ export class CloudField {
     const fieldWidth = Math.max(240, field.clientWidth);
     const fieldHeight = Math.max(240, field.clientHeight);
     const width = fieldWidth * between(...profile.width);
-    const height = width * 0.56;
+    // 方形舞台槽完整承载带透明留白的云图，避免任何方向发生硬裁切。
+    const height = width;
     const direction = Math.random() < 0.5 ? 1 : -1;
     const startX = direction === 1 ? -width * 1.08 : fieldWidth + width * 0.08;
     const endX = direction === 1 ? fieldWidth + width * 0.08 : -width * 1.08;
@@ -120,9 +125,9 @@ export class CloudField {
     sprite.style.width = `${width}px`;
     sprite.style.height = `${height}px`;
     const shapeIndex = this.shapeIndexes[index];
-    sprite.style.backgroundPosition = `${SHAPE_POSITIONS[shapeIndex]} center`;
-    // Each depth starts with a different crop and must switch shape next time.
-    this.shapeIndexes[index] = (shapeIndex + (Math.random() < 0.5 ? 1 : 2)) % SHAPE_POSITIONS.length;
+    sprite.style.backgroundImage = `url("${CLOUD_ASSETS[shapeIndex]}")`;
+    // Each depth starts with a different cloud and must switch shape next time.
+    this.shapeIndexes[index] = (shapeIndex + (Math.random() < 0.5 ? 1 : 2)) % CLOUD_ASSETS.length;
     sprite.style.filter = `blur(${profile.blur}px)`;
     sprite.style.zIndex = depth === 'far' ? '0' : depth === 'mid' ? '1' : '2';
 
@@ -153,8 +158,8 @@ export class CloudField {
       if (!field) return;
       const width = field.clientWidth * (depth === 'far' ? 0.38 : depth === 'mid' ? 0.58 : 0.82);
       sprite.style.width = `${width}px`;
-      sprite.style.height = `${width * 0.56}px`;
-      sprite.style.backgroundPosition = `${SHAPE_POSITIONS[this.shapeIndexes[index]]} center`;
+      sprite.style.height = `${width}px`;
+      sprite.style.backgroundImage = `url("${CLOUD_ASSETS[this.shapeIndexes[index]]}")`;
       sprite.style.filter = `blur(${PROFILES[depth].blur}px)`;
       sprite.style.opacity = depth === 'near' ? '0' : depth === 'far' ? '0.22' : '0.4';
       sprite.style.transform = depth === 'far'

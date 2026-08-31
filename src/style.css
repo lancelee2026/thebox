@@ -328,14 +328,11 @@ body::before {
   left: 0;
   display: block;
   opacity: 0;
-  background-image: url("./assets/foreground-cloud-bank.png");
   background-repeat: no-repeat;
-  background-size: 300% auto;
-  mix-blend-mode: screen;
+  background-position: center;
+  background-size: contain;
   transform-origin: center;
   will-change: transform, opacity;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
 }
 
 .controls {
