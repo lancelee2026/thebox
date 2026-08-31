@@ -84,7 +84,7 @@
     "keyCharacteristics": ["清透晴空蓝和青蓝角色", "三层树脂托盘", "圆润但克制", "双入口一致"],
     "rules": [
       { "name": "One Warm Accent", "body": "暖色只服务于成功、星级和键盘焦点。", "section": "colors" },
-      { "name": "Molded Stage", "body": "默认模式保留树脂托盘；只有玩家主动开启高空模式后才让路径悬浮，并继续保留砖块侧面和轻阴影。", "section": "elevation" }
+      { "name": "Molded Stage", "body": "默认模式保留树脂托盘；高空模式关闭托盘、外框与虚拟接影面，依靠砖块侧面和自身受光保持可读。", "section": "elevation" }
     ],
     "dos": ["Do 让角色表情在 390px 宽度下仍可读。", "Do 同时用形体、亮度和微光表达终点。"],
     "donts": ["Don't 使用学龄前角色符号或彩虹糖果色。", "Don't 为追求萌感牺牲关卡判断。"]

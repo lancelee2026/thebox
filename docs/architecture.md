@@ -151,7 +151,7 @@ npm run check-levels
 
 ### 5.5 场景偏好
 
-选关面板提供「高空模式」和从属的「云雾挑战」，存储键为 `thebox:scene-prefs:v1`。`Game.ts` 负责读取、约束与持久化；`LevelView.setHighAltitude()` 只控制托盘 mesh 的退场；`setup.ts` 只切换 WebGL 透明底、雾与阴影承接面。两项设置不得进入 `WorldSnapshot`，也不得影响规则、撤销、步数和星级。
+选关面板提供「高空模式」和从属的「云雾挑战」，存储键为 `thebox:scene-prefs:v1`。`Game.ts` 负责读取、约束与持久化；`LevelView.setHighAltitude()` 只控制托盘 mesh 的退场；`setup.ts` 切换 WebGL 透明底、雾，并在高空中彻底关闭接影面。两项设置不得进入 `WorldSnapshot`，也不得影响规则、撤销、步数和星级。
 
 ---
 

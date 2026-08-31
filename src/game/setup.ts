@@ -109,10 +109,8 @@ export function createScene(canvas: HTMLCanvasElement): {
     scene.background = enabled ? null : skyColor;
     scene.fog = enabled ? null : sceneFog;
     renderer.setClearColor(SCENE_SKY, enabled ? 0 : 1);
-    // 高空模式没有真实地板：把接影面抬到砖块底部附近，并让日光更接近顶光，
-    // 只留下短而淡的接触阴影，避免整条路径投出“隐形平台”。
-    catcher.position.y = enabled ? -0.31 : -0.82;
-    catcherMaterial.opacity = enabled ? 0.055 : 0.22;
+    // 高空没有地面，高空模式彻底关闭接影面；物体自身受光与砖面遮挡仍保留。
+    catcher.visible = !enabled;
     sun.position.set(enabled ? 3 : 5, enabled ? 18 : 14, enabled ? 4 : 6);
     sun.shadow.radius = enabled ? 3 : 1;
   };
