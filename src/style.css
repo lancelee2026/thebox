@@ -287,6 +287,7 @@ body::before {
 
 .high-altitude #canvas-wrap {
   border-radius: 0;
+  overflow: visible;
   background: transparent;
   box-shadow: none;
 }
@@ -301,12 +302,22 @@ body::before {
   object-fit: contain;
 }
 
+.high-altitude #game-canvas {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150% !important;
+  height: 150% !important;
+  max-width: none;
+  transform: translate(-50%, -50%);
+}
+
 .cloud-field {
   position: absolute;
-  inset: 0;
+  inset: -45%;
   pointer-events: none;
   opacity: 0;
-  overflow: hidden;
+  overflow: visible;
   transition: opacity 220ms ease;
 }
 
@@ -333,6 +344,13 @@ body::before {
   background-size: contain;
   transform-origin: center;
   will-change: transform, opacity;
+}
+
+.top-bar,
+.controls,
+.hint {
+  position: relative;
+  z-index: 6;
 }
 
 .controls {

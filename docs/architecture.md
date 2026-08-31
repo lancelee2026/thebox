@@ -151,7 +151,7 @@ npm run check-levels
 
 ### 5.5 场景偏好
 
-选关面板提供「高空模式」和从属的「云雾挑战」，存储键为 `thebox:scene-prefs:v1`。`Game.ts` 负责读取、约束与持久化；`LevelView.setHighAltitude()` 只控制托盘 mesh 的退场；`setup.ts` 切换 WebGL 透明底、雾，并在高空中彻底关闭接影面。`ui/cloudField.ts` 管理远、中、近三层云的随机裁片、方向、高度、速度和可见性；远云 DOM 层位于 WebGL 画布后方，中近云位于前方，页面隐藏、开关关闭或减少动态效果时会停止穿场动画。两项设置不得进入 `WorldSnapshot`，也不得影响规则、撤销、步数和星级。
+选关面板提供「高空模式」和从属的「云雾挑战」，存储键为 `thebox:scene-prefs:v1`。`Game.ts` 负责读取、约束与持久化；`LevelView.setHighAltitude()` 只控制托盘 mesh 的退场；`setup.ts` 切换 WebGL 透明底、雾，并在高空中彻底关闭接影面。高空模式把 WebGL 画布扩为 1.5 倍并反向补偿相机缩放，为坠落保留真实的舞台外渲染空间，默认模式仍使用原正方形画布。`ui/cloudField.ts` 管理远、中、近三层云的随机换形、方向、高度、速度和可见性；云图来自独立 Alpha 连通区域，不使用矩形蒙版；远云 DOM 层位于 WebGL 画布后方，中近云位于前方，页面隐藏、开关关闭或减少动态效果时会停止穿场动画。两项设置不得进入 `WorldSnapshot`，也不得影响规则、撤销、步数和星级。
 
 `rules.deathCause()` 在不改变胜负结果的前提下把死亡分为 `fall` 与 `hazard`。高空模式仅对 `fall` 调用 `Player.fallHighAltitude()`：固定正交相机，以重力位移、透视比例缩小和恒定角动量表现远离；分裂时逐块分类。`Sfx.fallWind()` 使用本地 Web Audio 噪声合成，不引入媒体资源。修改死亡规则后同时运行 `npm run check-death-feedback` 与 `npm run check-levels`。
 

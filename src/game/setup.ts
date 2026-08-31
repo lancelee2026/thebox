@@ -43,6 +43,15 @@ export function createScene(canvas: HTMLCanvasElement): {
   cameraPivot.rotation.set(0, -Math.PI / 2, 0);
   scene.add(cameraPivot);
 
+  const highAltitudeOverscan = 1.5;
+  let highAltitude = false;
+  let boardZoom = 1;
+
+  const syncCameraZoom = () => {
+    camera.zoom = boardZoom / (highAltitude ? highAltitudeOverscan : 1);
+    camera.updateProjectionMatrix();
+  };
+
   // 半球光：天空清蓝 / 地面微暖，托出软质树脂的体积
   const hemi = new THREE.HemisphereLight(0xbce9ff, 0xc69b72, 0.56);
   scene.add(hemi);
@@ -85,7 +94,8 @@ export function createScene(canvas: HTMLCanvasElement): {
       120,
       Math.floor(Number.isFinite(side) ? side : Math.min(650, window.innerWidth)),
     );
-    renderer.setSize(s, s, false);
+    const renderScale = highAltitude ? highAltitudeOverscan : 1;
+    renderer.setSize(Math.floor(s * renderScale), Math.floor(s * renderScale), false);
     canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.style.aspectRatio = '1 / 1';
@@ -101,11 +111,12 @@ export function createScene(canvas: HTMLCanvasElement): {
 
   const frameBoard = (cols: number, rows: number) => {
     const projectedSpan = Math.max(1, cols + rows);
-    camera.zoom = THREE.MathUtils.clamp(12 / projectedSpan, 0.76, 1.35);
-    camera.updateProjectionMatrix();
+    boardZoom = THREE.MathUtils.clamp(12 / projectedSpan, 0.76, 1.35);
+    syncCameraZoom();
   };
 
   const setHighAltitude = (enabled: boolean) => {
+    highAltitude = enabled;
     scene.background = enabled ? null : skyColor;
     scene.fog = enabled ? null : sceneFog;
     renderer.setClearColor(SCENE_SKY, enabled ? 0 : 1);
@@ -113,6 +124,8 @@ export function createScene(canvas: HTMLCanvasElement): {
     catcher.visible = !enabled;
     sun.position.set(enabled ? 3 : 5, enabled ? 18 : 14, enabled ? 4 : 6);
     sun.shadow.radius = enabled ? 3 : 1;
+    syncCameraZoom();
+    resize();
   };
 
   return { scene, renderer, camera, cameraPivot, frameBoard, setHighAltitude, resize };

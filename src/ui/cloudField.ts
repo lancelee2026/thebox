@@ -110,7 +110,8 @@ export class CloudField {
 
     const fieldWidth = Math.max(240, field.clientWidth);
     const fieldHeight = Math.max(240, field.clientHeight);
-    const width = fieldWidth * between(...profile.width);
+    const stageWidth = Math.max(240, field.parentElement?.clientWidth ?? fieldWidth);
+    const width = stageWidth * between(...profile.width);
     // 方形舞台槽完整承载带透明留白的云图，避免任何方向发生硬裁切。
     const height = width;
     const direction = Math.random() < 0.5 ? 1 : -1;
@@ -156,7 +157,8 @@ export class CloudField {
       const depth = sprite.dataset.cloudDepth as CloudDepth;
       const field = sprite.parentElement;
       if (!field) return;
-      const width = field.clientWidth * (depth === 'far' ? 0.38 : depth === 'mid' ? 0.58 : 0.82);
+      const stageWidth = field.parentElement?.clientWidth ?? field.clientWidth;
+      const width = stageWidth * (depth === 'far' ? 0.38 : depth === 'mid' ? 0.58 : 0.82);
       sprite.style.width = `${width}px`;
       sprite.style.height = `${width}px`;
       sprite.style.backgroundImage = `url("${CLOUD_ASSETS[this.shapeIndexes[index]]}")`;
