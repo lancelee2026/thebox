@@ -53,6 +53,36 @@ export class Sfx {
     setTimeout(() => this.beep(90, 200, 0.2, 'sine'), 70);
   }
 
+  /** 高空失足的克制风压声：纯 Web Audio 合成，不依赖外部音频资源。 */
+  fallWind(durationMs = 900): void {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    const duration = Math.max(0.2, durationMs / 1000);
+    const buffer = ctx.createBuffer(1, Math.ceil(ctx.sampleRate * duration), ctx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+
+    const source = ctx.createBufferSource();
+    const filter = ctx.createBiquadFilter();
+    const gain = ctx.createGain();
+    source.buffer = buffer;
+    filter.type = 'bandpass';
+    filter.frequency.value = 620;
+    filter.Q.value = 0.72;
+    source.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    const t0 = ctx.currentTime;
+    gain.gain.setValueAtTime(0.001, t0);
+    gain.gain.exponentialRampToValueAtTime(0.042, t0 + duration * 0.58);
+    gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+    filter.frequency.setValueAtTime(430, t0);
+    filter.frequency.exponentialRampToValueAtTime(860, t0 + duration * 0.82);
+    source.start(t0);
+    source.stop(t0 + duration);
+  }
+
   win(): void {
     const notes = [262, 330, 392, 523, 659];
     notes.forEach((n, i) => {

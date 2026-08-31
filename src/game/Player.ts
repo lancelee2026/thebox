@@ -9,11 +9,12 @@ import {
   nextState,
   worldCenter,
 } from './blockLogic';
-import { animDuration } from './motion';
+import { animDuration, prefersReducedMotion } from './motion';
 import type { LevelView } from './Level';
 
 type PivotAxis = 'x' | 'z';
 type PlayerMood = 'idle' | 'focus' | 'surprised' | 'happy';
+export type PlayerEntity = 'a' | 'b';
 
 interface FlipPlan {
   pivotWorld: { x: number; y: number; z: number };
@@ -564,6 +565,152 @@ export class Player {
         });
       })
       .onComplete(onDone)
+      .start();
+  }
+
+  /**
+   * 高空模式失足：固定正交镜头，用重力位移和透视比例缩小表现远离镜头。
+   * 只动画真正失去支撑的实体；同帧机关死亡的实体快速淡出，安全实体留在原位。
+   */
+  fallHighAltitude(
+    fallTargets: PlayerEntity[],
+    hazardTargets: PlayerEntity[],
+    dir: Dir,
+    onDone: () => void,
+  ): void {
+    this.canMove = false;
+    this.stopTween();
+    const reduced = prefersReducedMotion();
+    const durationMs = reduced ? 280 : 1000;
+    const fallSet = new Set(fallTargets);
+    const animated = [...new Set([...fallTargets, ...hazardTargets])];
+
+    const visuals = animated.map((which) => {
+      const pivot = which === 'a' ? this.pivot : this.pivotB;
+      const mesh = which === 'a' ? this.mesh : this.meshB;
+      const face = which === 'a' ? this.faceA : this.faceB;
+      const bodyMaterial = mesh.material as THREE.Material;
+      const faceMaterial = face.material as THREE.Material;
+      const fadeBodyMaterial = bodyMaterial.clone();
+      const fadeFaceMaterial = faceMaterial.clone();
+      fadeBodyMaterial.transparent = true;
+      fadeBodyMaterial.depthWrite = false;
+      fadeBodyMaterial.opacity = 1;
+      fadeBodyMaterial.needsUpdate = true;
+      fadeFaceMaterial.transparent = true;
+      fadeFaceMaterial.depthWrite = false;
+      fadeFaceMaterial.opacity = 1;
+      fadeFaceMaterial.needsUpdate = true;
+      mesh.material = fadeBodyMaterial;
+      face.material = fadeFaceMaterial;
+      return {
+        kind: fallSet.has(which) ? ('fall' as const) : ('hazard' as const),
+        pivot,
+        mesh,
+        face,
+        bodyMaterial,
+        faceMaterial,
+        fadeBodyMaterial,
+        fadeFaceMaterial,
+        pivotPosition: pivot.position.clone(),
+        pivotRotation: pivot.rotation.clone(),
+        meshScale: mesh.scale.clone(),
+        faceScale: face.scale.clone(),
+        pivotVisible: pivot.visible,
+      };
+    });
+
+    const direction =
+      dir === 'left'
+        ? { x: -1, z: 0, sign: 1, axis: 'z' as const }
+        : dir === 'right'
+          ? { x: 1, z: 0, sign: -1, axis: 'z' as const }
+          : dir === 'up'
+            ? { x: 0, z: -1, sign: -1, axis: 'x' as const }
+            : { x: 0, z: 1, sign: 1, axis: 'x' as const };
+
+    let cleaned = false;
+    const cleanup = (completed: boolean) => {
+      if (cleaned) return;
+      cleaned = true;
+      for (const visual of visuals) {
+        visual.mesh.material = visual.bodyMaterial;
+        visual.face.material = visual.faceMaterial;
+        visual.fadeBodyMaterial.dispose();
+        visual.fadeFaceMaterial.dispose();
+        if (completed) {
+          visual.pivot.visible = false;
+          continue;
+        }
+        visual.pivot.visible = visual.pivotVisible;
+        visual.pivot.position.copy(visual.pivotPosition);
+        visual.pivot.rotation.copy(visual.pivotRotation);
+        visual.mesh.scale.copy(visual.meshScale);
+        visual.face.scale.copy(visual.faceScale);
+      }
+    };
+
+    const progress = { t: 0 };
+    this.activeTween = new Tween(progress, this.tweens)
+      .to({ t: 1 }, durationMs)
+      .onUpdate(() => {
+        const elapsed = (progress.t * durationMs) / 1000;
+        for (const visual of visuals) {
+          if (visual.kind === 'hazard') {
+            const u = Math.min(1, elapsed / 0.34);
+            const eased = u * u;
+            visual.pivot.position.y = visual.pivotPosition.y - 1.2 * eased;
+            visual.mesh.scale.copy(visual.meshScale).multiplyScalar(1 - u);
+            visual.face.scale.copy(visual.faceScale).multiplyScalar(1 - u);
+            visual.fadeBodyMaterial.opacity = 1 - u;
+            visual.fadeFaceMaterial.opacity = 1 - u;
+            continue;
+          }
+
+          if (reduced) {
+            const eased = progress.t * progress.t;
+            visual.pivot.position.y = visual.pivotPosition.y - 0.55 * eased;
+            visual.fadeBodyMaterial.opacity = 1 - progress.t;
+            visual.fadeFaceMaterial.opacity = 1 - progress.t;
+            continue;
+          }
+
+          const dropDistance = 0.5 * 14 * elapsed * elapsed;
+          const perspective = 5.4 / (5.4 + dropDistance);
+          const spin = elapsed * Math.PI * 2 * 1.4 * direction.sign;
+          // The WebGL stage is intentionally square even on tall phones. Finish the
+          // 180ms fog fade before the projected body can meet that square's lower
+          // edge, otherwise the canvas boundary reads as an invisible floor.
+          const fadeStart = 0.64;
+          const fadeEnd = 0.82;
+          const fadeProgress = THREE.MathUtils.clamp(
+            (progress.t - fadeStart) / (fadeEnd - fadeStart),
+            0,
+            1,
+          );
+          const fade = 1 - fadeProgress * fadeProgress * (3 - 2 * fadeProgress);
+          visual.pivot.position.set(
+            visual.pivotPosition.x + direction.x * 0.9 * elapsed,
+            visual.pivotPosition.y - dropDistance,
+            visual.pivotPosition.z + direction.z * 0.9 * elapsed,
+          );
+          visual.pivot.rotation.set(
+            visual.pivotRotation.x + (direction.axis === 'x' ? spin : spin * 0.16),
+            visual.pivotRotation.y + spin * 0.14,
+            visual.pivotRotation.z + (direction.axis === 'z' ? spin : spin * 0.16),
+          );
+          visual.mesh.scale.copy(visual.meshScale).multiplyScalar(perspective);
+          visual.face.scale.copy(visual.faceScale).multiplyScalar(perspective);
+          visual.fadeBodyMaterial.opacity = fade;
+          visual.fadeFaceMaterial.opacity = fade;
+        }
+      })
+      .onStop(() => cleanup(false))
+      .onComplete(() => {
+        this.activeTween = null;
+        cleanup(true);
+        onDone();
+      })
       .start();
   }
 

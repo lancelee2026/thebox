@@ -1,9 +1,9 @@
 import { Group, Tween, Easing } from '@tweenjs/tween.js';
 import { createScene } from './setup';
 import { LevelView } from './Level';
-import { Player } from './Player';
+import { Player, type PlayerEntity } from './Player';
 import { LEVELS, LEVEL_COUNT, getLevel } from './levels';
-import type { Dir } from './blockLogic';
+import type { BlockState, Dir } from './blockLogic';
 import {
   canMerge,
   cloneState,
@@ -16,8 +16,15 @@ import {
   initialSnapshot,
   type WorldSnapshot,
 } from './levelTypes';
-import { applyCollapse, applySwitches, applyTeleport, effectiveCell, rawCell } from './rules';
-import { animDuration } from './motion';
+import {
+  applyCollapse,
+  applySwitches,
+  applyTeleport,
+  deathCause,
+  rawCell,
+  type DeathCause,
+} from './rules';
+import { animDuration, prefersReducedMotion } from './motion';
 import { Input } from '../input/Input';
 import { Sfx } from '../audio/Sfx';
 import { Hud, LevelSelect } from '../ui/hud';
@@ -29,6 +36,11 @@ const SCENE_PREFS_KEY = 'thebox:scene-prefs:v1';
 interface ScenePrefs {
   highAltitude: boolean;
   cloudChallenge: boolean;
+}
+
+interface DeathOutcome {
+  a: DeathCause | null;
+  b: DeathCause | null;
 }
 
 export class Game {
@@ -209,7 +221,7 @@ export class Game {
     const before = this.snapshot();
     const ok = this.player.tryMove(
       dir,
-      () => this.afterMove(before),
+      () => this.afterMove(before, dir),
       () => this.sfx.land(),
     );
     if (ok) this.sfx.move();
@@ -241,7 +253,7 @@ export class Game {
     this.sfx.beep(240, 40, 0.12);
   }
 
-  private afterMove(before: WorldSnapshot): void {
+  private afterMove(before: WorldSnapshot, dir: Dir): void {
     this.history.push(before);
     if (this.history.length > 50) this.history.shift();
     this.moves++;
@@ -285,7 +297,7 @@ export class Game {
         this.busy = false;
         this.input.setEnabled(true);
         if (this.level.isDeath(this.player.state, bridges, collapsed)) {
-          this.onDeath();
+          this.onDeath(dir);
           return;
         }
         if (this.level.isWin(this.player.state, bridges, collapsed)) {
@@ -321,7 +333,7 @@ export class Game {
               this.cubeDead(this.player.state) ||
               (this.player.stateB && this.cubeDead(this.player.stateB))
             ) {
-              this.onDeath();
+              this.onDeath(dir);
             }
           });
           this.world.block = cloneState(destA);
@@ -377,14 +389,14 @@ export class Game {
       const deadA = this.cubeDead(this.player.state);
       const deadB = this.cubeDead(this.player.stateB!);
       if (deadA || deadB) {
-        this.onDeath();
+        this.onDeath(dir);
         return;
       }
       return;
     }
 
     if (this.level.isDeath(this.player.state, bridges, collapsed)) {
-      this.onDeath();
+      this.onDeath(dir);
       return;
     }
     if (this.level.isWin(this.player.state, bridges, collapsed)) {
@@ -392,30 +404,60 @@ export class Game {
     }
   }
 
-  private cubeDead(state: { col: number; row: number }): boolean {
-    const t = effectiveCell(
+  private causeFor(state: BlockState, isCube: boolean): DeathCause | null {
+    return deathCause(
       this.level.parsed!,
-      state.col,
-      state.row,
+      state,
       this.world.bridges,
       this.world.collapsed,
+      isCube,
     );
-    return t === '.' || t === 'z';
   }
 
-  private onDeath(): void {
+  private cubeDead(state: BlockState): boolean {
+    return this.causeFor(state, true) !== null;
+  }
+
+  private deathOutcome(): DeathOutcome {
+    if (!this.player.stateB) {
+      return { a: this.causeFor(this.player.state, false), b: null };
+    }
+    return {
+      a: this.causeFor(this.player.state, true),
+      b: this.causeFor(this.player.stateB, true),
+    };
+  }
+
+  private onDeath(dir: Dir): void {
     this.busy = true;
     this.input.setEnabled(false);
-    this.sfx.fail();
     this.player.setMood('surprised');
-    this.level.shake();
-    this.player.fall(() => {
+    const outcome = this.deathOutcome();
+    const fallTargets: PlayerEntity[] = [];
+    const hazardTargets: PlayerEntity[] = [];
+    for (const target of ['a', 'b'] as const) {
+      if (outcome[target] === 'fall') fallTargets.push(target);
+      if (outcome[target] === 'hazard') hazardTargets.push(target);
+    }
+
+    const reset = () => {
       this.history = [];
       this.moves = 0;
       this.hud.setMoves(0);
       this.loadLevel(this.levelNo);
       this.busy = false;
-    });
+    };
+
+    if (this.scenePrefs.highAltitude && fallTargets.length > 0) {
+      if (prefersReducedMotion()) this.sfx.fail();
+      else this.sfx.fallWind(900);
+      this.player.fallHighAltitude(fallTargets, hazardTargets, dir, reset);
+      return;
+    }
+
+    this.sfx.fail();
+    this.level.shake();
+    this.player.fall(reset);
   }
 
   private onWin(): void {

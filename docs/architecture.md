@@ -153,6 +153,8 @@ npm run check-levels
 
 选关面板提供「高空模式」和从属的「云雾挑战」，存储键为 `thebox:scene-prefs:v1`。`Game.ts` 负责读取、约束与持久化；`LevelView.setHighAltitude()` 只控制托盘 mesh 的退场；`setup.ts` 切换 WebGL 透明底、雾，并在高空中彻底关闭接影面。两项设置不得进入 `WorldSnapshot`，也不得影响规则、撤销、步数和星级。
 
+`rules.deathCause()` 在不改变胜负结果的前提下把死亡分为 `fall` 与 `hazard`。高空模式仅对 `fall` 调用 `Player.fallHighAltitude()`：固定正交相机，以重力位移、透视比例缩小和恒定角动量表现远离；分裂时逐块分类。`Sfx.fallWind()` 使用本地 Web Audio 噪声合成，不引入媒体资源。修改死亡规则后同时运行 `npm run check-death-feedback` 与 `npm run check-levels`。
+
 ---
 
 ## 6. 模块职责速查

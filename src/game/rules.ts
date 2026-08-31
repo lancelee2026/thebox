@@ -2,6 +2,8 @@ import type { BlockState } from './blockLogic';
 import { occupiedCells, type Cell } from './blockLogic';
 import type { LevelDef, LevelMap, SplitPadDef, SwitchDef, TeleportDef } from './levelTypes';
 
+export type DeathCause = 'fall' | 'hazard';
+
 export interface ParsedLevel {
   def: LevelDef;
   /** 当前用于判定的网格（单层或指定 layer） */
@@ -138,6 +140,30 @@ export function isSupport(ch: string): boolean {
   return ch === 'x' || ch === 'o' || ch === 'f' || ch === 'z' || ch === 'c';
 }
 
+/**
+ * 死亡原因：红砖是机关伤害；虚空、失效桥、已塌砖与站立压碎脆弱砖都是真实失足。
+ * 半悬空仍可存活；分裂小方块可站在脆弱砖上。
+ */
+export function deathCause(
+  level: ParsedLevel,
+  state: BlockState,
+  bridges: Record<string, boolean> = {},
+  collapsed: Record<string, boolean> = {},
+  isCube = false,
+): DeathCause | null {
+  const cells = occupiedCells(state);
+  if (cells.length === 1) {
+    const t = effectiveCell(level, cells[0].col, cells[0].row, bridges, collapsed);
+    if (t === 'z') return 'hazard';
+    if (t === '.' || (!isCube && t === 'f')) return 'fall';
+    return null;
+  }
+  const a = effectiveCell(level, cells[0].col, cells[0].row, bridges, collapsed);
+  const b = effectiveCell(level, cells[1].col, cells[1].row, bridges, collapsed);
+  if (a === 'z' || b === 'z') return 'hazard';
+  return a === '.' && b === '.' ? 'fall' : null;
+}
+
 /** 死亡判定：半悬空存活；站立踩 f / z / 空；躺倒踩 z 或双空 */
 export function isDeath(
   level: ParsedLevel,
@@ -145,15 +171,7 @@ export function isDeath(
   bridges: Record<string, boolean> = {},
   collapsed: Record<string, boolean> = {},
 ): boolean {
-  const cells = occupiedCells(state);
-  if (cells.length === 1) {
-    const t = effectiveCell(level, cells[0].col, cells[0].row, bridges, collapsed);
-    return t === '.' || t === 'z' || t === 'f';
-  }
-  const a = effectiveCell(level, cells[0].col, cells[0].row, bridges, collapsed);
-  const b = effectiveCell(level, cells[1].col, cells[1].row, bridges, collapsed);
-  if (a === 'z' || b === 'z') return true;
-  return a === '.' && b === '.';
+  return deathCause(level, state, bridges, collapsed) !== null;
 }
 
 /** 小方块（分裂体）死亡：单格，脆弱砖也算支撑 */
@@ -164,8 +182,13 @@ export function isDeathCube(
   bridges: Record<string, boolean>,
   collapsed: Record<string, boolean> = {},
 ): boolean {
-  const t = effectiveCell(level, col, row, bridges, collapsed);
-  return t === '.' || t === 'z';
+  return deathCause(
+    level,
+    { col, row, ori: 'standing' },
+    bridges,
+    collapsed,
+    true,
+  ) !== null;
 }
 
 export function isWin(

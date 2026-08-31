@@ -15,7 +15,8 @@
     "dump-paths": "tsx scripts/dump-paths.ts",
     "debug-level": "tsx scripts/debug-level.ts",
     "debug-path": "tsx scripts/debug-path.ts",
-    "audit-mechanics": "tsx scripts/audit-mechanics.ts"
+    "audit-mechanics": "tsx scripts/audit-mechanics.ts",
+    "check-death-feedback": "tsx scripts/check-death-feedback.ts"
   },
   "devDependencies": {
     "@types/three": "^0.185.3",
