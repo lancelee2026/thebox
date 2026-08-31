@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
+    />
+    <title>翻砖块</title>
+    <meta name="theme-color" content="#1f6fa8" />
+    <link rel="stylesheet" href="./assets/style.css" />
+  </head>
+  <body class="xhs-mini-tool">
+    <div id="app">
+      <header class="top-bar">
+        <h1 class="brand">翻砖块</h1>
+        <div class="hud">
+          <span id="level-label">第 1 / 78 关</span>
+          <span class="hud-sep" aria-hidden="true">·</span>
+          <span id="moves-label">步数 0</span>
+        </div>
+        <div class="actions">
+          <button type="button" id="btn-select" class="btn btn-icon" title="选关"></button>
+          <button type="button" id="btn-undo" class="btn btn-icon" title="撤销"></button>
+          <button type="button" id="btn-restart" class="btn btn-icon" title="重来"></button>
+          <button type="button" id="btn-swap" class="btn btn-icon hidden" title="切换"></button>
+          <button type="button" id="btn-mute" class="btn btn-icon" title="声音" aria-pressed="false"></button>
+        </div>
+      </header>
+
+      <main class="stage">
+        <p id="hint-mechanic" class="mechanic-hint hidden" aria-live="polite"></p>
+        <div id="canvas-wrap">
+          <div id="clear-fanfare" class="clear-fanfare hidden" role="status" aria-live="assertive">
+            <div class="clear-stars" id="clear-stars" aria-hidden="true"></div>
+            <p class="clear-caption" id="clear-caption"></p>
+          </div>
+          <canvas id="game-canvas" aria-label="游戏棋盘"></canvas>
+        </div>
+      </main>
+
+      <div id="controls" class="controls" aria-label="方向键">
+        <button type="button" class="pad" data-dir="up" id="pad-up" aria-label="上">▲</button>
+        <div class="pad-row">
+          <button type="button" class="pad" data-dir="left" id="pad-left" aria-label="左">◀</button>
+          <button type="button" class="pad" data-dir="down" id="pad-down" aria-label="下">▼</button>
+          <button type="button" class="pad" data-dir="right" id="pad-right" aria-label="右">▶</button>
+        </div>
+      </div>
+
+      <p class="hint" id="hint">
+        <span class="hint-keys">方向键 / WASD · </span><span class="hint-goal">把砖块翻进绿色终点</span>
+      </p>
+    </div>
+
+    <div id="overlay" class="overlay hidden" aria-hidden="true" inert>
+      <div class="panel panel-select" id="panel-select">
+        <header class="panel-head">
+          <h2>选择关卡</h2>
+          <div class="select-stats" role="group" aria-label="通关进度">
+            <p id="select-progress" class="select-stat select-stat--clear"></p>
+            <p id="select-stars" class="select-stat select-stat--stars"></p>
+          </div>
+        </header>
+        <div id="level-chapters" class="level-chapters"></div>
+        <footer class="panel-foot">
+          <button type="button" class="btn btn-ghost" id="btn-close-select">关闭</button>
+        </footer>
+      </div>
+      <div class="panel panel-win hidden" id="panel-win">
+        <h2>78关，全部通关！</h2>
+        <p id="win-text">你已经完成全部关卡。</p>
+        <button type="button" class="btn primary" id="btn-win-select">选关再玩</button>
+      </div>
+    </div>
+
+    <script src="./assets/app.js"></script>
+  </body>
+</html>

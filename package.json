@@ -6,6 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build:xhs": "tsc && node scripts/build-xhs.mjs",
+    "validate:xhs": "node scripts/validate-xhs.mjs dist-xhs",
+    "package:xhs": "npm run build:xhs && npm run validate:xhs && cd dist-xhs && zip -FSqr ../fan-zhuan-kuai-xhs.zip . -x '*.DS_Store'",
     "preview": "vite preview",
     "check-levels": "tsx scripts/check-levels.ts",
     "dump-par": "tsx scripts/dump-par.ts",

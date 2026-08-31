@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="color-scheme" content="dark" />
+    <meta name="theme-color" content="#141210" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>社交病毒式小游戏 · 睡前读本</title>
+    <style>
+      :root {
+        --bg: #141210;
+        --bg-soft: #1c1916;
+        --ink: #e6ddd0;
+        --ink-dim: #a89f92;
+        --ink-faint: #6e675e;
+        --line: rgba(230, 221, 208, 0.12);
+        --accent: #d4a574;
+        --card: #221e1a;
+        --pad: max(20px, env(safe-area-inset-left));
+        --pad-r: max(20px, env(safe-area-inset-right));
+        --pad-b: max(28px, env(safe-area-inset-bottom));
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        background:
+          radial-gradient(120% 60% at 50% -10%, #2a241c 0%, transparent 55%),
+          var(--bg);
+        color: var(--ink);
+        font-family:
+          "Songti SC", "STSong", "Noto Serif SC", "Source Han Serif SC",
+          "PingFang SC", "Hiragino Mincho ProN", serif;
+        font-size: 17px;
+        line-height: 1.75;
+        letter-spacing: 0.02em;
+        padding: 0 var(--pad-r) var(--pad-b) var(--pad);
+      }
+
+      .wrap {
+        width: min(38rem, 100%);
+        margin: 0 auto;
+        padding-top: max(28px, env(safe-area-inset-top));
+      }
+
+      header.hero {
+        padding: 12px 0 28px;
+        border-bottom: 1px solid var(--line);
+        margin-bottom: 8px;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        font-family: "PingFang SC", "Helvetica Neue", sans-serif;
+        font-size: 0.72rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      h1 {
+        margin: 0 0 14px;
+        font-size: clamp(1.65rem, 6vw, 2rem);
+        font-weight: 700;
+        line-height: 1.35;
+        letter-spacing: 0.04em;
+      }
+
+      .lede {
+        margin: 0;
+        color: var(--ink-dim);
+        font-size: 0.98rem;
+      }
+
+      nav.toc {
+        margin: 20px 0 8px;
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      nav.toc summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        font-family: "PingFang SC", sans-serif;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--ink);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        user-select: none;
+      }
+
+      nav.toc summary::-webkit-details-marker {
+        display: none;
+      }
+
+      nav.toc summary::after {
+        content: "展开";
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--ink-faint);
+      }
+
+      nav.toc[open] summary::after {
+        content: "收起";
+      }
+
+      nav.toc ol {
+        margin: 0;
+        padding: 0 16px 14px 2.1rem;
+        color: var(--ink-dim);
+        font-family: "PingFang SC", sans-serif;
+        font-size: 0.88rem;
+        line-height: 1.7;
+      }
+
+      nav.toc a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      nav.toc a:active {
+        color: var(--accent);
+      }
+
+      article section {
+        padding: 28px 0 8px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      article section:last-of-type {
+        border-bottom: 0;
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 1.28rem;
+        font-weight: 700;
+        line-height: 1.4;
+        letter-spacing: 0.03em;
+        color: var(--ink);
+      }
+
+      h3 {
+        margin: 22px 0 8px;
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+
+      p {
+        margin: 0 0 12px;
+      }
+
+      strong {
+        font-weight: 700;
+        color: #f0e8db;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 14px;
+        padding-left: 1.25rem;
+      }
+
+      li {
+        margin: 0.28em 0;
+      }
+
+      blockquote {
+        margin: 14px 0;
+        padding: 12px 14px;
+        border-left: 3px solid var(--accent);
+        background: rgba(212, 165, 116, 0.08);
+        border-radius: 0 10px 10px 0;
+        color: var(--ink);
+        font-size: 1.02rem;
+      }
+
+      blockquote p {
+        margin: 0;
+      }
+
+      .callout {
+        margin: 14px 0;
+        padding: 14px 16px;
+        background: var(--card);
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        font-family: "PingFang SC", sans-serif;
+        font-size: 0.95rem;
+        line-height: 1.65;
+      }
+
+      .formula {
+        margin: 14px 0;
+        padding: 16px;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        background: linear-gradient(
+          180deg,
+          rgba(212, 165, 116, 0.14),
+          rgba(212, 165, 116, 0.05)
+        );
+        border: 1px solid rgba(212, 165, 116, 0.28);
+        border-radius: 12px;
+      }
+
+      pre {
+        margin: 12px 0 16px;
+        padding: 14px 16px;
+        overflow-x: auto;
+        background: #0e0c0a;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 0.78rem;
+        line-height: 1.55;
+        color: var(--ink-dim);
+        white-space: pre-wrap;
+      }
+
+      .table-wrap {
+        margin: 12px 0 16px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+        border: 1px solid var(--line);
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: "PingFang SC", sans-serif;
+        font-size: 0.84rem;
+        line-height: 1.5;
+        min-width: 280px;
+      }
+
+      th,
+      td {
+        padding: 10px 12px;
+        text-align: left;
+        vertical-align: top;
+        border-bottom: 1px solid var(--line);
+      }
+
+      th {
+        background: var(--bg-soft);
+        color: var(--accent);
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      tr:last-child td {
+        border-bottom: 0;
+      }
+
+      td:first-child {
+        color: #f0e8db;
+        font-weight: 600;
+        white-space: nowrap;
+      }
+
+      footer.end {
+        padding: 36px 0 20px;
+        color: var(--ink-faint);
+        font-family: "PingFang SC", sans-serif;
+        font-size: 0.8rem;
+        text-align: center;
+      }
+
+      .back-top {
+        position: fixed;
+        right: max(14px, env(safe-area-inset-right));
+        bottom: max(18px, env(safe-area-inset-bottom));
+        width: 44px;
+        height: 44px;
+        border: 1px solid var(--line);
+        border-radius: 50%;
+        background: rgba(34, 30, 26, 0.92);
+        color: var(--ink-dim);
+        font-size: 1.1rem;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="hero" id="top">
+        <p class="eyebrow">睡前读本</p>
+        <h1>社交病毒式小游戏</h1>
+        <p class="lede">
+          给要做「能被人转出去」的小游戏的人看，也给动手前的 agent 看。不是成功公式，是底层逻辑与常见误判。读完再开干，少走一截冤枉路。
+        </p>
+      </header>
+
+      <nav class="toc">
+        <details>
+          <summary>目录</summary>
+          <ol>
+            <li><a href="#s0">先把话说死</a></li>
+            <li><a href="#s1">什么叫「社交病毒式」游戏</a></li>
+            <li><a href="#s2">爆款里真正共通的东西</a></li>
+            <li><a href="#s3">底层结构：一句话传播句</a></li>
+            <li><a href="#s4">社交货币</a></li>
+            <li><a href="#s5">循环怎么转起来</a></li>
+            <li><a href="#s6">稀缺性到底稀缺什么</a></li>
+            <li><a href="#s7">平台逻辑</a></li>
+            <li><a href="#s8">和精品解谜的差别</a></li>
+            <li><a href="#s9">动手前的必答题</a></li>
+            <li><a href="#s10">常见自嗨</a></li>
+            <li><a href="#s11">手感清单</a></li>
+            <li><a href="#s12">给 agent 的用法</a></li>
+            <li><a href="#s13">收束</a></li>
+            <li><a href="#s14">附录</a></li>
+          </ol>
+        </details>
+      </nav>
+
+      <article>
+        <section id="s0">
+          <h2>先把话说死</h2>
+          <p>
+            羊了个羊、跳一跳、Flappy Bird，看起来都是「小而美然后爆了」。外面看像配方，里面多半是：
+          </p>
+          <p class="formula">极简规则 × 很强的情绪 × 刚好撞上平台分发 × 一点运气</p>
+          <p>
+            可以学结构、提命中率，<strong>不能预定上岸</strong>。把「做个小游戏等病毒」当商业计划，多数会沉在同质品海里。
+          </p>
+          <p>这份文档要回答的是：</p>
+          <ol>
+            <li>病毒式传播在游戏里到底靠什么成立</li>
+            <li>动手前该想清楚哪些问题</li>
+            <li>哪些东西看起来像传播、其实只是自嗨</li>
+            <li>精品解谜（比如翻砖块这类）和病毒体有什么不同</li>
+          </ol>
+        </section>
+
+        <section id="s1">
+          <h2>一、什么叫「社交病毒式」游戏</h2>
+          <p>不是「很好玩所以有人安利」这么宽。更窄一点：</p>
+          <div class="callout">
+            玩家玩完（或卡死）之后，有动机把游戏或结果扔给别人；别人接住之后，自己也很快进入同一情绪，并可能再扔出去。
+          </div>
+          <p>三个条件缺一，就很难「像病毒」：</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>条件</th>
+                  <th>白话</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>够短</td>
+                  <td>几秒懂规则，一两分钟出情绪</td>
+                </tr>
+                <tr>
+                  <td>够可说</td>
+                  <td>转发出去时有一句人话可说</td>
+                </tr>
+                <tr>
+                  <td>够便宜</td>
+                  <td>接收方打开成本极低（最好免安装、免注册）</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>
+            「好玩」是加分项，不是病毒的充分条件。很多很好玩的游戏从不传染；很多很粗糙的游戏，因为「气人」「可笑」「可晒」，反而传开。
+          </p>
+        </section>
+
+        <section id="s2">
+          <h2>二、爆款小样本里真正共通的东西</h2>
+
+          <h3>1. 规则可以拿去跟人讲</h3>
+          <p>不用说明书。旁观者看一眼也能懂你在干什么。</p>
+          <ul>
+            <li>Flappy Bird：点、躲管子</li>
+            <li>跳一跳：按住蓄力，松手跳到下一台</li>
+            <li>羊了个羊：消消乐变种，三格槽</li>
+          </ul>
+          <p>如果要用三段话才讲清「你怎么赢」，传播半径会先砍掉一半。</p>
+
+          <h3>2. 情绪来得又快又尖</h3>
+          <p>病毒游戏卖的往往不是「深度满足」，而是短情绪：</p>
+          <ul>
+            <li><strong>差一点</strong>：就差一下，再来一把</li>
+            <li><strong>羞辱感</strong>：「这么简单我都过不去」</li>
+            <li><strong>优越感</strong>：「我过了你呢」</li>
+            <li><strong>好笑</strong>：蠢死法、离谱关卡，适合吐槽</li>
+            <li><strong>成绩单</strong>：分数、步数、名次，适合晒</li>
+          </ul>
+          <p>情绪尖，人才会找人分享；情绪钝，人顶多自己收藏。</p>
+
+          <h3>3. 失败要便宜</h3>
+          <p>
+            死了、卡了、重来，成本必须极低。若失败要读长文、等加载、丢进度、付费复活，传播欲会被掐死。
+          </p>
+          <p>「再试一次」比「下次再来」更接近病毒体质。</p>
+
+          <h3>4. 结果要可携带</h3>
+          <p>分享出去的通常不是「游戏本体介绍」，而是一种<strong>结果物</strong>：</p>
+          <ul>
+            <li>分数 / 关卡号 / 「我卡在第 N 关」</li>
+            <li>回放、残局、挑战链接</li>
+            <li>一句能截图的文案</li>
+          </ul>
+          <p>没有可携带的结果，好友圈里就只剩「你玩这个吧」——转化很差。</p>
+
+          <h3>5. 平台往往比创意更决定上限</h3>
+          <p>
+            跳一跳几乎是微信塞进会话里的；羊了个羊吃的是微信生态里的话题与转发习惯。同一款游戏放在独立站、应用商店、微信里，命运可以完全不同。
+          </p>
+          <p>
+            <strong>渠道不是后期运营问题，是产品形态的一部分。</strong>做之前就要想：它主要寄生在哪张网上？
+          </p>
+        </section>
+
+        <section id="s3">
+          <h2>三、底层结构：一句话传播句</h2>
+          <p>动手画关卡之前，先逼自己写出这句：</p>
+          <blockquote>
+            <p>别人把这个游戏推给你时，会说什么？</p>
+          </blockquote>
+          <p>合格的例子（示意）：</p>
+          <ul>
+            <li>「就差一下，气死」</li>
+            <li>「我第 N 关过不去，你来」</li>
+            <li>「我比你多 20 分」</li>
+            <li>「这个关卡设计有病（褒义）」</li>
+            <li>「30 秒，你也试一下」</li>
+          </ul>
+          <p>不合格的例子：</p>
+          <ul>
+            <li>「很好玩的解谜游戏」——太空，没有钩子</li>
+            <li>「78 关精品翻转」——像说明书，不像想转给朋友的话</li>
+            <li>「类似某某」——把主动权交给别人的品类记忆</li>
+          </ul>
+          <div class="callout">
+            <strong>没有传播句，就没有社交病毒设计；只有「可能好玩的产品」。</strong>
+          </div>
+          <p>传播句会反推设计：</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>传播句类型</th>
+                  <th>设计重心</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>差一点就过</td>
+                  <td>难度曲线、判定、手感</td>
+                </tr>
+                <tr>
+                  <td>我卡关了你来</td>
+                  <td>关卡墙、求助 / 残局分享</td>
+                </tr>
+                <tr>
+                  <td>我比你强</td>
+                  <td>分数、排行、对战、可复现局</td>
+                </tr>
+                <tr>
+                  <td>太好笑了</td>
+                  <td>表现、失败反馈、梗点</td>
+                </tr>
+                <tr>
+                  <td>今天这关你过了吗</td>
+                  <td>每日内容、限时、共同话题</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>一款游戏最好先押 <strong>一个主传播句</strong>，不要妄想面面俱到。</p>
+        </section>
+
+        <section id="s4">
+          <h2>四、社交货币：人为什么愿意转</h2>
+          <p>人转发游戏，很少是为了「帮作者涨量」。常见动机：</p>
+          <ol>
+            <li><strong>显摆</strong>：我厉害 / 我先玩到</li>
+            <li><strong>拉踩或较劲</strong>：你行你上</li>
+            <li><strong>求安慰 / 求帮忙</strong>：我太难了</li>
+            <li><strong>找认同</strong>：这也太坑了吧</li>
+            <li><strong>搭话借口</strong>：比「在吗」自然一点的开场</li>
+          </ol>
+          <p>
+            设计时要问：完成一次游玩后，玩家手里多了哪一种货币？若什么都没多，只有「我玩过了」，转发动力通常不够。
+          </p>
+          <p>
+            显摆要容易截图或一键生成；较劲要规则公平、结果可比；求助要带关卡现场，而不是只丢一个首页链接。
+          </p>
+        </section>
+
+        <section id="s5">
+          <h2>五、循环怎么转起来（白话版）</h2>
+          <p>理想情况接近这样：</p>
+          <pre>玩 → 出情绪/出结果 → 分享给熟人 → 熟人低成本打开
+  → 也进入情绪 → 再分享 / 或回来再玩 → …</pre>
+          <p>要盯住几个断点：</p>
+          <ol>
+            <li><strong>玩不到情绪就走了</strong> —— 前 30 秒太闷、教学太长</li>
+            <li><strong>有情绪但无处分享</strong> —— 没有成绩、没有残局、没有「发给好友」</li>
+            <li><strong>分享出去打不开 / 要下载</strong> —— 接收方流失</li>
+            <li><strong>打开了但接不上上下文</strong> —— 好友不知道你卡在哪、比的是什么</li>
+            <li><strong>玩完没有理由回来</strong> —— 没有日更、没有新挑战、没有社交债</li>
+          </ol>
+          <p>
+            付费投放可以买来人；病毒结构解决的是：<strong>来了以后会不会自己带下一个人。</strong>
+          </p>
+        </section>
+
+        <section id="s6">
+          <h2>六、稀缺性到底稀缺什么</h2>
+          <p>
+            「玩法独一无二」几乎不存在。消消乐、跳一跳、翻转砖块、合成大西瓜，仿品永远在。
+          </p>
+          <p>更常成立的稀缺是：</p>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>类型</th>
+                  <th>含义</th>
+                  <th>例子感</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>手感稀缺</td>
+                  <td>明明规则旧，手感调到尖</td>
+                  <td>Flappy 的管道节奏</td>
+                </tr>
+                <tr>
+                  <td>话题稀缺</td>
+                  <td>大家都在说同一件事</td>
+                  <td>「通关率低到离谱」</td>
+                </tr>
+                <tr>
+                  <td>社交场景稀缺</td>
+                  <td>只有在这个关系网里才好玩</td>
+                  <td>同事互跳、同学攀比</td>
+                </tr>
+                <tr>
+                  <td>渠道稀缺</td>
+                  <td>入口本身难复制</td>
+                  <td>官方塞进微信</td>
+                </tr>
+                <tr>
+                  <td>时间窗稀缺</td>
+                  <td>热点短、爆完就退潮</td>
+                  <td>很多跟风小游戏</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>做产品时与其问「有没有人做过」，不如问：</p>
+          <ul>
+            <li>我的尖点是手感、话题、社交规则，还是渠道？</li>
+            <li>这个尖点别人三天能抄走吗？抄得走玩法，抄不走你的分发和时机。</li>
+          </ul>
+        </section>
+
+        <section id="s7">
+          <h2>七、平台逻辑（想清楚寄生在哪）</h2>
+
+          <h3>微信系</h3>
+          <ul>
+            <li>优点：熟人、转发、免安装（小游戏）、天然社交场</li>
+            <li>代价：审核、类目、广告与资质；同类拥挤；规则会变</li>
+            <li>适合：强比分、强求助、强「发给好友」、短会话间隙</li>
+          </ul>
+
+          <h3>短视频 / 内容平台</h3>
+          <ul>
+            <li>优点：示范卡关、神操作、吐槽天然是内容</li>
+            <li>代价：要会做内容或绑创作者；跳转路径长</li>
+            <li>适合：观赏性强、失败很好笑、规则镜头里一眼懂</li>
+          </ul>
+
+          <h3>独立站 / App</h3>
+          <ul>
+            <li>优点：品牌可控、不绑死平台政策</li>
+            <li>代价：冷启动极难；分享链路长</li>
+            <li>适合：口碑向、深度向、当作品经营；病毒不是主策略</li>
+          </ul>
+          <div class="callout">
+            同一套关卡，换皮上架到不同平台，不是「多一个渠道」，有时是「换了一种物种」。
+          </div>
+        </section>
+
+        <section id="s8">
+          <h2>八、和「精品解谜」的差别（很重要）</h2>
+          <p>精品解谜（关卡扎实、机制干净、手感好）很有价值，但是：</p>
+          <ul>
+            <li>节奏常偏慢，情绪偏「自己跟谜题较劲」</li>
+            <li>分享动机弱：朋友未必想替你解第 47 关</li>
+            <li>完成路径长，不适合「打开就爆情绪」</li>
+          </ul>
+          <p>它可以成为好作品、好品牌、可被内容种草的产品，也可以是付费或长线口碑的底子。它<strong>默认不是</strong>病毒发动机。</p>
+          <p>若既有翻砖块这种深度作品，又想要传播，常见两条路：</p>
+          <ol>
+            <li>
+              <strong>给深度作品加薄薄一层社交皮</strong>：每日一关、最少步可晒、残局分享求助（不破坏本体）
+            </li>
+            <li>
+              <strong>另做一支短、狠、可重开的姊妹玩法</strong>
+              去撞传播；深度作品继续养口碑
+            </li>
+          </ol>
+          <p>不要指望「把解谜做精」自动等于「会传染」。两条能力模型不同。</p>
+        </section>
+
+        <section id="s9">
+          <h2>九、动手前的必答题</h2>
+          <p>开工程前，用白话写下来。写不出来就还没准备好做病毒向。</p>
+
+          <h3>A. 定位</h3>
+          <ol>
+            <li>主传播句是什么？（一句人话）</li>
+            <li>主情绪是什么？（差一口气 / 攀比 / 好笑 / 求助……只选一个主的）</li>
+            <li>主要寄生平台是什么？打开方式是什么？</li>
+            <li>第一次游玩多久必须出现「可分享的情绪或结果」？</li>
+          </ol>
+
+          <h3>B. 循环</h3>
+          <ol start="5">
+            <li>玩家分享时带走的「结果物」是什么？</li>
+            <li>好友点开后，是否立刻落到同一语境（同一关、同一分、同一残局）？</li>
+            <li>失败重来要几秒？有没有多余惩罚？</li>
+            <li>玩完为什么明天还要来？（可以没有日更，但要诚实承认「这是一锤子话题」）</li>
+          </ol>
+
+          <h3>C. 诚实边界</h3>
+          <ol start="9">
+            <li>这款游戏更像病毒体，还是更像精品小品？不要自欺。</li>
+            <li>没有官方入口、没有内容号、没有投放时，传播预期是什么？</li>
+            <li>爆了之后，是准备承接，还是接受短生命周期？</li>
+            <li>别人抄走玩法后，你还剩什么？</li>
+          </ol>
+          <p>写得越空，越说明还在愿望层，没到设计层。</p>
+        </section>
+
+        <section id="s10">
+          <h2>十、常见自嗨（尽量别踩）</h2>
+          <ol>
+            <li><strong>玩法没人做过就会火</strong> —— 没人做过也可能没人在乎。</li>
+            <li><strong>画面精美就会被分享</strong> —— 精美难截进聊天动机里。</li>
+            <li><strong>关卡很多 = 留存好 = 会传</strong> —— 也可能是一个人安静玩完。</li>
+            <li><strong>先做完再想传播</strong> —— 传播结构往往改的是核心循环，不是贴个分享按钮。</li>
+            <li><strong>对标爆款做同款</strong> —— 复制得了玩法壳，复制不了时机和入口。</li>
+            <li><strong>用广告硬推当病毒</strong> —— 投放是买量；病毒是结构。别混为一谈。</li>
+            <li><strong>把作者约束写进玩家文案</strong> —— 「要对齐」这类，只说明你在自言自语。</li>
+            <li><strong>迷信小而美</strong> —— 小是手段，美是品质；传染靠的是钩子和网络。</li>
+          </ol>
+        </section>
+
+        <section id="s11">
+          <h2>十一、设计时的手感清单</h2>
+          <p>不必全做，但病毒向至少要反复掂量：</p>
+          <ul>
+            <li><strong>前 10 秒</strong>：有没有动作？有没有反馈？有没有目标？</li>
+            <li><strong>前 60 秒</strong>：有没有第一次强烈情绪（死、过、笑、气）？</li>
+            <li><strong>失败</strong>：动画短不短？重开快不快？会不会骂产品而不是骂自己？</li>
+            <li><strong>成功</strong>：有没有「可截图的一刻」？</li>
+            <li><strong>社交</strong>：分享是默认路径之一，还是藏在角落的按钮？</li>
+            <li><strong>公平</strong>：比分 / 通关是否可复现？</li>
+            <li><strong>话题</strong>：有没有一句能上评论区的话？</li>
+            <li><strong>生命周期</strong>：长线日更，还是一波话题？两种成本完全不同。</li>
+          </ul>
+        </section>
+
+        <section id="s12">
+          <h2>十二、给 agent 的使用方式</h2>
+          <p>在构思、评审、或「帮我想一个会传的小游戏」时，先读本文，再产出方案。输出里应显式包含：</p>
+          <ol>
+            <li>主传播句（人话，一句）</li>
+            <li>主情绪</li>
+            <li>寄生平台与打开方式</li>
+            <li>结果物 / 分享带走什么</li>
+            <li>好友点开后的第一屏语境</li>
+            <li>失败与重来的成本</li>
+            <li>这是病毒体还是精品小品</li>
+            <li>没有大渠道时的保守预期</li>
+          </ol>
+          <p>若方案只有玩法机制表、没有传播句和分享语境——退回重做，不要直接进入关卡生产。</p>
+          <p>做关卡与文案时额外遵守：</p>
+          <ul>
+            <li>玩家文案只写玩家要做的事和会看到的反馈</li>
+            <li>不要把关卡作者约束、实现细节、内部代号写进提示</li>
+            <li>规则解释遵循「看见什么 → 怎么做 → 会怎样」</li>
+          </ul>
+        </section>
+
+        <section id="s13">
+          <h2>十三、收束</h2>
+          <p>社交病毒式小游戏的底层逻辑，可以压成一段话：</p>
+          <div class="callout">
+            <strong
+              >让人在极短时间里尝到尖情绪，并拿到一句能说出口的话、一个能丢给熟人的结果；熟人又能以接近零的成本掉进同一情绪。平台决定这句话能传多远；运气决定你能不能赶上那一波。</strong
+            >
+          </div>
+          <p>
+            精品与病毒可以并存于同一个工作室的不同产品里，但不要用同一套成功标准衡量它们。
+          </p>
+          <p>做之前想清楚自己在做哪一种。想清楚了，再写第一行代码、第一张关卡图。</p>
+        </section>
+
+        <section id="s14">
+          <h2>附录：对照阅读</h2>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>样本</th>
+                  <th>更强的杠杆</th>
+                  <th>别误读成</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Flappy Bird</td>
+                  <td>难度与再开、话题性</td>
+                  <td>「像素风就会火」</td>
+                </tr>
+                <tr>
+                  <td>跳一跳</td>
+                  <td>微信入口 + 社交分</td>
+                  <td>「跳格子玩法稀缺」</td>
+                </tr>
+                <tr>
+                  <td>羊了个羊</td>
+                  <td>通关挫败话题 + 微信传播场</td>
+                  <td>「三消换皮就行」</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p>读样本时问两句就够：</p>
+          <ol>
+            <li>人当时转发时嘴里在说什么？</li>
+            <li>若拿掉它所在的平台入口，它还剩多少传染力？</li>
+          </ol>
+          <p>答得出来，就说明没有被「小而美神话」带跑。</p>
+        </section>
+      </article>
+
+      <footer class="end">翻到头了。睡吧。</footer>
+    </div>
+
+    <a class="back-top" href="#top" aria-label="回到顶部">↑</a>
+  </body>
+</html>
