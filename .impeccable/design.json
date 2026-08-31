@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-31T00:00:00+08:00",
+  "title": "Design System: 翻砖块",
+  "extensions": {
+    "colorMeta": {
+      "sky-clear": { "role": "primary", "displayName": "晴空蓝", "canonical": "#38abf0", "tonalRamp": ["#07314c", "#0b527d", "#126fa8", "#248fd9", "#38abf0", "#75c8f6", "#b5e3fb", "#eef9ff"] },
+      "cuboid-teal": { "role": "secondary", "displayName": "角色青蓝", "canonical": "#16afc7", "tonalRamp": ["#06313a", "#08515e", "#0b7182", "#1094aa", "#16afc7", "#58c9d8", "#9de3ea", "#ebfbfc"] },
+      "arrival-mint": { "role": "tertiary", "displayName": "到达薄荷", "canonical": "#32c990", "tonalRamp": ["#073a2a", "#0b5e43", "#12845f", "#1bab78", "#32c990", "#70dcae", "#b3efd5", "#effcf7"] },
+      "cloud-white": { "role": "neutral", "displayName": "云白", "canonical": "#f9fcff", "tonalRamp": ["#202a33", "#3c4a56", "#5f6e7a", "#8795a1", "#adb8c2", "#d0d8df", "#e8eef3", "#f9fcff"] },
+      "ink-navy": { "role": "neutral", "displayName": "墨水海军蓝", "canonical": "#17395d", "tonalRamp": ["#081421", "#102b46", "#17395d", "#2a547d", "#4d7396", "#7d9bb5", "#b7c9d8", "#edf3f8"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "游戏标题", "purpose": "品牌标题和面板标题，粗壮但不幼儿化。" },
+      "body": { "displayName": "清晰圆体", "purpose": "HUD、按钮、提示和统计信息。" }
+    },
+    "shadows": [
+      { "name": "control-lift", "value": "0 7px 16px rgba(5, 67, 118, 0.25)", "purpose": "树脂按钮静止态触感。" },
+      { "name": "stage-depth", "value": "0 18px 38px rgba(5, 62, 109, 0.3)", "purpose": "主舞台与天空背景的结构分离。" },
+      { "name": "panel-float", "value": "0 24px 56px rgba(7, 54, 94, 0.34)", "purpose": "覆盖层面板。" }
+    ],
+    "motion": [
+      { "name": "press", "value": "100ms ease", "purpose": "按钮按下位移和缩放。" },
+      { "name": "panel-enter", "value": "420ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "面板轻快进入；reduced-motion 下关闭。" }
+    ],
+    "breakpoints": [
+      { "name": "mobile-header", "value": "640px" },
+      { "name": "touch-controls", "value": "899px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Resin Icon Button",
+      "kind": "button",
+      "refersTo": "resin-button",
+      "description": "HUD 中的 44px 触控按钮。",
+      "html": "<button class=\"ds-resin-btn\" aria-label=\"重来\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 11a8 8 0 1 1 2 5\"/><path d=\"M4 5v6h6\"/></svg></button>",
+      "css": ".ds-resin-btn{width:44px;height:44px;border:1px solid rgba(220,244,255,.72);border-radius:16px;background:linear-gradient(180deg,rgba(151,215,255,.98),rgba(119,195,245,.92));color:#fff;box-shadow:0 7px 16px rgba(5,67,118,.25);display:grid;place-items:center;transition:transform .1s ease,box-shadow .12s ease}.ds-resin-btn svg{width:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.ds-resin-btn:hover{filter:brightness(1.04)}.ds-resin-btn:active{transform:translateY(2px) scale(.96);box-shadow:0 3px 9px rgba(5,67,118,.24)}.ds-resin-btn:focus-visible{outline:3px solid #ffd45a;outline-offset:2px}"
+    },
+    {
+      "name": "HUD Pill",
+      "kind": "chip",
+      "refersTo": "hud-pill",
+      "description": "紧凑显示关卡与步数。",
+      "html": "<div class=\"ds-hud\">第 1 / 78 关 <span>·</span> 步数 0</div>",
+      "css": ".ds-hud{display:inline-flex;gap:8px;align-items:center;padding:.38rem .68rem;border-radius:999px;background:rgba(8,83,145,.2);color:rgba(255,255,255,.94);font:700 .9rem Nunito,'PingFang SC',sans-serif;font-variant-numeric:tabular-nums}.ds-hud span{opacity:.45}"
+    },
+    {
+      "name": "Direction Button",
+      "kind": "button",
+      "refersTo": "resin-button",
+      "description": "十字方向键中的单个触控目标。",
+      "html": "<button class=\"ds-pad\" aria-label=\"上\"><svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m7 14 5-5 5 5\"/></svg></button>",
+      "css": ".ds-pad{width:62px;height:54px;border:1px solid rgba(220,244,255,.72);border-radius:17px;background:linear-gradient(180deg,rgba(151,215,255,.98),rgba(119,195,245,.92));color:#fff;box-shadow:0 7px 15px rgba(5,66,116,.25);display:grid;place-items:center}.ds-pad svg{width:28px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.ds-pad:hover{filter:brightness(1.04)}.ds-pad:active{transform:translateY(2px) scale(.95)}.ds-pad:focus-visible{outline:3px solid #ffd45a;outline-offset:2px}"
+    },
+    {
+      "name": "Game Stage",
+      "kind": "custom",
+      "description": "承载 WebGL 树脂托盘的正方形舞台框。",
+      "html": "<div class=\"ds-stage\"><span>WebGL stage</span></div>",
+      "css": ".ds-stage{width:320px;aspect-ratio:1;border-radius:26px;overflow:hidden;background:#2f8fd0;box-shadow:0 18px 38px rgba(5,62,109,.3),inset 0 2px 0 rgba(226,247,255,.52),inset 0 -16px 30px rgba(5,74,128,.2);display:grid;place-items:center;color:rgba(255,255,255,.6);font:700 14px Nunito,sans-serif}"
+    },
+    {
+      "name": "Overlay Panel",
+      "kind": "card",
+      "refersTo": "panel",
+      "description": "选关和通关信息的云白浮层。",
+      "html": "<section class=\"ds-panel\"><h2>选择关卡</h2><p>已通关 1 / 78</p><button>关闭</button></section>",
+      "css": ".ds-panel{width:320px;padding:20px;border-radius:24px;background:#f9fcff;color:#17395d;box-shadow:0 24px 56px rgba(7,54,94,.34),inset 0 2px 0 #fff;font-family:Nunito,'PingFang SC',sans-serif}.ds-panel h2{margin:0 0 12px;font:800 1.55rem 'ZCOOL KuaiLe',Nunito,sans-serif}.ds-panel p{color:#58718b;font-weight:700}.ds-panel button{width:100%;min-height:44px;border:1px solid #d9e8f4;border-radius:16px;background:transparent;color:#58718b;font-weight:800}.ds-panel button:hover{background:#f4f7fa;color:#17395d}.ds-panel button:focus-visible{outline:3px solid #ffd45a;outline-offset:2px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "晴空树脂游乐场",
+    "overview": "界面是一座悬在晴空里的精巧树脂玩具舞台：清爽、有触感、带一点轻竞技的利落感。可爱来自小方块的比例、表情、翻滚反应和材质，而不是婴幼儿符号或装饰堆叠。",
+    "keyCharacteristics": ["清透晴空蓝和青蓝角色", "三层树脂托盘", "圆润但克制", "双入口一致"],
+    "rules": [
+      { "name": "One Warm Accent", "body": "暖色只服务于成功、星级和键盘焦点。", "section": "colors" },
+      { "name": "Molded Stage", "body": "路径不能直接漂在纯色卡片上。", "section": "elevation" }
+    ],
+    "dos": ["Do 让角色表情在 390px 宽度下仍可读。", "Do 同时用形体、亮度和微光表达终点。"],
+    "donts": ["Don't 使用学龄前角色符号或彩虹糖果色。", "Don't 为追求萌感牺牲关卡判断。"]
+  }
+}

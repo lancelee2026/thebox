@@ -123,6 +123,9 @@ export class Game {
     const bridges = emptyBridges(def);
     const collapsed = emptyCollapsed();
     this.level.load(def, 0, bridges, collapsed);
+    if (this.level.parsed) {
+      this.sceneSetup.frameBoard(this.level.parsed.cols, this.level.parsed.rows);
+    }
     this.world = initialSnapshot(def, this.level.startCol, this.level.startRow);
     this.world.bridges = bridges;
     this.world.collapsed = collapsed;
@@ -131,7 +134,7 @@ export class Game {
     this.hud.setMoves(0);
     const coach =
       def.hint ??
-      (level1Based === 1 ? '把砖块翻进绿色终点。' : '');
+      (level1Based === 1 ? '把小方块送回家。' : '');
     this.hud.setHint(coach);
     this.hud.hideClear();
     this.hud.setSwapVisible(false);
@@ -342,6 +345,7 @@ export class Game {
     this.busy = true;
     this.input.setEnabled(false);
     this.sfx.fail();
+    this.player.setMood('surprised');
     this.level.shake();
     this.player.fall(() => {
       this.history = [];

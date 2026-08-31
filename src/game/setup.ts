@@ -1,13 +1,14 @@
 import * as THREE from 'three';
 
-/** 舞台场景底：比页面渐变更深一档，读成「窗口」 */
-export const SCENE_SKY = 0x1f6fa8;
+/** 舞台场景底：清透的玩具蓝，与页面天空同属一个世界 */
+export const SCENE_SKY = 0x2f8fd0;
 
 export function createScene(canvas: HTMLCanvasElement): {
   scene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
   camera: THREE.OrthographicCamera;
   cameraPivot: THREE.Group;
+  frameBoard: (cols: number, rows: number) => void;
   resize: () => void;
 } {
   const scene = new THREE.Scene();
@@ -22,6 +23,9 @@ export function createScene(canvas: HTMLCanvasElement): {
     failIfMajorPerformanceCaveat: false,
   });
   renderer.setPixelRatio(Math.min(2, window.devicePixelRatio));
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.08;
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
 
@@ -35,14 +39,14 @@ export function createScene(canvas: HTMLCanvasElement): {
   cameraPivot.rotation.set(0, -Math.PI / 2, 0);
   scene.add(cameraPivot);
 
-  // 半球光：天空冷蓝 / 地面微暖，形成体积
-  const hemi = new THREE.HemisphereLight(0x9fd4ff, 0xc4a574, 0.42);
+  // 半球光：天空清蓝 / 地面微暖，托出软质树脂的体积
+  const hemi = new THREE.HemisphereLight(0xbce9ff, 0xc69b72, 0.56);
   scene.add(hemi);
 
-  const ambient = new THREE.AmbientLight(0xffffff, 0.38);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.46);
   scene.add(ambient);
 
-  const sun = new THREE.DirectionalLight(0xfff5e6, 1.05);
+  const sun = new THREE.DirectionalLight(0xfff8ed, 1.22);
   sun.position.set(5, 14, 6);
   sun.castShadow = true;
   sun.shadow.mapSize.set(1024, 1024);
@@ -56,13 +60,13 @@ export function createScene(canvas: HTMLCanvasElement): {
   sun.shadow.normalBias = 0.04;
   scene.add(sun);
 
-  // 极淡阴影承接面：浮空路径落地
+  // 极淡阴影承接面：托盘下方仍保留一层软阴影，不抢舞台本身的层次。
   const catcher = new THREE.Mesh(
     new THREE.PlaneGeometry(48, 48),
-    new THREE.ShadowMaterial({ opacity: 0.28 }),
+    new THREE.ShadowMaterial({ opacity: 0.22 }),
   );
   catcher.rotation.x = -Math.PI / 2;
-  catcher.position.y = -0.28;
+  catcher.position.y = -0.82;
   catcher.receiveShadow = true;
   scene.add(catcher);
 
@@ -90,5 +94,11 @@ export function createScene(canvas: HTMLCanvasElement): {
 
   document.addEventListener('dblclick', (e) => e.preventDefault());
 
-  return { scene, renderer, camera, cameraPivot, resize };
+  const frameBoard = (cols: number, rows: number) => {
+    const projectedSpan = Math.max(1, cols + rows);
+    camera.zoom = THREE.MathUtils.clamp(12 / projectedSpan, 0.76, 1.35);
+    camera.updateProjectionMatrix();
+  };
+
+  return { scene, renderer, camera, cameraPivot, frameBoard, resize };
 }

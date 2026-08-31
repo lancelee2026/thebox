@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { Group, Tween, Easing } from '@tweenjs/tween.js';
 import type { BlockState, Dir } from './blockLogic';
 import {
@@ -12,6 +13,7 @@ import { animDuration } from './motion';
 import type { LevelView } from './Level';
 
 type PivotAxis = 'x' | 'z';
+type PlayerMood = 'idle' | 'focus' | 'surprised' | 'happy';
 
 interface FlipPlan {
   pivotWorld: { x: number; y: number; z: number };
@@ -20,6 +22,97 @@ interface FlipPlan {
   next: BlockState;
   target: 'a' | 'b';
   asCube: boolean;
+}
+
+function drawRoundRect(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  radius: number,
+): void {
+  const r = Math.min(radius, width / 2, height / 2);
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + width, y, x + width, y + height, r);
+  ctx.arcTo(x + width, y + height, x, y + height, r);
+  ctx.arcTo(x, y + height, x, y, r);
+  ctx.arcTo(x, y, x + width, y, r);
+  ctx.closePath();
+}
+
+function createFaceMaterial(mood: PlayerMood): THREE.MeshBasicMaterial {
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.MeshBasicMaterial({ transparent: true });
+
+  const ink = '#123b58';
+  const white = '#f8fdff';
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  if (mood === 'happy') {
+    ctx.strokeStyle = white;
+    ctx.lineWidth = 18;
+    ctx.beginPath();
+    ctx.arc(83, 62, 24, Math.PI * 0.12, Math.PI * 0.88);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(173, 62, 24, Math.PI * 0.12, Math.PI * 0.88);
+    ctx.stroke();
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 9;
+    ctx.beginPath();
+    ctx.arc(128, 81, 25, Math.PI * 0.12, Math.PI * 0.88);
+    ctx.stroke();
+  } else {
+    for (const x of [78, 178]) {
+      drawRoundRect(ctx, x - 31, 28, 62, mood === 'surprised' ? 68 : 58, 27);
+      ctx.fillStyle = white;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x + (mood === 'focus' ? 6 : 0), 58, mood === 'surprised' ? 13 : 15, 0, Math.PI * 2);
+      ctx.fillStyle = ink;
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(x + 5, 52, 4.5, 0, Math.PI * 2);
+      ctx.fillStyle = white;
+      ctx.fill();
+    }
+
+    ctx.strokeStyle = ink;
+    ctx.lineWidth = 8;
+    if (mood === 'focus') {
+      ctx.beginPath();
+      ctx.moveTo(51, 27);
+      ctx.quadraticCurveTo(77, 19, 101, 29);
+      ctx.moveTo(155, 29);
+      ctx.quadraticCurveTo(179, 19, 205, 27);
+      ctx.stroke();
+    }
+
+    ctx.beginPath();
+    if (mood === 'surprised') {
+      ctx.arc(128, 96, 10, 0, Math.PI * 2);
+    } else {
+      ctx.arc(128, 78, 18, Math.PI * 0.16, Math.PI * 0.84);
+    }
+    ctx.stroke();
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  return new THREE.MeshBasicMaterial({
+    map: texture,
+    transparent: true,
+    alphaTest: 0.08,
+    depthWrite: false,
+    toneMapped: false,
+  });
 }
 
 export class Player {
@@ -35,32 +128,55 @@ export class Player {
   private level: LevelView;
   private activeTween: Tween | null = null;
   private matA = new THREE.MeshStandardMaterial({
-    color: 0x3a4654,
-    metalness: 0.08,
-    roughness: 0.72,
+    color: 0x16afc7,
+    emissive: 0x06394a,
+    emissiveIntensity: 0.07,
+    metalness: 0.04,
+    roughness: 0.5,
   });
   private matB = new THREE.MeshStandardMaterial({
-    color: 0x6b7c8a,
-    metalness: 0.06,
-    roughness: 0.74,
+    color: 0x72c8d7,
+    emissive: 0x0c3d49,
+    emissiveIntensity: 0.05,
+    metalness: 0.03,
+    roughness: 0.56,
   });
   private matActive = new THREE.MeshStandardMaterial({
-    color: 0x243447,
-    metalness: 0.1,
-    roughness: 0.68,
+    color: 0x0d88a4,
+    emissive: 0x073e53,
+    emissiveIntensity: 0.11,
+    metalness: 0.04,
+    roughness: 0.46,
   });
+  private faceMaterials: Record<PlayerMood, THREE.MeshBasicMaterial> = {
+    idle: createFaceMaterial('idle'),
+    focus: createFaceMaterial('focus'),
+    surprised: createFaceMaterial('surprised'),
+    happy: createFaceMaterial('happy'),
+  };
+  private faceA: THREE.Mesh;
+  private faceB: THREE.Mesh;
 
   constructor(scene: THREE.Scene, level: LevelView, tweens: Group) {
     this.level = level;
     this.tweens = tweens;
-    this.mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.matA);
+    const bodyGeo = new RoundedBoxGeometry(1.12, 1.12, 1.12, 4, 0.14);
+    const faceGeo = new THREE.PlaneGeometry(0.94, 0.48);
+
+    this.mesh = new THREE.Mesh(bodyGeo, this.matA);
     this.mesh.castShadow = true;
     this.pivot.add(this.mesh);
+    this.faceA = new THREE.Mesh(faceGeo, this.faceMaterials.idle);
+    this.faceA.renderOrder = 3;
+    this.pivot.add(this.faceA);
     scene.add(this.pivot);
 
-    this.meshB = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.matB);
+    this.meshB = new THREE.Mesh(bodyGeo, this.matB);
     this.meshB.castShadow = true;
     this.pivotB.add(this.meshB);
+    this.faceB = new THREE.Mesh(faceGeo, this.faceMaterials.idle);
+    this.faceB.renderOrder = 3;
+    this.pivotB.add(this.faceB);
     this.pivotB.visible = false;
     scene.add(this.pivotB);
   }
@@ -95,7 +211,27 @@ export class Player {
     mesh.position.set(0, 0, 0);
     mesh.rotation.set(0, 0, 0);
     mesh.scale.set(size.sx * scaleMul, size.sy * scaleMul, size.sz * scaleMul);
+    this.positionFace(which, size, mesh.position);
+    const face = which === 'a' ? this.faceA : this.faceB;
+    face.scale.setScalar(scaleMul);
     pivot.position.set(x, local.y, z);
+  }
+
+  private positionFace(
+    which: 'a' | 'b',
+    size: { sx: number; sy: number; sz: number },
+    center: THREE.Vector3,
+  ): void {
+    const face = which === 'a' ? this.faceA : this.faceB;
+    const lift = size.sy > 1.4 ? 0.27 : 0.1;
+    // 角色体积略大于逻辑格；脸要贴在实际树脂外壳之外，避免被深度缓冲吞掉。
+    face.position.set(center.x, center.y + lift, center.z + size.sz * 0.56 + 0.025);
+    face.rotation.set(0, 0, 0);
+  }
+
+  setMood(mood: PlayerMood): void {
+    this.faceA.material = this.faceMaterials[mood];
+    this.faceB.material = this.faceMaterials[mood];
   }
 
   placeMerged(state: BlockState, scaleMul = 1): void {
@@ -142,6 +278,10 @@ export class Player {
     this.meshB.rotation.set(0, 0, 0);
     this.mesh.scale.set(1, 1, 1);
     this.meshB.scale.set(1, 1, 1);
+    this.positionFace('a', { sx: 1, sy: 1, sz: 1 }, this.mesh.position);
+    this.positionFace('b', { sx: 1, sy: 1, sz: 1 }, this.meshB.position);
+    this.faceA.scale.setScalar(1);
+    this.faceB.scale.setScalar(1);
     this.pivot.position.set(startAW.x, originA.y, startAW.z);
     this.pivotB.position.set(startBW.x, originB.y, startBW.z);
     this.refreshMaterials();
@@ -211,6 +351,7 @@ export class Player {
         const z = startW.z + (endW.z - startW.z) * travel;
         const y = startC.y + (endC.y - startC.y) * travel + Math.sin(Math.PI * travel) * 0.55;
         this.mesh.scale.set(size.sx * squeeze, size.sy * squeeze, size.sz * squeeze);
+        this.faceA.scale.setScalar(squeeze);
         this.pivot.position.set(x, y, z);
       })
       .onComplete(() => {
@@ -273,14 +414,17 @@ export class Player {
     this.stopTween();
     this.canMove = false;
     this.placeMerged(state, 1);
+    this.setMood('idle');
     const size = blockSize(state);
     const s = { v: 0.75 };
     this.mesh.scale.set(size.sx * s.v, size.sy * s.v, size.sz * s.v);
+    this.faceA.scale.setScalar(s.v);
     new Tween(s, this.tweens)
       .to({ v: 1 }, animDuration(250))
       .easing(Easing.Quadratic.Out)
       .onUpdate(() => {
         this.mesh.scale.set(size.sx * s.v, size.sy * s.v, size.sz * s.v);
+        this.faceA.scale.setScalar(s.v);
       })
       .onComplete(() => {
         this.canMove = true;
@@ -297,12 +441,14 @@ export class Player {
     const next = asCube ? nextCubeState(cur, dir) : nextState(cur, dir);
     const plan = this.planFlip(cur, next, dir, which, asCube);
     this.canMove = false;
+    this.setMood('focus');
     this.animateFlip(
       plan,
       () => {
         if (which === 'a') this.state = cloneState(next);
         else this.stateB = cloneState(next);
         this.placeEntity(which, next, asCube);
+        this.setMood('idle');
         this.canMove = true;
         onSettled();
       },
@@ -377,6 +523,7 @@ export class Player {
       cw.z - plan.pivotWorld.z,
     );
     mesh.scale.set(size.sx, size.sy, size.sz);
+    this.positionFace(plan.target, size, mesh.position);
 
     const rot = { x: 0, y: 0, z: 0 };
     const target = plan.axis === 'z' ? { z: plan.angle } : { x: plan.angle };
@@ -401,6 +548,7 @@ export class Player {
     const s = { v: 1, y: 0 };
     const targets = [this.mesh, ...(this.pivotB.visible ? [this.meshB] : [])];
     const pivots = [this.pivot, ...(this.pivotB.visible ? [this.pivotB] : [])];
+    const faces = [this.faceA, ...(this.pivotB.visible ? [this.faceB] : [])];
     const scales = targets.map((m) => ({ x: m.scale.x, y: m.scale.y, z: m.scale.z }));
     const baseY = pivots.map((p) => p.position.y);
     new Tween(s, this.tweens)
@@ -410,6 +558,7 @@ export class Player {
         targets.forEach((m, i) =>
           m.scale.set(scales[i].x * s.v, scales[i].y * s.v, scales[i].z * s.v),
         );
+        faces.forEach((face) => face.scale.setScalar(s.v));
         pivots.forEach((p, i) => {
           p.position.y = baseY[i] + s.y;
         });
@@ -426,9 +575,10 @@ export class Player {
     const sx = this.mesh.scale.x;
     const sy = this.mesh.scale.y;
     const sz = this.mesh.scale.z;
+    this.setMood('happy');
 
     const riseSpin = new Tween(lift, this.tweens)
-      .to({ y: baseY + 0.85, spin: Math.PI * 1.5 }, animDuration(520))
+      .to({ y: baseY + 0.85, spin: Math.PI * 2 }, animDuration(520))
       .easing(Easing.Cubic.Out)
       .onUpdate(() => {
         this.pivot.position.y = lift.y;
@@ -439,7 +589,10 @@ export class Player {
     const shrink = new Tween(s, this.tweens)
       .to({ v: 0 }, animDuration(300))
       .easing(Easing.Quadratic.In)
-      .onUpdate(() => this.mesh.scale.set(sx * s.v, sy * s.v, sz * s.v))
+      .onUpdate(() => {
+        this.mesh.scale.set(sx * s.v, sy * s.v, sz * s.v);
+        this.faceA.scale.setScalar(s.v);
+      })
       .onComplete(onDone);
 
     riseSpin.chain(shrink).start();

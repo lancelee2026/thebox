@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
 import { Group, Tween, Easing } from '@tweenjs/tween.js';
 import type { BlockState } from './blockLogic';
 import { animDuration } from './motion';
@@ -21,19 +22,51 @@ export class LevelView {
   def: LevelDef | null = null;
   parsed: ParsedLevel | null = null;
   private tweens: Group;
-  private geo = new THREE.BoxGeometry(1, 0.25, 1);
+  private geo = new RoundedBoxGeometry(0.96, 0.25, 0.96, 3, 0.075);
+  private goalInsetGeo = new RoundedBoxGeometry(0.67, 0.055, 0.67, 3, 0.08);
+  private goalDockGeo = new RoundedBoxGeometry(0.82, 0.08, 0.82, 4, 0.1);
+  private goalDockMat = new THREE.MeshStandardMaterial({
+    color: 0xb9ffe1,
+    emissive: 0x36d99b,
+    emissiveIntensity: 0.28,
+    metalness: 0.01,
+    roughness: 0.38,
+  });
+  private goalInsetMat = new THREE.MeshStandardMaterial({
+    color: 0x91f3c8,
+    emissive: 0x2bd893,
+    emissiveIntensity: 0.48,
+    metalness: 0.02,
+    roughness: 0.42,
+  });
+  private trayBaseMat = new THREE.MeshStandardMaterial({
+    color: 0x72bfe4,
+    metalness: 0.02,
+    roughness: 0.46,
+  });
+  private trayRimMat = new THREE.MeshStandardMaterial({
+    color: 0xd7f2fc,
+    metalness: 0.01,
+    roughness: 0.4,
+  });
+  private trayInsetMat = new THREE.MeshStandardMaterial({
+    color: 0x3f96c3,
+    metalness: 0,
+    roughness: 0.64,
+  });
+  private trayMeshes: THREE.Mesh[] = [];
   private mats: Record<TileKind, THREE.MeshStandardMaterial> = {
     x: new THREE.MeshStandardMaterial({
-      color: 0xf3f5f7,
+      color: 0xf7fbff,
       metalness: 0,
-      roughness: 0.82,
+      roughness: 0.62,
     }),
     o: new THREE.MeshStandardMaterial({
-      color: 0x1f9b58,
-      emissive: 0x0a4d2c,
-      emissiveIntensity: 0.16,
+      color: 0x38d69b,
+      emissive: 0x0b6847,
+      emissiveIntensity: 0.2,
       metalness: 0,
-      roughness: 0.72,
+      roughness: 0.52,
     }),
     z: new THREE.MeshStandardMaterial({
       color: 0xd6453a,
@@ -117,20 +150,21 @@ export class LevelView {
     this.offsetX = -this.parsed.cols / 2 + 0.5;
     this.offsetZ = -this.parsed.rows / 2 + 0.5;
     this.layer.position.set(this.offsetX, 0, this.offsetZ);
+    this.addTray(this.parsed.cols, this.parsed.rows);
 
     for (let r = 0; r < this.parsed.rows; r++) {
       for (let c = 0; c < this.parsed.cols; c++) {
         const ch = this.parsed.grid[r][c];
         if (ch === '.' ) continue;
         if (ch === 'b') {
-          const mesh = this.createTile(this.mats.b, c, r);
+          const mesh = this.createTile(this.mats.b, c, r, 'b');
           mesh.visible = !!bridges[this.parsed.cellToBridge.get(`${c},${r}`) ?? ''];
           this.bridgeMeshes.set(`${c},${r}`, mesh);
           continue;
         }
         const kind = (ch === '@' ? 'x' : ch) as TileKind;
         if (this.mats[kind]) {
-          const mesh = this.createTile(this.mats[kind], c, r);
+          const mesh = this.createTile(this.mats[kind], c, r, kind);
           if (ch === 't') this.addTeleportRing(mesh);
           if (ch === 'c') {
             const key = `${c},${r}`;
@@ -143,6 +177,38 @@ export class LevelView {
         }
       }
     }
+  }
+
+  /** 给每关铺一只软质树脂托盘，让路径像被摆进一个明确的玩具舞台。 */
+  private addTray(cols: number, rows: number): void {
+    const width = cols + 1.34;
+    const depth = Math.max(rows + 1.34, 4.3);
+    const centerX = (cols - 1) / 2;
+    const centerZ = (rows - 1) / 2;
+    const baseGeo = new RoundedBoxGeometry(width, 0.58, depth, 6, 0.24);
+    const rimGeo = new RoundedBoxGeometry(width - 0.2, 0.22, depth - 0.2, 6, 0.2);
+    const insetGeo = new RoundedBoxGeometry(width - 0.46, 0.12, depth - 0.46, 5, 0.18);
+    const base = new THREE.Mesh(baseGeo, this.trayBaseMat);
+    base.position.set(centerX, -0.59, centerZ);
+    base.castShadow = true;
+    base.receiveShadow = true;
+    base.userData.trayGeometry = baseGeo;
+    this.layer.add(base);
+
+    const rim = new THREE.Mesh(rimGeo, this.trayRimMat);
+    rim.position.set(centerX, -0.36, centerZ);
+    rim.castShadow = true;
+    rim.receiveShadow = true;
+    rim.userData.trayGeometry = rimGeo;
+    this.layer.add(rim);
+
+    const inset = new THREE.Mesh(insetGeo, this.trayInsetMat);
+    inset.position.set(centerX, -0.225, centerZ);
+    inset.castShadow = false;
+    inset.receiveShadow = true;
+    inset.userData.trayGeometry = insetGeo;
+    this.layer.add(inset);
+    this.trayMeshes.push(base, rim, inset);
   }
 
   setLayer(
@@ -199,12 +265,24 @@ export class LevelView {
     }
   }
 
-  private createTile(mat: THREE.Material, c: number, r: number): THREE.Mesh {
+  private createTile(mat: THREE.Material, c: number, r: number, kind: TileKind): THREE.Mesh {
     const mesh = new THREE.Mesh(this.geo, mat);
     mesh.position.set(c, -0.125, r);
     mesh.receiveShadow = true;
     mesh.castShadow = true;
     this.layer.add(mesh);
+    if (kind === 'o') {
+      const dock = new THREE.Mesh(this.goalDockGeo, this.goalDockMat);
+      dock.position.y = 0.17;
+      dock.castShadow = false;
+      dock.receiveShadow = false;
+      mesh.add(dock);
+      const inset = new THREE.Mesh(this.goalInsetGeo, this.goalInsetMat);
+      inset.position.y = 0.23;
+      inset.castShadow = false;
+      inset.receiveShadow = false;
+      mesh.add(inset);
+    }
     const s = { v: 0.72 };
     mesh.scale.set(s.v, 1, s.v);
     new Tween(s, this.tweens)
@@ -251,6 +329,7 @@ export class LevelView {
     const base: Array<{ mesh: THREE.Mesh; x: number; y: number; z: number }> = [];
     for (const e of this.layer.children) {
       const mesh = e as THREE.Mesh;
+      if (this.trayMeshes.includes(mesh)) continue;
       base.push({ mesh, x: mesh.position.x, y: mesh.position.y, z: mesh.position.z });
     }
     for (const b of base) {
@@ -278,6 +357,7 @@ export class LevelView {
   remove(onDone: () => void): void {
     for (const e of this.layer.children) {
       const mesh = e as THREE.Mesh;
+      if (this.trayMeshes.includes(mesh)) continue;
       const s = { v: 1 };
       new Tween(s, this.tweens)
         .to({ v: 0 }, animDuration(280))
@@ -296,7 +376,11 @@ export class LevelView {
 
   clearImmediate(): void {
     while (this.layer.children.length) {
-      this.layer.remove(this.layer.children[0]);
+      const child = this.layer.children[0] as THREE.Mesh;
+      const trayGeometry = child.userData.trayGeometry as THREE.BufferGeometry | undefined;
+      trayGeometry?.dispose();
+      this.layer.remove(child);
     }
+    this.trayMeshes.length = 0;
   }
 }

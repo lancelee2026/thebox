@@ -22,6 +22,10 @@ const ICON_PATHS: Record<string, string> = {
   'icon-star':
     '<path d="M12 3.2 14.4 9l6.1.5-4.7 3.9 1.5 5.9L12 15.8 6.7 19.3l1.5-5.9L3.5 9.5 9.6 9z"/>',
   'icon-check': '<path d="M5 13.5 9.5 18 19 7"/>',
+  'icon-arrow-up': '<path d="m6 14 6-6 6 6"/>',
+  'icon-arrow-down': '<path d="m6 10 6 6 6-6"/>',
+  'icon-arrow-left': '<path d="m14 6-6 6 6 6"/>',
+  'icon-arrow-right': '<path d="m10 6 6 6-6 6"/>',
 };
 
 /** Build icon via createElementNS — no SVG innerHTML (Trusted Types / older WebKit) */
@@ -113,6 +117,13 @@ function setBtnIcon(btn: HTMLElement, iconId: string, label: string): void {
   btn.title = label;
 }
 
+function setPadIcon(id: string, iconId: string, label: string): void {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  btn.replaceChildren(iconEl(iconId, 'pad-icon'));
+  btn.setAttribute('aria-label', label);
+}
+
 function chapterRanges(): Array<{ name: string; start: number; end: number }> {
   const out: Array<{ name: string; start: number; end: number }> = [];
   let name = '';
@@ -144,6 +155,10 @@ export class Hud {
     setBtnIcon(mustEl('btn-undo'), 'icon-undo', '撤销');
     setBtnIcon(mustEl('btn-restart'), 'icon-restart', '重来');
     if (this.swapBtn) setBtnIcon(this.swapBtn, 'icon-swap', '切换');
+    setPadIcon('pad-up', 'icon-arrow-up', '上');
+    setPadIcon('pad-left', 'icon-arrow-left', '左');
+    setPadIcon('pad-down', 'icon-arrow-down', '下');
+    setPadIcon('pad-right', 'icon-arrow-right', '右');
   }
 
   setLevel(level1Based: number): void {
