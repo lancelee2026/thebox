@@ -59,10 +59,10 @@ function createFaceMaterial(mood: PlayerMood): THREE.MeshBasicMaterial {
     ctx.strokeStyle = white;
     ctx.lineWidth = 18;
     ctx.beginPath();
-    ctx.arc(83, 62, 24, Math.PI * 0.12, Math.PI * 0.88);
+    ctx.arc(83, 86, 24, Math.PI * 1.12, Math.PI * 1.88);
     ctx.stroke();
     ctx.beginPath();
-    ctx.arc(173, 62, 24, Math.PI * 0.12, Math.PI * 0.88);
+    ctx.arc(173, 86, 24, Math.PI * 1.12, Math.PI * 1.88);
     ctx.stroke();
     ctx.strokeStyle = ink;
     ctx.lineWidth = 9;

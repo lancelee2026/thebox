@@ -23,7 +23,7 @@
       { "name": "press", "value": "100ms ease", "purpose": "按钮按下位移和缩放。" },
       { "name": "panel-enter", "value": "420ms cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "面板轻快进入；reduced-motion 下关闭。" },
       { "name": "sky-drift", "value": "46000ms ease-in-out alternate", "purpose": "背景云层以小幅 transform 缓慢漂移；reduced-motion 下静止。" },
-      { "name": "cloud-pass", "value": "19000ms linear", "purpose": "仅在玩家主动开启云雾挑战时穿过路径；reduced-motion 下静止。" },
+      { "name": "cloud-pass", "value": "9000–24000ms randomized linear", "purpose": "仅在玩家主动开启云雾挑战时，以远中近三层随机轮廓、入口、高度与速度穿过路径；reduced-motion 下静止。" },
       { "name": "high-altitude-fall", "value": "1000ms linear physics", "purpose": "真实失足按重力、透视比例和恒定角动量坠落；reduced-motion 下改为 280ms 短下沉淡出。" }
     ],
     "breakpoints": [

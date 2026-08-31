@@ -28,6 +28,7 @@ import { animDuration, prefersReducedMotion } from './motion';
 import { Input } from '../input/Input';
 import { Sfx } from '../audio/Sfx';
 import { Hud, LevelSelect } from '../ui/hud';
+import { CloudField } from '../ui/cloudField';
 import { loadProgress, recordStars, saveProgress, type Progress } from './progress';
 import { starsForMoves } from './stars';
 
@@ -52,6 +53,7 @@ export class Game {
   private sfx = new Sfx();
   private hud = new Hud();
   private select = new LevelSelect();
+  private clouds: CloudField;
   private progress: Progress;
   private levelNo = 1;
   private moves = 0;
@@ -66,6 +68,7 @@ export class Game {
     this.sceneSetup = createScene(canvas);
     this.level = new LevelView(this.sceneSetup.scene, this.tweens);
     this.player = new Player(this.sceneSetup.scene, this.level, this.tweens);
+    this.clouds = new CloudField();
     this.progress = loadProgress();
     this.sfx.setMuted(this.progress.muted);
     this.hud.setMuted(this.progress.muted);
@@ -146,6 +149,7 @@ export class Game {
     root.classList.toggle('cloud-challenge', this.scenePrefs.cloudChallenge);
     this.level.setHighAltitude(this.scenePrefs.highAltitude);
     this.sceneSetup.setHighAltitude(this.scenePrefs.highAltitude);
+    this.clouds.setActive(this.scenePrefs.highAltitude && this.scenePrefs.cloudChallenge);
 
     if (persist) {
       try {

@@ -301,42 +301,41 @@ body::before {
   object-fit: contain;
 }
 
-.foreground-clouds {
+.cloud-field {
   position: absolute;
-  top: 22%;
-  left: -18%;
-  z-index: 4;
-  width: 136%;
-  height: 66%;
+  inset: 0;
   pointer-events: none;
   opacity: 0;
-  background: url("./assets/foreground-cloud-bank.png") center / contain no-repeat;
+  overflow: hidden;
+  transition: opacity 220ms ease;
+}
+
+.cloud-field--far {
+  z-index: 0;
+}
+
+.cloud-field--foreground {
+  z-index: 4;
+}
+
+.high-altitude.cloud-challenge .cloud-field {
+  opacity: 1;
+}
+
+.cloud-sprite {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  opacity: 0;
+  background-image: url("./assets/foreground-cloud-bank.png");
+  background-repeat: no-repeat;
+  background-size: 300% auto;
   mix-blend-mode: screen;
-  transform: translate3d(-76%, 9%, 0);
+  transform-origin: center;
   will-change: transform, opacity;
-}
-
-.high-altitude.cloud-challenge .foreground-clouds {
-  animation: cloud-pass 19s linear infinite;
-}
-
-@keyframes cloud-pass {
-  0%,
-  8% {
-    opacity: 0;
-    transform: translate3d(-76%, 9%, 0);
-  }
-  18% {
-    opacity: 0.78;
-  }
-  72% {
-    opacity: 0.74;
-  }
-  84%,
-  100% {
-    opacity: 0;
-    transform: translate3d(76%, -5%, 0);
-  }
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 9%, #000 91%, transparent 100%);
 }
 
 .controls {
@@ -968,7 +967,7 @@ body::before {
   #canvas-wrap,
   .toggle-track,
   .toggle-track span,
-  .foreground-clouds {
+  .cloud-field {
     transition: none;
     animation: none;
   }
@@ -976,11 +975,6 @@ body::before {
   .clear-star {
     opacity: 1;
     transform: none;
-  }
-
-  .high-altitude.cloud-challenge .foreground-clouds {
-    opacity: 0.58;
-    transform: translate3d(0, 1%, 0);
   }
 
   body::before {
