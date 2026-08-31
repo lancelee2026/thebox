@@ -39,9 +39,6 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background:
-    radial-gradient(ellipse 86% 54% at 52% -12%, rgba(210, 242, 255, 0.52), transparent 58%),
-    linear-gradient(166deg, var(--sky) 0%, var(--sky-mid) 44%, var(--sky-deep) 100%);
   color: var(--ink);
   font-family: var(--font-ui);
   user-select: none;
@@ -49,41 +46,16 @@ body {
   -webkit-touch-callout: none;
 }
 
+html {
+  background: var(--sky-deep);
+}
+
 body {
   position: relative;
   isolation: isolate;
-}
-
-/* 克制的边缘云层只负责空间深度；不加表情、不抢棋盘焦点。 */
-body::before,
-body::after {
-  content: "";
-  position: fixed;
-  z-index: -1;
-  pointer-events: none;
-  filter: blur(10px);
-  opacity: 0.28;
-}
-
-body::before {
-  left: -10vw;
-  top: 24%;
-  width: min(48vw, 560px);
-  height: min(23vw, 260px);
   background:
-    radial-gradient(ellipse 28% 48% at 22% 56%, rgba(239, 249, 255, 0.9) 0 66%, transparent 68%),
-    radial-gradient(ellipse 31% 62% at 43% 42%, rgba(250, 253, 255, 0.92) 0 64%, transparent 66%),
-    radial-gradient(ellipse 35% 47% at 70% 62%, rgba(224, 243, 255, 0.86) 0 64%, transparent 67%);
-}
-
-body::after {
-  right: -9vw;
-  top: 9%;
-  width: min(34vw, 390px);
-  height: min(18vw, 205px);
-  background:
-    radial-gradient(ellipse 42% 58% at 38% 48%, rgba(250, 253, 255, 0.9) 0 65%, transparent 67%),
-    radial-gradient(ellipse 36% 48% at 70% 64%, rgba(225, 243, 255, 0.8) 0 63%, transparent 66%);
+    linear-gradient(180deg, rgba(28, 137, 210, 0.06), rgba(16, 91, 166, 0.22)),
+    url("./assets/sky-clouds-desktop.jpg") center / cover no-repeat;
 }
 
 #app {
@@ -752,20 +724,10 @@ body::after {
 }
 
 @media (max-width: 640px) {
-  body::before {
-    left: -30vw;
-    top: 27%;
-    width: 72vw;
-    height: 35vw;
-    opacity: 0.22;
-  }
-
-  body::after {
-    right: -29vw;
-    top: 14%;
-    width: 54vw;
-    height: 30vw;
-    opacity: 0.18;
+  body {
+    background:
+      linear-gradient(180deg, rgba(28, 137, 210, 0.04), rgba(16, 91, 166, 0.2)),
+      url("./assets/sky-clouds-mobile.jpg") center / cover no-repeat;
   }
 
   #app {
