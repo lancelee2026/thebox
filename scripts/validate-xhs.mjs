@@ -74,6 +74,13 @@ for (const [label, pattern, required] of checks) {
   if ((required && !matched) || (!required && matched)) errors.push(`${label} 校验失败`);
 }
 
+// 云雾由运行时按 data-cloud-depth 取节点；双入口 HTML 漏同步时，开关会看似打开却没有任何云可渲染。
+for (const depth of ['far', 'mid', 'near']) {
+  if (!new RegExp(`data-cloud-depth=["']${depth}["']`).test(html)) {
+    errors.push(`缺少 ${depth} 云层节点`);
+  }
+}
+
 for (const match of html.matchAll(/(?:src|href)=["']([^"']+)["']/gi)) {
   const ref = match[1];
   if (ref.startsWith('data:') || ref.startsWith('blob:') || ref.startsWith('#')) continue;

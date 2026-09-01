@@ -39,12 +39,18 @@
       <main class="stage">
         <p id="hint-mechanic" class="mechanic-hint hidden" aria-live="polite"></p>
         <div id="canvas-wrap">
+          <div class="cloud-field cloud-field--far" aria-hidden="true">
+            <span class="cloud-sprite" data-cloud-depth="far"></span>
+          </div>
           <div id="clear-fanfare" class="clear-fanfare hidden" role="status" aria-live="assertive">
             <div class="clear-stars" id="clear-stars" aria-hidden="true"></div>
             <p class="clear-caption" id="clear-caption"></p>
           </div>
           <canvas id="game-canvas" aria-label="游戏棋盘"></canvas>
-          <div id="foreground-clouds" class="foreground-clouds" aria-hidden="true"></div>
+          <div class="cloud-field cloud-field--foreground" aria-hidden="true">
+            <span class="cloud-sprite" data-cloud-depth="mid"></span>
+            <span class="cloud-sprite" data-cloud-depth="near"></span>
+          </div>
         </div>
       </main>
 

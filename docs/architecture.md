@@ -181,7 +181,7 @@ npm run audit-level-experience
 - 宽屏细指针：隐藏触控键
 - 机制提示条 `#hint-mechanic`；分裂时显示「切换」
 - 壳层中文；画布为唯一 3D 视图
-- 场景开关 DOM 必须同时维护在 `index.html` 与 `xhs/index.html`；关闭高空模式时云雾挑战必须禁用并清空
+- 场景开关与三层 `data-cloud-depth` 云节点必须同时维护在 `index.html` 与 `xhs/index.html`；关闭高空模式时云雾挑战必须禁用并清空
 
 ### 7.1 玩家文案与分享文案
 
