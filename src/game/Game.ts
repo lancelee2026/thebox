@@ -61,7 +61,7 @@ export class Game {
   private history: WorldSnapshot[] = [];
   private world: WorldSnapshot = initialSnapshot(LEVELS[0], 0, 0);
   private busy = false;
-  private scenePrefs: ScenePrefs = { highAltitude: false, cloudChallenge: false };
+  private scenePrefs: ScenePrefs = { highAltitude: true, cloudChallenge: true };
 
   constructor() {
     const canvas = document.getElementById('game-canvas') as HTMLCanvasElement;
@@ -111,13 +111,15 @@ export class Game {
   private loadScenePrefs(): ScenePrefs {
     try {
       const stored = JSON.parse(localStorage.getItem(SCENE_PREFS_KEY) ?? '{}') as Partial<ScenePrefs>;
-      const highAltitude = stored.highAltitude === true;
+      // 首次进入直接呈现云端主场景；已有用户的显式开关继续优先于新默认值。
+      const highAltitude = typeof stored.highAltitude === 'boolean' ? stored.highAltitude : true;
       return {
         highAltitude,
-        cloudChallenge: highAltitude && stored.cloudChallenge === true,
+        cloudChallenge:
+          highAltitude && (typeof stored.cloudChallenge === 'boolean' ? stored.cloudChallenge : true),
       };
     } catch {
-      return { highAltitude: false, cloudChallenge: false };
+      return { highAltitude: true, cloudChallenge: true };
     }
   }
 
