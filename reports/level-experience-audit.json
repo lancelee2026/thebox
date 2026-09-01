@@ -429,12 +429,12 @@
     "level": 21,
     "chapter": "脆弱",
     "chapterOrder": 6,
-    "par": 4,
+    "par": 8,
     "solved": true,
-    "minMoves": 4,
-    "minTurns": 3,
-    "reachableStates": 32,
-    "decisionStates": 27,
+    "minMoves": 8,
+    "minTurns": 4,
+    "reachableStates": 48,
+    "decisionStates": 43,
     "deadEndStates": 0,
     "mainMechanic": "脆弱",
     "mainMechanicUsed": true,
@@ -442,9 +442,9 @@
     "specialTiles": {
       "f": {
         "total": 3,
-        "safeEntries": 20,
+        "safeEntries": 27,
         "dangerEntries": 7,
-        "relevant": 27
+        "relevant": 34
       }
     },
     "findings": []
@@ -891,12 +891,12 @@
     "level": 37,
     "chapter": "桥梁",
     "chapterOrder": 14,
-    "par": 10,
+    "par": 14,
     "solved": true,
-    "minMoves": 10,
-    "minTurns": 7,
-    "reachableStates": 124,
-    "decisionStates": 109,
+    "minMoves": 14,
+    "minTurns": 12,
+    "reachableStates": 104,
+    "decisionStates": 88,
     "deadEndStates": 0,
     "mainMechanic": "桥梁",
     "mainMechanicUsed": true,
@@ -904,30 +904,24 @@
     "specialTiles": {
       "s": {
         "total": 1,
-        "safeEntries": 40,
+        "safeEntries": 36,
         "dangerEntries": 0,
-        "relevant": 40
+        "relevant": 36
       },
       "S": {
         "total": 1,
-        "safeEntries": 44,
+        "safeEntries": 34,
         "dangerEntries": 0,
-        "relevant": 44
+        "relevant": 34
       },
       "b": {
         "total": 4,
-        "safeEntries": 107,
+        "safeEntries": 77,
         "dangerEntries": 35,
-        "relevant": 142
+        "relevant": 112
       }
     },
-    "findings": [
-      {
-        "severity": "P2",
-        "code": "difficulty-drop-candidate",
-        "message": "第 37 关：同章节最短步从 17 降至 10（41%），需人工确认是否过度降难。"
-      }
-    ]
+    "findings": []
   },
   {
     "level": 38,
@@ -1545,12 +1539,12 @@
     "level": 62,
     "chapter": "传送",
     "chapterOrder": 7,
-    "par": 5,
+    "par": 11,
     "solved": true,
-    "minMoves": 5,
-    "minTurns": 0,
-    "reachableStates": 6,
-    "decisionStates": 2,
+    "minMoves": 11,
+    "minTurns": 6,
+    "reachableStates": 35,
+    "decisionStates": 32,
     "deadEndStates": 0,
     "mainMechanic": "传送",
     "mainMechanicUsed": true,
@@ -1558,18 +1552,12 @@
     "specialTiles": {
       "t": {
         "total": 2,
-        "safeEntries": 4,
+        "safeEntries": 14,
         "dangerEntries": 0,
-        "relevant": 4
+        "relevant": 14
       }
     },
-    "findings": [
-      {
-        "severity": "P2",
-        "code": "difficulty-drop-candidate",
-        "message": "第 62 关：同章节最短步从 9 降至 5（44%），需人工确认是否过度降难。"
-      }
-    ]
+    "findings": []
   },
   {
     "level": 63,
@@ -1681,8 +1669,8 @@
     "solved": true,
     "minMoves": 8,
     "minTurns": 6,
-    "reachableStates": 11,
-    "decisionStates": 7,
+    "reachableStates": 22,
+    "decisionStates": 17,
     "deadEndStates": 0,
     "mainMechanic": "传送",
     "mainMechanicUsed": true,
@@ -1691,23 +1679,17 @@
       "z": {
         "total": 1,
         "safeEntries": 0,
-        "dangerEntries": 0,
-        "relevant": 0
+        "dangerEntries": 1,
+        "relevant": 1
       },
       "t": {
         "total": 1,
-        "safeEntries": 4,
+        "safeEntries": 10,
         "dangerEntries": 0,
-        "relevant": 4
+        "relevant": 10
       }
     },
-    "findings": [
-      {
-        "severity": "P1",
-        "code": "decorative-special-tile",
-        "message": "第 67 关：z 格未出现在任一可达决策中，疑似摆设。"
-      }
-    ]
+    "findings": []
   },
   {
     "level": 68,

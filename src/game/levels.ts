@@ -153,7 +153,8 @@ export const LEVELS: LevelDef[] = [
   { map: ['@xff', 'x..x', '.xoo'], chapter: '脆弱' },
   { map: ['@xxx', 'xffx', '..oo'], chapter: '脆弱' },
   { map: ['@xxf', 'xf.x', 'x..x', '..oo'], chapter: '脆弱' },
-  { map: ['@fxx', 'xff.x', 'x..x', '.xoo'], chapter: '脆弱' },
+  // 第 21 关不再以四步直达收尾：需横躺穿过 f 后再调整方向进目标。
+  { map: ['@fxxx', 'xff.x', 'x..xx', '...oo'], chapter: '脆弱' },
   { map: ['@xxf', 'xff.x', 'x..x', '..oo'], chapter: '脆弱' },
   { map: ['@xfxx', 'xff.x', 'x..x', '..oo'], chapter: '脆弱' },
 
@@ -240,7 +241,8 @@ export const LEVELS: LevelDef[] = [
     switches: [{ col: 2, row: 1, type: 'hard', bridgeIds: ['A'], mode: 'toggle' }],
   },
   {
-    map: ['@sbb.', 'xxSbb', '...oo'],
+    // 目标右移一格：两种开关都要用完，且要在桥末端再完成一次姿态调整。
+    map: ['@sbb.', 'xxSbb', '....oo'],
     chapter: '桥梁',
     bridges: [
       { id: 'A', cells: [[2, 0], [3, 0]], initiallyOpen: false },
@@ -416,9 +418,10 @@ export const LEVELS: LevelDef[] = [
     teleports: [{ dest: [5, 2] }],
   },
   {
-    map: ['@xxt..xxxt..xoo'],
+    // 双传送台加入起点侧转向：避免直线连按即可连续跳台通关。
+    map: ['@xx.........', 'x.x.........', 'xxt..xxxt..xoo'],
     chapter: '传送',
-    teleports: [{ dest: [6, 0] }, { dest: [12, 0] }],
+    teleports: [{ dest: [5, 2] }, { dest: [11, 2] }],
   },
   {
     map: [
@@ -460,7 +463,8 @@ export const LEVELS: LevelDef[] = [
     map: [
       '@xx...',
       'x.t..xoo',
-      'x...z...',
+      // 红砖放进起点岛的可达岔路，作为传送前的真实失误风险。
+      'x.x.z...',
     ],
     chapter: '传送',
     teleports: [{ dest: [5, 1] }],
