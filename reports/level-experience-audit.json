@@ -1,0 +1,1994 @@
+[
+  {
+    "level": 1,
+    "chapter": "基础",
+    "chapterOrder": 1,
+    "par": 5,
+    "solved": true,
+    "minMoves": 5,
+    "minTurns": 0,
+    "reachableStates": 6,
+    "decisionStates": 4,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 2,
+    "chapter": "基础",
+    "chapterOrder": 2,
+    "par": 11,
+    "solved": true,
+    "minMoves": 11,
+    "minTurns": 3,
+    "reachableStates": 12,
+    "decisionStates": 10,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 3,
+    "chapter": "基础",
+    "chapterOrder": 3,
+    "par": 12,
+    "solved": true,
+    "minMoves": 12,
+    "minTurns": 2,
+    "reachableStates": 13,
+    "decisionStates": 11,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 4,
+    "chapter": "基础",
+    "chapterOrder": 4,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 4,
+    "reachableStates": 16,
+    "decisionStates": 12,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 5,
+    "chapter": "基础",
+    "chapterOrder": 5,
+    "par": 14,
+    "solved": true,
+    "minMoves": 14,
+    "minTurns": 4,
+    "reachableStates": 31,
+    "decisionStates": 28,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-spike-candidate",
+        "message": "第 5 关：同章节最短步从 8 升至 14（75%），需人工确认是否突增。"
+      }
+    ]
+  },
+  {
+    "level": 6,
+    "chapter": "基础",
+    "chapterOrder": 6,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 4,
+    "reachableStates": 23,
+    "decisionStates": 19,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-drop-candidate",
+        "message": "第 6 关：同章节最短步从 14 降至 7（50%），需人工确认是否过度降难。"
+      }
+    ]
+  },
+  {
+    "level": 7,
+    "chapter": "基础",
+    "chapterOrder": 7,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 9,
+    "decisionStates": 6,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 8,
+    "chapter": "基础",
+    "chapterOrder": 8,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 8,
+    "reachableStates": 15,
+    "decisionStates": 12,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 2,
+        "safeEntries": 0,
+        "dangerEntries": 6,
+        "relevant": 6
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 9,
+    "chapter": "基础",
+    "chapterOrder": 9,
+    "par": 19,
+    "solved": true,
+    "minMoves": 19,
+    "minTurns": 11,
+    "reachableStates": 52,
+    "decisionStates": 46,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-spike-candidate",
+        "message": "第 9 关：同章节最短步从 10 升至 19（90%），需人工确认是否突增。"
+      }
+    ]
+  },
+  {
+    "level": 10,
+    "chapter": "基础",
+    "chapterOrder": 10,
+    "par": 14,
+    "solved": true,
+    "minMoves": 14,
+    "minTurns": 10,
+    "reachableStates": 40,
+    "decisionStates": 33,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 11,
+    "chapter": "基础",
+    "chapterOrder": 11,
+    "par": 19,
+    "solved": true,
+    "minMoves": 19,
+    "minTurns": 6,
+    "reachableStates": 103,
+    "decisionStates": 96,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 12,
+    "chapter": "基础",
+    "chapterOrder": 12,
+    "par": 14,
+    "solved": true,
+    "minMoves": 14,
+    "minTurns": 8,
+    "reachableStates": 116,
+    "decisionStates": 97,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": []
+  },
+  {
+    "level": 13,
+    "chapter": "基础",
+    "chapterOrder": 13,
+    "par": 12,
+    "solved": true,
+    "minMoves": 12,
+    "minTurns": 6,
+    "reachableStates": 77,
+    "decisionStates": 74,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 2,
+        "safeEntries": 0,
+        "dangerEntries": 17,
+        "relevant": 17
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 14,
+    "chapter": "基础",
+    "chapterOrder": 14,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 1,
+    "reachableStates": 77,
+    "decisionStates": 64,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {},
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-drop-candidate",
+        "message": "第 14 关：同章节最短步从 12 降至 6（50%），需人工确认是否过度降难。"
+      }
+    ]
+  },
+  {
+    "level": 15,
+    "chapter": "基础",
+    "chapterOrder": 15,
+    "par": 13,
+    "solved": true,
+    "minMoves": 13,
+    "minTurns": 6,
+    "reachableStates": 78,
+    "decisionStates": 57,
+    "deadEndStates": 0,
+    "mainMechanic": null,
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 2,
+        "safeEntries": 0,
+        "dangerEntries": 14,
+        "relevant": 14
+      }
+    },
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-spike-candidate",
+        "message": "第 15 关：同章节最短步从 6 升至 13（117%），需人工确认是否突增。"
+      }
+    ]
+  },
+  {
+    "level": 16,
+    "chapter": "脆弱",
+    "chapterOrder": 1,
+    "par": 3,
+    "solved": true,
+    "minMoves": 3,
+    "minTurns": 1,
+    "reachableStates": 26,
+    "decisionStates": 22,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 2,
+        "safeEntries": 18,
+        "dangerEntries": 5,
+        "relevant": 23
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 17,
+    "chapter": "脆弱",
+    "chapterOrder": 2,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 25,
+    "decisionStates": 20,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 2,
+        "safeEntries": 17,
+        "dangerEntries": 3,
+        "relevant": 20
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 18,
+    "chapter": "脆弱",
+    "chapterOrder": 3,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 12,
+    "decisionStates": 8,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 2,
+        "safeEntries": 5,
+        "dangerEntries": 3,
+        "relevant": 8
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 19,
+    "chapter": "脆弱",
+    "chapterOrder": 4,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 35,
+    "decisionStates": 30,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 2,
+        "safeEntries": 21,
+        "dangerEntries": 7,
+        "relevant": 28
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 20,
+    "chapter": "脆弱",
+    "chapterOrder": 5,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 4,
+    "reachableStates": 22,
+    "decisionStates": 18,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 2,
+        "safeEntries": 9,
+        "dangerEntries": 4,
+        "relevant": 13
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 21,
+    "chapter": "脆弱",
+    "chapterOrder": 6,
+    "par": 4,
+    "solved": true,
+    "minMoves": 4,
+    "minTurns": 3,
+    "reachableStates": 32,
+    "decisionStates": 27,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 3,
+        "safeEntries": 20,
+        "dangerEntries": 7,
+        "relevant": 27
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 22,
+    "chapter": "脆弱",
+    "chapterOrder": 7,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 4,
+    "reachableStates": 34,
+    "decisionStates": 26,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 3,
+        "safeEntries": 21,
+        "dangerEntries": 8,
+        "relevant": 29
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 23,
+    "chapter": "脆弱",
+    "chapterOrder": 8,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 4,
+    "reachableStates": 35,
+    "decisionStates": 29,
+    "deadEndStates": 0,
+    "mainMechanic": "脆弱",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 3,
+        "safeEntries": 21,
+        "dangerEntries": 7,
+        "relevant": 28
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 24,
+    "chapter": "桥梁",
+    "chapterOrder": 1,
+    "par": 3,
+    "solved": true,
+    "minMoves": 3,
+    "minTurns": 0,
+    "reachableStates": 6,
+    "decisionStates": 2,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 3,
+        "dangerEntries": 0,
+        "relevant": 3
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 4,
+        "dangerEntries": 1,
+        "relevant": 5
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 25,
+    "chapter": "桥梁",
+    "chapterOrder": 2,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 8,
+    "reachableStates": 62,
+    "decisionStates": 46,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 15,
+        "dangerEntries": 0,
+        "relevant": 15
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 35,
+        "dangerEntries": 14,
+        "relevant": 49
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 26,
+    "chapter": "桥梁",
+    "chapterOrder": 3,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 7,
+    "reachableStates": 69,
+    "decisionStates": 53,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 14,
+        "dangerEntries": 0,
+        "relevant": 14
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 36,
+        "dangerEntries": 10,
+        "relevant": 46
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 27,
+    "chapter": "桥梁",
+    "chapterOrder": 4,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 5,
+    "reachableStates": 51,
+    "decisionStates": 36,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 12,
+        "dangerEntries": 0,
+        "relevant": 12
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 25,
+        "dangerEntries": 8,
+        "relevant": 33
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 28,
+    "chapter": "桥梁",
+    "chapterOrder": 5,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 8,
+    "reachableStates": 52,
+    "decisionStates": 40,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 10,
+        "dangerEntries": 0,
+        "relevant": 10
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 28,
+        "dangerEntries": 11,
+        "relevant": 39
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 29,
+    "chapter": "桥梁",
+    "chapterOrder": 6,
+    "par": 11,
+    "solved": true,
+    "minMoves": 11,
+    "minTurns": 7,
+    "reachableStates": 61,
+    "decisionStates": 45,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 15,
+        "dangerEntries": 0,
+        "relevant": 15
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 32,
+        "dangerEntries": 12,
+        "relevant": 44
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 30,
+    "chapter": "桥梁",
+    "chapterOrder": 7,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 7,
+    "reachableStates": 42,
+    "decisionStates": 30,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 13,
+        "dangerEntries": 0,
+        "relevant": 13
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 25,
+        "dangerEntries": 12,
+        "relevant": 37
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 31,
+    "chapter": "桥梁",
+    "chapterOrder": 8,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 9,
+    "reachableStates": 58,
+    "decisionStates": 43,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 14,
+        "dangerEntries": 0,
+        "relevant": 14
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 31,
+        "dangerEntries": 15,
+        "relevant": 46
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 32,
+    "chapter": "桥梁",
+    "chapterOrder": 9,
+    "par": 14,
+    "solved": true,
+    "minMoves": 14,
+    "minTurns": 10,
+    "reachableStates": 67,
+    "decisionStates": 49,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "S": {
+        "total": 1,
+        "safeEntries": 22,
+        "dangerEntries": 0,
+        "relevant": 22
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 26,
+        "dangerEntries": 6,
+        "relevant": 32
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 33,
+    "chapter": "桥梁",
+    "chapterOrder": 10,
+    "par": 16,
+    "solved": true,
+    "minMoves": 16,
+    "minTurns": 13,
+    "reachableStates": 67,
+    "decisionStates": 56,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "S": {
+        "total": 1,
+        "safeEntries": 22,
+        "dangerEntries": 0,
+        "relevant": 22
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 18,
+        "dangerEntries": 5,
+        "relevant": 23
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 34,
+    "chapter": "桥梁",
+    "chapterOrder": 11,
+    "par": 11,
+    "solved": true,
+    "minMoves": 11,
+    "minTurns": 9,
+    "reachableStates": 50,
+    "decisionStates": 43,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "S": {
+        "total": 1,
+        "safeEntries": 16,
+        "dangerEntries": 0,
+        "relevant": 16
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 24,
+        "dangerEntries": 5,
+        "relevant": 29
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 35,
+    "chapter": "桥梁",
+    "chapterOrder": 12,
+    "par": 12,
+    "solved": true,
+    "minMoves": 12,
+    "minTurns": 9,
+    "reachableStates": 30,
+    "decisionStates": 23,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "S": {
+        "total": 1,
+        "safeEntries": 7,
+        "dangerEntries": 0,
+        "relevant": 7
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 13,
+        "dangerEntries": 2,
+        "relevant": 15
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 36,
+    "chapter": "桥梁",
+    "chapterOrder": 13,
+    "par": 17,
+    "solved": true,
+    "minMoves": 17,
+    "minTurns": 13,
+    "reachableStates": 77,
+    "decisionStates": 63,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "S": {
+        "total": 1,
+        "safeEntries": 22,
+        "dangerEntries": 0,
+        "relevant": 22
+      },
+      "b": {
+        "total": 2,
+        "safeEntries": 30,
+        "dangerEntries": 10,
+        "relevant": 40
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 37,
+    "chapter": "桥梁",
+    "chapterOrder": 14,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 7,
+    "reachableStates": 124,
+    "decisionStates": 109,
+    "deadEndStates": 0,
+    "mainMechanic": "桥梁",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "s": {
+        "total": 1,
+        "safeEntries": 40,
+        "dangerEntries": 0,
+        "relevant": 40
+      },
+      "S": {
+        "total": 1,
+        "safeEntries": 44,
+        "dangerEntries": 0,
+        "relevant": 44
+      },
+      "b": {
+        "total": 4,
+        "safeEntries": 107,
+        "dangerEntries": 35,
+        "relevant": 142
+      }
+    },
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-drop-candidate",
+        "message": "第 37 关：同章节最短步从 17 降至 10（41%），需人工确认是否过度降难。"
+      }
+    ]
+  },
+  {
+    "level": 38,
+    "chapter": "分裂",
+    "chapterOrder": 1,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 3,
+    "reachableStates": 121,
+    "decisionStates": 119,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "p": {
+        "total": 1,
+        "safeEntries": 42,
+        "dangerEntries": 0,
+        "relevant": 42
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 39,
+    "chapter": "分裂",
+    "chapterOrder": 2,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 3,
+    "reachableStates": 120,
+    "decisionStates": 118,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "p": {
+        "total": 1,
+        "safeEntries": 40,
+        "dangerEntries": 0,
+        "relevant": 40
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 40,
+    "chapter": "分裂",
+    "chapterOrder": 3,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 3,
+    "reachableStates": 121,
+    "decisionStates": 119,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "p": {
+        "total": 1,
+        "safeEntries": 42,
+        "dangerEntries": 0,
+        "relevant": 42
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 41,
+    "chapter": "分裂",
+    "chapterOrder": 4,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 5,
+    "reachableStates": 82,
+    "decisionStates": 78,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "p": {
+        "total": 1,
+        "safeEntries": 16,
+        "dangerEntries": 0,
+        "relevant": 16
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 42,
+    "chapter": "分裂",
+    "chapterOrder": 5,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 5,
+    "reachableStates": 74,
+    "decisionStates": 70,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "p": {
+        "total": 1,
+        "safeEntries": 22,
+        "dangerEntries": 0,
+        "relevant": 22
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 43,
+    "chapter": "分裂",
+    "chapterOrder": 6,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 3,
+    "reachableStates": 180,
+    "decisionStates": 174,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 10,
+        "relevant": 10
+      },
+      "p": {
+        "total": 1,
+        "safeEntries": 50,
+        "dangerEntries": 0,
+        "relevant": 50
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 44,
+    "chapter": "分裂",
+    "chapterOrder": 7,
+    "par": 10,
+    "solved": true,
+    "minMoves": 10,
+    "minTurns": 4,
+    "reachableStates": 180,
+    "decisionStates": 172,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 30,
+        "relevant": 30
+      },
+      "p": {
+        "total": 1,
+        "safeEntries": 49,
+        "dangerEntries": 0,
+        "relevant": 49
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 45,
+    "chapter": "分裂",
+    "chapterOrder": 8,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 4,
+    "reachableStates": 131,
+    "decisionStates": 125,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "p": {
+        "total": 1,
+        "safeEntries": 42,
+        "dangerEntries": 0,
+        "relevant": 42
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 46,
+    "chapter": "分裂",
+    "chapterOrder": 9,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 3,
+    "reachableStates": 229,
+    "decisionStates": 223,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "p": {
+        "total": 1,
+        "safeEntries": 55,
+        "dangerEntries": 0,
+        "relevant": 55
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 47,
+    "chapter": "分裂",
+    "chapterOrder": 10,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 1,
+    "reachableStates": 228,
+    "decisionStates": 223,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 38,
+        "relevant": 38
+      },
+      "p": {
+        "total": 1,
+        "safeEntries": 33,
+        "dangerEntries": 0,
+        "relevant": 33
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 48,
+    "chapter": "分裂",
+    "chapterOrder": 11,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 5,
+    "reachableStates": 94,
+    "decisionStates": 92,
+    "deadEndStates": 0,
+    "mainMechanic": "分裂",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 12,
+        "relevant": 12
+      },
+      "p": {
+        "total": 1,
+        "safeEntries": 14,
+        "dangerEntries": 0,
+        "relevant": 14
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 49,
+    "chapter": "多层",
+    "chapterOrder": 1,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 23,
+    "decisionStates": 21,
+    "deadEndStates": 0,
+    "mainMechanic": "多层",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "u": {
+        "total": 2,
+        "safeEntries": 9,
+        "dangerEntries": 0,
+        "relevant": 9
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 50,
+    "chapter": "多层",
+    "chapterOrder": 2,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 30,
+    "decisionStates": 28,
+    "deadEndStates": 0,
+    "mainMechanic": "多层",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "u": {
+        "total": 2,
+        "safeEntries": 13,
+        "dangerEntries": 0,
+        "relevant": 13
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 51,
+    "chapter": "多层",
+    "chapterOrder": 3,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 36,
+    "decisionStates": 34,
+    "deadEndStates": 0,
+    "mainMechanic": "多层",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "u": {
+        "total": 2,
+        "safeEntries": 14,
+        "dangerEntries": 0,
+        "relevant": 14
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 52,
+    "chapter": "多层",
+    "chapterOrder": 4,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 30,
+    "decisionStates": 25,
+    "deadEndStates": 0,
+    "mainMechanic": "多层",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "u": {
+        "total": 2,
+        "safeEntries": 12,
+        "dangerEntries": 0,
+        "relevant": 12
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 53,
+    "chapter": "多层",
+    "chapterOrder": 5,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 4,
+    "reachableStates": 54,
+    "decisionStates": 49,
+    "deadEndStates": 0,
+    "mainMechanic": "多层",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "u": {
+        "total": 2,
+        "safeEntries": 16,
+        "dangerEntries": 0,
+        "relevant": 16
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 54,
+    "chapter": "多层",
+    "chapterOrder": 6,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 5,
+    "reachableStates": 49,
+    "decisionStates": 40,
+    "deadEndStates": 0,
+    "mainMechanic": "多层",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 10,
+        "relevant": 10
+      },
+      "u": {
+        "total": 2,
+        "safeEntries": 16,
+        "dangerEntries": 0,
+        "relevant": 16
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 55,
+    "chapter": "多层",
+    "chapterOrder": 7,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 4,
+    "reachableStates": 54,
+    "decisionStates": 51,
+    "deadEndStates": 0,
+    "mainMechanic": "多层",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 1,
+        "safeEntries": 12,
+        "dangerEntries": 4,
+        "relevant": 16
+      },
+      "u": {
+        "total": 2,
+        "safeEntries": 15,
+        "dangerEntries": 0,
+        "relevant": 15
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 56,
+    "chapter": "传送",
+    "chapterOrder": 1,
+    "par": 3,
+    "solved": true,
+    "minMoves": 3,
+    "minTurns": 0,
+    "reachableStates": 4,
+    "decisionStates": 1,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 2,
+        "dangerEntries": 0,
+        "relevant": 2
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 57,
+    "chapter": "传送",
+    "chapterOrder": 2,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 33,
+    "decisionStates": 31,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 12,
+        "dangerEntries": 0,
+        "relevant": 12
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 58,
+    "chapter": "传送",
+    "chapterOrder": 3,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 34,
+    "decisionStates": 32,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 12,
+        "dangerEntries": 0,
+        "relevant": 12
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 59,
+    "chapter": "传送",
+    "chapterOrder": 4,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 32,
+    "decisionStates": 26,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 12,
+        "dangerEntries": 0,
+        "relevant": 12
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 60,
+    "chapter": "传送",
+    "chapterOrder": 5,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 34,
+    "decisionStates": 28,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 11,
+        "dangerEntries": 0,
+        "relevant": 11
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 61,
+    "chapter": "传送",
+    "chapterOrder": 6,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 37,
+    "decisionStates": 31,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 12,
+        "dangerEntries": 0,
+        "relevant": 12
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 62,
+    "chapter": "传送",
+    "chapterOrder": 7,
+    "par": 5,
+    "solved": true,
+    "minMoves": 5,
+    "minTurns": 0,
+    "reachableStates": 6,
+    "decisionStates": 2,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 2,
+        "safeEntries": 4,
+        "dangerEntries": 0,
+        "relevant": 4
+      }
+    },
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-drop-candidate",
+        "message": "第 62 关：同章节最短步从 9 降至 5（44%），需人工确认是否过度降难。"
+      }
+    ]
+  },
+  {
+    "level": 63,
+    "chapter": "传送",
+    "chapterOrder": 8,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 17,
+    "decisionStates": 10,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 4,
+        "dangerEntries": 0,
+        "relevant": 4
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 64,
+    "chapter": "传送",
+    "chapterOrder": 9,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 5,
+    "reachableStates": 26,
+    "decisionStates": 18,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 8,
+        "dangerEntries": 0,
+        "relevant": 8
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 65,
+    "chapter": "传送",
+    "chapterOrder": 10,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 5,
+    "reachableStates": 26,
+    "decisionStates": 20,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "t": {
+        "total": 1,
+        "safeEntries": 10,
+        "dangerEntries": 0,
+        "relevant": 10
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 66,
+    "chapter": "传送",
+    "chapterOrder": 11,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 32,
+    "decisionStates": 29,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 6,
+        "relevant": 6
+      },
+      "t": {
+        "total": 1,
+        "safeEntries": 12,
+        "dangerEntries": 0,
+        "relevant": 12
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 67,
+    "chapter": "传送",
+    "chapterOrder": 12,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 6,
+    "reachableStates": 11,
+    "decisionStates": 7,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 0,
+        "relevant": 0
+      },
+      "t": {
+        "total": 1,
+        "safeEntries": 4,
+        "dangerEntries": 0,
+        "relevant": 4
+      }
+    },
+    "findings": [
+      {
+        "severity": "P1",
+        "code": "decorative-special-tile",
+        "message": "第 67 关：z 格未出现在任一可达决策中，疑似摆设。"
+      }
+    ]
+  },
+  {
+    "level": 68,
+    "chapter": "传送",
+    "chapterOrder": 13,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 6,
+    "reachableStates": 32,
+    "decisionStates": 28,
+    "deadEndStates": 0,
+    "mainMechanic": "传送",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "f": {
+        "total": 1,
+        "safeEntries": 8,
+        "dangerEntries": 3,
+        "relevant": 11
+      },
+      "t": {
+        "total": 1,
+        "safeEntries": 11,
+        "dangerEntries": 0,
+        "relevant": 11
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 69,
+    "chapter": "崩塌",
+    "chapterOrder": 1,
+    "par": 3,
+    "solved": true,
+    "minMoves": 3,
+    "minTurns": 1,
+    "reachableStates": 5,
+    "decisionStates": 1,
+    "deadEndStates": 1,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 2,
+        "safeEntries": 2,
+        "dangerEntries": 4,
+        "relevant": 6
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 70,
+    "chapter": "崩塌",
+    "chapterOrder": 2,
+    "par": 3,
+    "solved": true,
+    "minMoves": 3,
+    "minTurns": 1,
+    "reachableStates": 5,
+    "decisionStates": 1,
+    "deadEndStates": 1,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 2,
+        "safeEntries": 2,
+        "dangerEntries": 4,
+        "relevant": 6
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 71,
+    "chapter": "崩塌",
+    "chapterOrder": 3,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 7,
+    "reachableStates": 63,
+    "decisionStates": 48,
+    "deadEndStates": 0,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 2,
+        "safeEntries": 22,
+        "dangerEntries": 17,
+        "relevant": 39
+      }
+    },
+    "findings": [
+      {
+        "severity": "P2",
+        "code": "difficulty-spike-candidate",
+        "message": "第 71 关：同章节最短步从 3 升至 9（200%），需人工确认是否突增。"
+      }
+    ]
+  },
+  {
+    "level": 72,
+    "chapter": "崩塌",
+    "chapterOrder": 4,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 7,
+    "reachableStates": 59,
+    "decisionStates": 43,
+    "deadEndStates": 4,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 3,
+        "safeEntries": 27,
+        "dangerEntries": 28,
+        "relevant": 55
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 73,
+    "chapter": "崩塌",
+    "chapterOrder": 5,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 7,
+    "reachableStates": 156,
+    "decisionStates": 125,
+    "deadEndStates": 0,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 3,
+        "safeEntries": 68,
+        "dangerEntries": 47,
+        "relevant": 115
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 74,
+    "chapter": "崩塌",
+    "chapterOrder": 6,
+    "par": 6,
+    "solved": true,
+    "minMoves": 6,
+    "minTurns": 4,
+    "reachableStates": 193,
+    "decisionStates": 146,
+    "deadEndStates": 0,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 3,
+        "safeEntries": 68,
+        "dangerEntries": 68,
+        "relevant": 136
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 75,
+    "chapter": "崩塌",
+    "chapterOrder": 7,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 7,
+    "reachableStates": 117,
+    "decisionStates": 90,
+    "deadEndStates": 0,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 4,
+        "safeEntries": 53,
+        "dangerEntries": 59,
+        "relevant": 112
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 76,
+    "chapter": "崩塌",
+    "chapterOrder": 8,
+    "par": 7,
+    "solved": true,
+    "minMoves": 7,
+    "minTurns": 4,
+    "reachableStates": 204,
+    "decisionStates": 173,
+    "deadEndStates": 0,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 3,
+        "safeEntries": 100,
+        "dangerEntries": 67,
+        "relevant": 167
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 77,
+    "chapter": "崩塌",
+    "chapterOrder": 9,
+    "par": 9,
+    "solved": true,
+    "minMoves": 9,
+    "minTurns": 7,
+    "reachableStates": 31,
+    "decisionStates": 20,
+    "deadEndStates": 1,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "c": {
+        "total": 3,
+        "safeEntries": 8,
+        "dangerEntries": 20,
+        "relevant": 28
+      }
+    },
+    "findings": []
+  },
+  {
+    "level": 78,
+    "chapter": "崩塌",
+    "chapterOrder": 10,
+    "par": 8,
+    "solved": true,
+    "minMoves": 8,
+    "minTurns": 6,
+    "reachableStates": 69,
+    "decisionStates": 47,
+    "deadEndStates": 3,
+    "mainMechanic": "崩塌",
+    "mainMechanicUsed": true,
+    "withoutMechanicMinMoves": null,
+    "specialTiles": {
+      "z": {
+        "total": 1,
+        "safeEntries": 0,
+        "dangerEntries": 18,
+        "relevant": 18
+      },
+      "c": {
+        "total": 3,
+        "safeEntries": 24,
+        "dangerEntries": 23,
+        "relevant": 47
+      }
+    },
+    "findings": []
+  }
+]

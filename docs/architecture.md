@@ -30,6 +30,7 @@ npm install
 npm run dev
 npm run build
 npm run check-levels   # 本地 BFS，不进 Pages 构建
+npm run audit-level-experience  # 78 关体验审计与报告生成
 ```
 
 注意：`package.json` 与 `package-lock.json` 必须同步，Pages 使用 `npm ci`。
@@ -142,7 +143,10 @@ interface BlockState { col: number; row: number; ori: Ori }
 
 ```bash
 npm run check-levels
+npm run audit-level-experience
 ```
+
+`audit-level-experience` 会输出 [`level-design-audit.md`](level-design-audit.md) 和 `reports/level-experience-audit.json`：在保留前两关教学豁免的前提下，量化最短路、转向数、可达状态与决策状态；以关闭本章机关的反事实求解筛选可绕过机关；以所有可达未通关状态中的安全/失败触及，筛选从未构成决策的特殊格。它是改关前的候选清单，而非自动改关器。
 
 ### 5.4 选关解锁
 

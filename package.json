@@ -16,6 +16,8 @@
     "debug-level": "tsx scripts/debug-level.ts",
     "debug-path": "tsx scripts/debug-path.ts",
     "audit-mechanics": "tsx scripts/audit-mechanics.ts",
+    "audit-level-experience": "tsx scripts/audit-level-experience.ts --write",
+    "check-level-experience": "tsx scripts/check-level-experience.ts",
     "check-death-feedback": "tsx scripts/check-death-feedback.ts"
   },
   "devDependencies": {

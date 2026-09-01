@@ -52,3 +52,11 @@ Vite · TypeScript · Three.js · @tweenjs/tween.js
 ```bash
 npm run check-levels
 ```
+
+需要审查难度突变、机关绕过或特殊砖是否只是摆设时，运行：
+
+```bash
+npm run audit-level-experience
+```
+
+它会生成逐关报告到 [`docs/level-design-audit.md`](docs/level-design-audit.md) 与机器可读数据 `reports/level-experience-audit.json`；报告只筛选候选，仍需结合实际试玩决定是否改关。
