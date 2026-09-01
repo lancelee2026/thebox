@@ -1,16 +1,27 @@
 export class Sfx {
   private ctx: AudioContext | null = null;
+  private unavailable = false;
   muted = false;
 
   private ensure(): AudioContext | null {
-    if (this.muted) return null;
+    if (this.muted || this.unavailable) return null;
     if (!this.ctx) {
       const AC =
         window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-      this.ctx = new AC();
+        (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      // 部分离线容器会屏蔽 Web Audio；静音降级而非阻断游戏输入。
+      if (!AC) {
+        this.unavailable = true;
+        return null;
+      }
+      try {
+        this.ctx = new AC();
+      } catch {
+        this.unavailable = true;
+        return null;
+      }
     }
-    if (this.ctx.state === 'suspended') void this.ctx.resume();
+    if (this.ctx.state === 'suspended') void this.ctx.resume().catch(() => undefined);
     return this.ctx;
   }
 

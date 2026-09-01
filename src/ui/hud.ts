@@ -351,15 +351,22 @@ export class LevelSelect {
 
     btn.addEventListener('click', () => {
       if (locked) {
-        btn.animate(
-          [
-            { transform: 'translateX(0)' },
-            { transform: 'translateX(-4px)' },
-            { transform: 'translateX(4px)' },
-            { transform: 'translateX(0)' },
-          ],
-          { duration: 200 },
-        );
+        if (typeof btn.animate === 'function') {
+          btn.animate(
+            [
+              { transform: 'translateX(0)' },
+              { transform: 'translateX(-4px)' },
+              { transform: 'translateX(4px)' },
+              { transform: 'translateX(0)' },
+            ],
+            { duration: 200 },
+          );
+        } else {
+          btn.classList.remove('lock-shake');
+          void btn.offsetWidth;
+          btn.classList.add('lock-shake');
+          window.setTimeout(() => btn.classList.remove('lock-shake'), 220);
+        }
         return;
       }
       this.hide();

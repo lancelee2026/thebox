@@ -49,10 +49,15 @@ function between(min: number, max: number): number {
 export class CloudField {
   private sprites: HTMLElement[];
   private timers: Array<number | null> = [];
+  private fallbackTimers: Array<number | null> = [];
   private animations: Array<Animation | null> = [];
   private shapeIndexes: number[];
   private active = false;
-  private reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  private animationGeneration = 0;
+  private reducedMotion =
+    typeof window.matchMedia === 'function'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)')
+      : null;
 
   constructor() {
     this.sprites = Array.from(document.querySelectorAll<HTMLElement>('[data-cloud-depth]'));
@@ -60,7 +65,13 @@ export class CloudField {
     this.shapeIndexes = this.sprites.map(
       (_, index) => (index + shapeRotation) % CLOUD_ASSETS.length,
     );
-    this.reducedMotion.addEventListener('change', this.refresh);
+    if (this.reducedMotion) {
+      if (typeof this.reducedMotion.addEventListener === 'function') {
+        this.reducedMotion.addEventListener('change', this.refresh);
+      } else {
+        this.reducedMotion.addListener(this.refresh);
+      }
+    }
     document.addEventListener('visibilitychange', this.refresh);
   }
 
@@ -73,7 +84,7 @@ export class CloudField {
   private refresh = (): void => {
     this.stop();
     if (!this.active || document.hidden) return;
-    if (this.reducedMotion.matches) {
+    if (this.prefersReducedMotion()) {
       this.showReducedMotionComposition();
       return;
     }
@@ -84,15 +95,21 @@ export class CloudField {
   };
 
   private stop(): void {
+    this.animationGeneration++;
     this.timers.forEach((timer) => {
+      if (timer !== null) window.clearTimeout(timer);
+    });
+    this.fallbackTimers.forEach((timer) => {
       if (timer !== null) window.clearTimeout(timer);
     });
     this.animations.forEach((animation) => animation?.cancel());
     this.timers = this.sprites.map(() => null);
+    this.fallbackTimers = this.sprites.map(() => null);
     this.animations = this.sprites.map(() => null);
     this.sprites.forEach((sprite) => {
       sprite.style.opacity = '0';
       sprite.style.removeProperty('transform');
+      sprite.style.removeProperty('transition');
     });
   }
 
@@ -101,7 +118,7 @@ export class CloudField {
   }
 
   private launch(index: number): void {
-    if (!this.active || this.reducedMotion.matches || document.hidden) return;
+    if (!this.active || this.prefersReducedMotion() || document.hidden) return;
     const sprite = this.sprites[index];
     const depth = sprite.dataset.cloudDepth as CloudDepth;
     const profile = PROFILES[depth];
@@ -134,13 +151,28 @@ export class CloudField {
 
     const transform = (x: number, y: number, rotation: number) =>
       `translate3d(${x}px, ${y}px, 0) scaleX(${flip}) rotate(${rotation}deg)`;
+    const startTransform = transform(startX, startY, direction * -1.2);
+    const endTransform = transform(endX, endY, direction * 1.2);
+    // 少数旧 WebView 没有 Web Animations API：保留同样的穿场轨迹，改用 CSS transition。
+    if (typeof sprite.animate !== 'function') {
+      this.launchCssFallback(
+        index,
+        sprite,
+        startTransform,
+        endTransform,
+        opacity,
+        duration,
+        this.animationGeneration,
+      );
+      return;
+    }
     const animation = sprite.animate(
       [
-        { opacity: 0, transform: transform(startX, startY, direction * -1.2) },
+        { opacity: 0, transform: startTransform },
         { opacity: opacity * 0.72, offset: 0.12 },
         { opacity, offset: 0.42 },
         { opacity: opacity * 0.88, offset: 0.82 },
-        { opacity: 0, transform: transform(endX, endY, direction * 1.2) },
+        { opacity: 0, transform: endTransform },
       ],
       { duration, easing: 'linear', fill: 'forwards' },
     );
@@ -150,6 +182,40 @@ export class CloudField {
       sprite.style.opacity = '0';
       if (this.active) this.queue(index, between(1_800, 5_800));
     };
+  }
+
+  private prefersReducedMotion(): boolean {
+    return this.reducedMotion?.matches ?? false;
+  }
+
+  private launchCssFallback(
+    index: number,
+    sprite: HTMLElement,
+    startTransform: string,
+    endTransform: string,
+    opacity: number,
+    duration: number,
+    generation: number,
+  ): void {
+    const fadeMs = Math.min(420, Math.max(220, duration * 0.14));
+    sprite.style.transition = 'none';
+    sprite.style.opacity = '0';
+    sprite.style.transform = startTransform;
+    window.requestAnimationFrame(() => {
+      if (!this.active || document.hidden || generation !== this.animationGeneration) return;
+      sprite.style.transition = `transform ${duration}ms linear, opacity ${fadeMs}ms ease`;
+      sprite.style.opacity = String(opacity);
+      sprite.style.transform = endTransform;
+      this.fallbackTimers[index] = window.setTimeout(() => {
+        if (!this.active || generation !== this.animationGeneration) return;
+        sprite.style.opacity = '0';
+        this.fallbackTimers[index] = window.setTimeout(() => {
+          if (this.active && generation === this.animationGeneration) {
+            this.queue(index, between(1_800, 5_800));
+          }
+        }, fadeMs);
+      }, Math.max(0, duration - fadeMs));
+    });
   }
 
   private showReducedMotionComposition(): void {

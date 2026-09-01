@@ -346,6 +346,16 @@ body::before {
   will-change: transform, opacity;
 }
 
+@keyframes lock-shake {
+  0%, 100% { transform: translateX(0); }
+  33% { transform: translateX(-4px); }
+  66% { transform: translateX(4px); }
+}
+
+.level-cell.lock-shake {
+  animation: lock-shake 200ms ease;
+}
+
 .top-bar,
 .controls,
 .hint {
